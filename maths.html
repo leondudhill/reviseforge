@@ -34,7 +34,7 @@
     display: flex; align-items: center; justify-content: space-between;
     flex-shrink: 0;
   }
-  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; color: var(--text); line-height: 1; text-decoration: none; }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 2px; color: var(--text); line-height: 1; text-decoration: none; }
   .logo .logo-study { font-weight: 400; color: var(--text); }
   .logo .logo-forge { font-weight: 700; color: var(--accent); }
   .header-byline { font-size: 11px; color: #111111; font-weight: 400; letter-spacing: 0.3px; text-align: right; }
@@ -140,6 +140,7 @@
     line-height: 1.1;
     white-space: nowrap;
   }
+  .topic-name .forge { color: var(--card-color); }
   .topic-desc {
     font-size: 11.5px;
     font-weight: 500;
@@ -148,13 +149,53 @@
     line-height: 1.5;
   }
 
-  /* 6 distinct card colours for Maths (blue palette) */
-  .tc-1 { --card-color: #2563eb; --card-border: #bdd0f7; --card-bg: #f0f5ff; }
-  .tc-2 { --card-color: #0ea5e9; --card-border: #bae6fd; --card-bg: #f0faff; }
-  .tc-3 { --card-color: #6366f1; --card-border: #c7d2fe; --card-bg: #f5f3ff; }
-  .tc-4 { --card-color: #0891b2; --card-border: #a5f3fc; --card-bg: #ecfeff; }
-  .tc-5 { --card-color: #4f46e5; --card-border: #c7d2fe; --card-bg: #eef2ff; }
-  .tc-6 { --card-color: #7c3aed; --card-border: #ddd6fe; --card-bg: #f5f3ff; }
+  /* 15 card colours for MathsForge tools (blue palette) */
+  .tc-1  { --card-color: #2563eb; --card-border: #bdd0f7; --card-bg: #f0f5ff; }
+  .tc-2  { --card-color: #1d4ed8; --card-border: #b3c6f5; --card-bg: #eef2ff; }
+  .tc-3  { --card-color: #3b82f6; --card-border: #bfdbfe; --card-bg: #eff6ff; }
+  .tc-4  { --card-color: #1e40af; --card-border: #aabcf0; --card-bg: #eef2ff; }
+  .tc-5  { --card-color: #0ea5e9; --card-border: #bae6fd; --card-bg: #f0faff; }
+  .tc-6  { --card-color: #6366f1; --card-border: #c7d2fe; --card-bg: #f5f3ff; }
+  .tc-7  { --card-color: #0891b2; --card-border: #a5f3fc; --card-bg: #ecfeff; }
+  .tc-8  { --card-color: #4f46e5; --card-border: #c7d2fe; --card-bg: #eef2ff; }
+  .tc-9  { --card-color: #60a5fa; --card-border: #bfdbfe; --card-bg: #eff6ff; }
+  .tc-10 { --card-color: #38bdf8; --card-border: #bae6fd; --card-bg: #f0faff; }
+  .tc-11 { --card-color: #818cf8; --card-border: #c7d2fe; --card-bg: #f5f3ff; }
+  .tc-12 { --card-color: #22d3ee; --card-border: #a5f3fc; --card-bg: #ecfeff; }
+  .tc-13 { --card-color: #1254c8; --card-border: #93c5fd; --card-bg: #eff6ff; }
+  .tc-14 { --card-color: #0f4dbd; --card-border: #7cb9f4; --card-bg: #f0f6ff; }
+  .tc-15 { --card-color: #0842b5; --card-border: #6aaaf2; --card-bg: #eef5ff; }
+  .tc-16 { --card-color: #0c46b2; --card-border: #5590e5; --card-bg: #edf3ff; }
+  .tc-17 { --card-color: #0939a8; --card-border: #4880df; --card-bg: #eaf2ff; }
+
+  /* Coming soon cards */
+  .topic-card.coming-soon {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+  }
+  .coming-soon-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--card-border);
+    border-radius: 20px;
+    padding: 2px 10px;
+  }
+
+  /* Section labels */
+  .section-label {
+    width: min(960px, 100%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    padding-bottom: 4px;
+    border-bottom: 1.5px solid var(--border);
+    margin-top: 8px;
+  }
 
   /* ===================== FOOTER ===================== */
   footer {
@@ -180,51 +221,140 @@
 <body>
 
 <header>
-  <a href="../index.html" class="logo"><span class="logo-study">Revise</span><span class="logo-forge">Forge</span></a>
+  <a href="../index.html" class="logo"><span class="logo-study">Maths</span><span class="logo-forge">Forge</span></a>
   <div class="header-byline">A website by <strong>Leon Dudhill</strong></div>
 </header>
 
 <main class="main">
   <a href="../index.html" class="back-link">← Back to ReviseForge</a>
-  <div class="main-title">Maths<span class="forge">Forge</span></div>
   <p class="main-sub">Choose a topic to begin revising</p>
 
+  <div class="section-label">Tools</div>
   <div class="topic-grid">
 
-    <a href="#" class="topic-card tc-1">
-      <div class="topic-icon">➕</div>
-      <div class="topic-name">Number</div>
-      <div class="topic-desc">Integers, fractions, decimals &amp; percentages</div>
-    </a>
-
-    <a href="#" class="topic-card tc-2">
+    <a href="GeometryForge2D.html" class="topic-card tc-1">
       <div class="topic-icon">📐</div>
-      <div class="topic-name">Geometry</div>
-      <div class="topic-desc">Shapes, angles, area &amp; volume</div>
+      <div class="topic-name">Geometry<span class="forge">Forge</span><span style="color:#111111">2D</span></div>
+      <div class="topic-desc">Interactive 2D shape explorer</div>
     </a>
 
-    <a href="#" class="topic-card tc-3">
-      <div class="topic-icon">🔣</div>
-      <div class="topic-name">Algebra</div>
-      <div class="topic-desc">Equations, expressions &amp; sequences</div>
+    <a href="CalcForge.html" class="topic-card tc-2">
+      <div class="topic-icon">🖩</div>
+      <div class="topic-name">Calc<span class="forge">Forge</span></div>
+      <div class="topic-desc">Scientific calculator</div>
     </a>
 
-    <a href="#" class="topic-card tc-4">
-      <div class="topic-icon">📊</div>
-      <div class="topic-name">Statistics</div>
-      <div class="topic-desc">Mean, median, charts &amp; probability</div>
+    <a href="OmniConverterForge.html" class="topic-card tc-3">
+      <div class="topic-icon">⇄</div>
+      <div class="topic-name">OmniConverter<span class="forge">Forge</span></div>
+      <div class="topic-desc">Universal unit converter</div>
     </a>
 
-    <a href="#" class="topic-card tc-5">
-      <div class="topic-icon">📏</div>
-      <div class="topic-name">Ratio &amp; Proportion</div>
-      <div class="topic-desc">Ratios, rates &amp; direct proportion</div>
+  </div>
+
+  <div class="section-label">Drills</div>
+  <div class="topic-grid">
+
+    <a href="AdditionForge.html" class="topic-card tc-1">
+      <div class="topic-icon">➕</div>
+      <div class="topic-name">Addition<span class="forge">Forge</span></div>
+      <div class="topic-desc">Master adding from 1-digit to decimals</div>
     </a>
 
-    <a href="#" class="topic-card tc-6">
-      <div class="topic-icon">📈</div>
-      <div class="topic-name">Graphs</div>
-      <div class="topic-desc">Linear, quadratic &amp; real-life graphs</div>
+    <a href="ChangeForge.html" class="topic-card tc-2">
+      <div class="topic-icon">📉</div>
+      <div class="topic-name">Change<span class="forge">Forge</span></div>
+      <div class="topic-desc">Percentage increase &amp; decrease</div>
+    </a>
+
+    <a href="ConvertForge.html" class="topic-card tc-3">
+      <div class="topic-icon">🔄</div>
+      <div class="topic-name">Convert<span class="forge">Forge</span></div>
+      <div class="topic-desc">Units, fractions, decimals &amp; percentages</div>
+    </a>
+
+    <a href="DivisionForge.html" class="topic-card tc-4">
+      <div class="topic-icon">➗</div>
+      <div class="topic-name">Division<span class="forge">Forge</span></div>
+      <div class="topic-desc">Whole numbers &amp; remainders</div>
+    </a>
+
+    <a href="EquivForge.html" class="topic-card tc-5">
+      <div class="topic-icon">🔁</div>
+      <div class="topic-name">Equiv<span class="forge">Forge</span></div>
+      <div class="topic-desc">Fractions, decimals &amp; percentages</div>
+    </a>
+
+    <a href="FractionForge.html" class="topic-card tc-6">
+      <div class="topic-icon">½</div>
+      <div class="topic-name">Fraction<span class="forge">Forge</span></div>
+      <div class="topic-desc">Simplify fractions to lowest terms</div>
+    </a>
+
+    <a href="MultiplicationForge.html" class="topic-card tc-7">
+      <div class="topic-icon">✖️</div>
+      <div class="topic-name">Multiplication<span class="forge">Forge</span></div>
+      <div class="topic-desc">Times tables &amp; beyond</div>
+    </a>
+
+    <a href="NegativeForge.html" class="topic-card tc-8">
+      <div class="topic-icon">➖</div>
+      <div class="topic-name">Negative<span class="forge">Forge</span></div>
+      <div class="topic-desc">Arithmetic with negative numbers</div>
+    </a>
+
+    <a href="PercentForge.html" class="topic-card tc-9">
+      <div class="topic-icon">💯</div>
+      <div class="topic-name">Percent<span class="forge">Forge</span></div>
+      <div class="topic-desc">Find percentages of amounts</div>
+    </a>
+
+    <a href="PowerForge.html" class="topic-card tc-10">
+      <div class="topic-icon">^</div>
+      <div class="topic-name">Power<span class="forge">Forge</span></div>
+      <div class="topic-desc">Laws of indices &amp; negative powers</div>
+    </a>
+
+    <a href="RatioForge.html" class="topic-card tc-11">
+      <div class="topic-icon">⚖️</div>
+      <div class="topic-name">Ratio<span class="forge">Forge</span></div>
+      <div class="topic-desc">Simplify ratios to lowest terms</div>
+    </a>
+
+    <a href="RootForge.html" class="topic-card tc-12">
+      <div class="topic-icon">√</div>
+      <div class="topic-name">Root<span class="forge">Forge</span></div>
+      <div class="topic-desc">Roots of perfect &amp; non-perfect squares</div>
+    </a>
+
+    <a href="RoundForge.html" class="topic-card tc-13">
+      <div class="topic-icon">🎯</div>
+      <div class="topic-name">Round<span class="forge">Forge</span></div>
+      <div class="topic-desc">Nearest 10, 100, 1000 &amp; decimal places</div>
+    </a>
+
+    <a href="SigFigForge.html" class="topic-card tc-14">
+      <div class="topic-icon">🔬</div>
+      <div class="topic-name">SigFig<span class="forge">Forge</span></div>
+      <div class="topic-desc">1, 2 &amp; 3 significant figures</div>
+    </a>
+
+    <a href="SquareForge.html" class="topic-card tc-15">
+      <div class="topic-icon">²</div>
+      <div class="topic-name">Square<span class="forge">Forge</span></div>
+      <div class="topic-desc">Square numbers &amp; powers</div>
+    </a>
+
+    <a href="StandardFormForge.html" class="topic-card tc-16">
+      <div class="topic-icon">✕</div>
+      <div class="topic-name">StandardForm<span class="forge">Forge</span></div>
+      <div class="topic-desc">To &amp; from standard form</div>
+    </a>
+
+    <a href="SubtractionForge.html" class="topic-card tc-17">
+      <div class="topic-icon">➖</div>
+      <div class="topic-name">Subtraction<span class="forge">Forge</span></div>
+      <div class="topic-desc">Single digits up to large numbers</div>
     </a>
 
   </div>

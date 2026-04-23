@@ -1,0 +1,2290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeometryForge 3D — ReviseForge</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--white:#ffffff;--border:#bdd0f7;--border-light:#dbeafe;
+  --text:#0d1b3e;--muted:#4a6190;
+  --blue:#2563eb;--blue-light:#eff6ff;
+  --green:#2a9d5c;--green-light:#edfaf3;
+  --red:#e84c1e;--red-light:#fff0ed;
+  --yellow:#f5a623;--yellow-light:#fff8ed;
+  --purple:#6366f1;--purple-light:#f5f3ff;
+  --orange:#ea580c;--orange-light:#fff7ed;
+  --shadow-sm:0 1px 3px rgba(13,27,62,.08);
+  --shadow:0 2px 8px rgba(13,27,62,.10);
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column;}
+
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:#fff;animation:splashLife 2s ease forwards;pointer-events:none}
+@keyframes splashLife{0%{opacity:0}20%{opacity:1}75%{opacity:1}100%{opacity:0;visibility:hidden}}
+.splash-by{font-size:1.15rem;font-weight:400;color:#111;letter-spacing:0.01em}
+
+
+/* ── REVISEFORGE HEADER ── */
+header{padding:14px 24px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--white);position:sticky;top:0;z-index:200;}
+.rf-logo{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:2px;color:var(--text);line-height:1;text-decoration:none;}
+.rf-forge{color:var(--blue);}
+.rf-dim{color:#111111;}
+.rf-byline{font-size:11px;color:#111111;font-weight:400;letter-spacing:0.3px;text-align:right;}
+.rf-byline strong{font-weight:700;color:#111111;}
+/* ── REVISEFORGE FOOTER ── */
+footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-size:11.5px;color:var(--muted);background:#f0f5ff;line-height:1.5;flex-shrink:0;}
+.rf-footer-label{font-weight:700;letter-spacing:1px;color:var(--blue);margin-right:6px;}
+
+
+/* MAIN LAYOUT */
+#app{display:grid;grid-template-columns:1fr 300px;flex:1;min-height:0;opacity:0;animation:fadeIn .4s 2.1s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+
+/* CANVAS AREA */
+#canvas-area{display:flex;flex-direction:column;padding:14px 14px 14px 16px;gap:10px;min-width:0;background:var(--bg)}
+
+/* TOOLBAR */
+#toolbar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;background:var(--white);border:1px solid var(--border);border-radius:10px;padding:8px 12px;box-shadow:var(--shadow-sm)}
+.ctrl-btn{padding:5px 12px;border:1px solid var(--border);border-radius:20px;background:var(--white);font-size:11.5px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text);font-weight:500;transition:all .15s;white-space:nowrap}
+.ctrl-btn:hover{background:var(--bg);border-color:#bbb}
+.ctrl-btn.active{background:var(--blue-light);border-color:var(--blue);color:var(--blue)}
+.ctrl-btn.success{color:var(--green);border-color:#b7dfbf}
+.ctrl-btn.success:hover{background:var(--green-light)}
+.ctrl-sep{width:1px;height:24px;background:var(--border-light);flex-shrink:0}
+.mode-pill{font-size:11px;padding:3px 10px;border-radius:20px;background:#f1f3f4;color:var(--muted);margin-left:auto;font-family:'DM Sans',sans-serif}
+.cat-label{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:0 2px;font-weight:500;flex-basis:100%}
+
+/* 3D CANVAS */
+#canvas-wrap{flex:1;position:relative;background:var(--white);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow-sm);overflow:hidden;cursor:grab}
+#canvas-wrap:active{cursor:grabbing}
+#three-canvas{display:block;width:100%;height:100%}
+#reset-view-btn{position:absolute;top:10px;right:10px;padding:5px 12px;border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,0.92);font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text);font-weight:500;box-shadow:var(--shadow-sm);backdrop-filter:blur(4px)}
+#reset-view-btn:hover{background:var(--blue-light);border-color:var(--blue);color:var(--blue)}
+#wireframe-btn{position:absolute;top:10px;right:110px;padding:5px 12px;border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,0.92);font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text);font-weight:500;box-shadow:var(--shadow-sm);backdrop-filter:blur(4px)}
+#wireframe-btn:hover{background:var(--blue-light);border-color:var(--blue);color:var(--blue)}
+#wireframe-btn.active{background:var(--blue-light);border-color:var(--blue);color:var(--blue)}
+
+/* STATUS BAR */
+#status-bar{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:8px;border:1px solid var(--border-light);background:var(--white);font-size:12px;box-shadow:var(--shadow-sm)}
+.sdot{width:9px;height:9px;border-radius:50%;flex-shrink:0;background:#1a73e8}
+#smsg{font-weight:500;color:var(--text);font-family:'Bebas Neue',sans-serif}
+#sdetail{color:var(--muted);font-size:11px;margin-left:auto}
+#hint{font-size:10.5px;color:var(--muted);padding:0 2px}
+
+/* RIGHT PANEL */
+#info-panel{background:var(--white);border-left:1px solid var(--border-light);display:flex;flex-direction:column;overflow:hidden;min-height:0;height:100%}
+.panel-header{padding:12px 14px 8px;border-bottom:1px solid var(--border-light);flex-shrink:0}
+.panel-title{font-family:'Bebas Neue',sans-serif;font-size:13px;font-weight:500;color:var(--text);margin-bottom:1px}
+.panel-sub{font-size:10px;color:var(--muted)}
+.panel-scroll{flex:1;overflow-y:auto;padding:10px 10px 20px;display:flex;flex-direction:column;gap:8px;min-height:0;box-sizing:border-box}
+.panel-scroll::-webkit-scrollbar{width:6px}
+.panel-scroll::-webkit-scrollbar-track{background:var(--bg)}
+.panel-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.panel-scroll::-webkit-scrollbar-thumb:hover{background:#bbb}
+.panel-footer{border-top:1px solid var(--border-light);padding:8px 12px;font-size:10px;color:var(--muted);text-align:center;flex-shrink:0}
+
+/* STATS CARD */
+.stats-card{border:1px solid var(--border-light);border-radius:10px;overflow:hidden;flex-shrink:0}
+.stats-card-header{background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border-light)}
+.stat-row{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--border-light);gap:6px}
+.stat-row:last-child{border-bottom:none}
+.stat-label{font-size:11.5px;color:var(--muted);flex-shrink:0}
+.stat-value{font-size:12px;font-weight:500;color:var(--text);font-family:'Bebas Neue',sans-serif;text-align:right}
+.stat-value.big{font-size:14px;color:var(--blue)}
+.stat-value.green{color:var(--green)}
+.stat-value.purple{color:var(--purple)}
+
+/* DIMENSION CARD */
+.dim-card{border:1px solid var(--border-light);border-radius:10px;overflow:hidden;flex-shrink:0}
+.dim-card-header{background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border-light)}
+.dim-row{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border-light)}
+.dim-row:last-child{border-bottom:none}
+.dim-label{font-size:11px;color:var(--muted);flex-shrink:0;min-width:60px;font-style:italic}
+.dim-input{flex:1;padding:3px 6px;border:1px solid var(--border);border-radius:5px;font-size:11px;font-family:'DM Mono',monospace;color:var(--text);background:var(--white);text-align:right;min-width:0}
+.dim-input:focus{outline:none;border-color:var(--blue);background:var(--blue-light)}
+.dim-unit{font-size:10px;color:var(--muted);flex-shrink:0}
+
+/* ANGLE CARD */
+.angle-card-3d{border:1px solid var(--border-light);border-radius:10px;overflow:hidden;flex-shrink:0}
+.angle-card-3d-header{background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border-light)}
+#angle-rows-3d{overflow:visible}
+.angle-row-3d{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border-light)}
+.angle-row-3d:last-child{border-bottom:none}
+.angle-label-3d{font-size:11px;color:var(--muted);flex-shrink:0;min-width:110px;font-style:italic}
+.angle-input-3d{flex:1;padding:3px 6px;border:1px solid var(--border);border-radius:5px;font-size:11px;font-family:'DM Mono',monospace;color:var(--text);background:var(--white);text-align:right;min-width:0}
+.angle-input-3d:focus{outline:none;border-color:var(--purple);background:var(--purple-light)}
+.angle-input-3d[readonly]{background:#f8f9fa;color:var(--muted);cursor:default}
+.angle-deg-3d{font-size:10px;color:var(--muted);flex-shrink:0}
+
+/* EULER CARD */
+.euler-card{border:1px solid var(--border-light);border-radius:10px;overflow:hidden;flex-shrink:0}
+.euler-card-header{background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border-light)}
+.euler-row{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--border-light);gap:6px}
+.euler-row:last-child{border-bottom:none}
+.euler-label{font-size:11px;color:var(--muted)}
+.euler-val{font-size:12px;font-weight:500;font-family:'Bebas Neue',sans-serif}
+.euler-formula{padding:8px 12px;font-size:11px;color:var(--blue);font-family:'DM Mono',monospace;text-align:center;background:var(--blue-light);border-top:1px solid #c5d8fb}
+
+/* NOTICE */
+.notice{font-size:11px;color:var(--muted);padding:6px 10px;background:#f8f9fa;border-radius:8px;border:1px solid var(--border-light);text-align:center;line-height:1.5;flex-shrink:0}
+
+@media(max-width:900px){
+  body{overflow-y:auto}
+  #topbar{position:relative}
+  #disclaimer{position:relative;bottom:auto;left:auto;right:auto}
+  #app{grid-template-columns:1fr;grid-template-rows:auto auto;height:auto!important}
+  #canvas-area{height:auto;display:flex;flex-direction:column;padding:8px}
+  #canvas-wrap{height:60vw;min-height:240px;max-height:400px;flex:none}
+  #info-panel{border-left:none;border-top:1px solid var(--border-light);height:auto;overflow:visible}
+  .panel-scroll{flex-direction:column;overflow:visible;height:auto;max-height:none;padding:10px 10px 20px;gap:8px}
+  .stats-card,.dim-card,.euler-card,.angle-card-3d{min-width:unset;width:100%}
+}
+</style>
+</head>
+<body>
+<div id="splash" style="display:none"></div>
+
+</div>
+
+<!-- TOPBAR -->
+<header>
+  <a href="../index.html" class="rf-logo"><span style="color:var(--text)">Geometry</span><span class="rf-forge">Forge</span><span class="rf-dim">3D</span></a>
+  <div class="rf-byline">A website by <strong>Leon Dudhill</strong></div>
+</header>
+
+<!-- MAIN APP -->
+<div id="app">
+
+  <!-- LEFT: CANVAS AREA -->
+  <div id="canvas-area">
+    <div id="toolbar">
+      <!-- Circular — first -->
+      <button class="ctrl-btn active" onclick="loadShape('solid_of_revolution',this)">Circular</button>
+      <div class="ctrl-sep"></div>
+      <!-- Polygonal solids -->
+      <button class="ctrl-btn" onclick="loadShape('triangle_solid',this)">Triangular</button>
+      <button class="ctrl-btn" onclick="loadShape('quadrangle_solid',this)">Quadrangular</button>
+      <button class="ctrl-btn" onclick="loadShape('pentagon_solid',this)">Pentagonal</button>
+      <button class="ctrl-btn" onclick="loadShape('hexagon_solid',this)">Hexagonal</button>
+      <button class="ctrl-btn" onclick="loadShape('heptagon_solid',this)">Heptagonal</button>
+      <button class="ctrl-btn" onclick="loadShape('octagon_solid',this)">Octagonal</button>
+      <button class="ctrl-btn" onclick="loadShape('nonagon_solid',this)">Nonagonal</button>
+      <button class="ctrl-btn" onclick="loadShape('decagon_solid',this)">Decagonal</button>
+      <button class="ctrl-btn" onclick="loadShape('hendecagon_solid',this)">Hendecagonal</button>
+      <button class="ctrl-btn" onclick="loadShape('dodecagon_solid',this)">Dodecagonal</button>
+      <!-- Platonic solids -->
+      <button class="ctrl-btn" onclick="loadShape('icosahedron',this)">Icosahedron</button>
+      <button class="ctrl-btn" onclick="loadShape('dodecahedron',this)">Dodecahedron</button>
+      <button class="ctrl-btn" onclick="loadShape('parallelepiped',this)">Parallelepiped</button>
+      <div class="ctrl-sep"></div>
+      <button class="ctrl-btn" onclick="loadShape('sphere',this)">Sphere</button>
+      <button class="ctrl-btn" onclick="loadShape('hemisphere',this)">Hemisphere</button>
+      <span class="mode-pill">Drag to rotate · Scroll to zoom</span>
+    </div>
+
+    <div id="canvas-wrap">
+      <canvas id="three-canvas"></canvas>
+      <button id="wireframe-btn" onclick="toggleWireframe()">⬡ Wireframe</button>
+      <button id="reset-view-btn" onclick="resetView()">↺ Reset View</button>
+    </div>
+
+    <div id="status-bar">
+      <div class="sdot"></div>
+      <span id="smsg">Cube selected</span>
+      <span id="sdetail">Drag to rotate · Scroll to zoom · Edit dimensions in the right panel</span>
+    </div>
+    <div id="hint">Drag to rotate · Scroll to zoom · Edit any dimension in the right panel and the shape updates live</div>
+  </div>
+
+  <!-- RIGHT: INFO PANEL -->
+  <div id="info-panel">
+    <div class="panel-header">
+      <div class="panel-title">Shape Properties</div>
+      <div class="panel-sub">All values update live</div>
+    </div>
+    <div class="panel-scroll" id="panel-scroll">
+
+      <!-- MEASUREMENTS -->
+      <div class="stats-card">
+        <div class="stats-card-header">Measurements</div>
+        <div class="stat-row">
+          <span class="stat-label">Volume</span>
+          <span class="stat-value big" id="val-volume">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Surface Area</span>
+          <span class="stat-value big green" id="val-sa">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Lateral Surface Area</span>
+          <span class="stat-value" id="val-lsa">—</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">Shape type</span>
+          <span class="stat-value" id="val-type">—</span>
+        </div>
+      </div>
+
+      <!-- DIMENSIONS -->
+      <div class="dim-card">
+        <div class="dim-card-header">Dimensions</div>
+        <div id="dim-rows"></div>
+      </div>
+
+      <!-- ANGLES -->
+      <div class="angle-card-3d">
+        <div class="angle-card-3d-header">Angles</div>
+        <div id="angle-rows-3d"></div>
+      </div>
+
+      <!-- EULER -->
+      <div class="euler-card">
+        <div class="euler-card-header">Topology (Euler's Formula)</div>
+        <div class="euler-row">
+          <span class="euler-label">Vertices (V)</span>
+          <span class="euler-val" id="val-v" style="color:var(--blue)">—</span>
+        </div>
+        <div class="euler-row">
+          <span class="euler-label">Edges (E)</span>
+          <span class="euler-val" id="val-e" style="color:var(--green)">—</span>
+        </div>
+        <div class="euler-row">
+          <span class="euler-label">Faces (F)</span>
+          <span class="euler-val" id="val-f" style="color:var(--purple)">—</span>
+        </div>
+        <div class="euler-row">
+          <span class="euler-label">V − E + F</span>
+          <span class="euler-val" id="val-euler" style="color:var(--orange)">—</span>
+        </div>
+        <div class="euler-formula" id="euler-formula">V − E + F = 2</div>
+      </div>
+
+      <div class="notice">Curved shapes (sphere, cone, cylinder) use calculus-based formulas · Euler's formula applies to polyhedra only</div>
+
+    </div>
+    <div class="panel-footer">A tool by Leon Dudhill · Geometry Explorer 3D</div>
+  </div>
+
+</div>
+
+
+
+<script>
+(function(){
+  const s=document.createElement('script');
+  s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+  s.onload=initApp;
+  s.onerror=()=>{document.getElementById('smsg').textContent='Failed to load 3D library — check your internet connection';};
+  document.head.appendChild(s);
+})();
+
+function initApp(){
+const wrap = document.getElementById('canvas-wrap');
+const canvasEl = document.getElementById('three-canvas');
+
+const renderer = new THREE.WebGLRenderer({canvas: canvasEl, antialias: true, alpha: true});
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setClearColor(0xffffff, 1);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
+
+// Lighting
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.55);
+scene.add(ambientLight);
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+dirLight.position.set(5, 8, 5);
+dirLight.castShadow = true;
+scene.add(dirLight);
+const fillLight = new THREE.DirectionalLight(0xc8d8ff, 0.3);
+fillLight.position.set(-5, -2, -5);
+scene.add(fillLight);
+
+// Grid helper (subtle floor)
+const gridHelper = new THREE.GridHelper(10, 20, 0xe8eaed, 0xf1f3f4);
+gridHelper.position.y = -2.2;
+scene.add(gridHelper);
+
+// ─── CAMERA / ORBIT ───────────────────────────────────────────────────────────
+let camTheta = Math.PI / 6;
+let camPhi   = Math.PI / 4;
+let camDist  = 7;
+const camTarget = new THREE.Vector3(0, 0, 0);
+let isDragging = false, lastMX = 0, lastMY = 0;
+
+function updateCamera() {
+  camera.position.x = camTarget.x + camDist * Math.sin(camPhi) * Math.cos(camTheta);
+  camera.position.y = camTarget.y + camDist * Math.cos(camPhi);
+  camera.position.z = camTarget.z + camDist * Math.sin(camPhi) * Math.sin(camTheta);
+  camera.lookAt(camTarget);
+}
+
+window.resetView = function() {
+  camTheta = Math.PI / 6; camPhi = Math.PI / 4; camDist = 7;
+  camTarget.set(0,0,0);
+  updateCamera();
+}
+
+wrap.addEventListener('mousedown', e => { isDragging = true; lastMX = e.clientX; lastMY = e.clientY; });
+window.addEventListener('mouseup',  () => { isDragging = false; });
+window.addEventListener('mousemove', e => {
+  if (!isDragging) return;
+  const dx = e.clientX - lastMX, dy = e.clientY - lastMY;
+  lastMX = e.clientX; lastMY = e.clientY;
+  camTheta -= dx * 0.008;
+  camPhi   = Math.max(0.05, Math.min(Math.PI - 0.05, camPhi + dy * 0.008));
+  updateCamera();
+});
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  camDist = Math.max(2, Math.min(20, camDist + e.deltaY * 0.01));
+  updateCamera();
+}, {passive: false});
+
+// Touch
+let lastTX = 0, lastTY = 0;
+wrap.addEventListener('touchstart', e => { lastTX = e.touches[0].clientX; lastTY = e.touches[0].clientY; });
+wrap.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const dx = e.touches[0].clientX - lastTX, dy = e.touches[0].clientY - lastTY;
+  lastTX = e.touches[0].clientX; lastTY = e.touches[0].clientY;
+  camTheta -= dx * 0.01; camPhi = Math.max(0.05, Math.min(Math.PI-0.05, camPhi + dy * 0.01));
+  updateCamera();
+}, {passive: false});
+
+// ─── SHAPE STATE ──────────────────────────────────────────────────────────────
+let currentShapeName = 'cube';
+let currentDims = {};
+let shapeMesh = null;
+let wireframeMesh = null;
+let showWireframe = false;
+
+const SHAPE_COLOR  = 0x1a73e8;
+const SHAPE_OPACITY = 0.82;
+
+window.toggleWireframe = function() {
+  showWireframe = !showWireframe;
+  document.getElementById('wireframe-btn').classList.toggle('active', showWireframe);
+  rebuildMesh();
+}
+
+// ─── SHAPE DEFINITIONS ────────────────────────────────────────────────────────
+// Helper: regular n-gon area given side length s
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+function nGonArea(n,s){return(n*s**2)/(4*Math.tan(Math.PI/n));}
+function nGonPerim(n,s){return n*s;}
+function nGonR(n,s){return s/(2*Math.sin(Math.PI/n));}
+function nGonApo(n,s){return s/(2*Math.tan(Math.PI/n));}
+
+// ─── SHAPE DEFINITIONS ────────────────────────────────────────────────────────
+// angles(d) returns [{label, val, desc, onEdit(newDeg, dims)}]
+// onEdit length > 20 chars = truly editable; short = fixed (display only)
+const SHAPES={
+
+  triangle_solid:{
+    name:'Triangle Solid',
+    _state:{
+      sides: [2,2,2],
+      angles:[60,60,60],
+      sideLocked: [false,false,false],
+      angleLocked:[false,false,false],
+      h:3, topScale:1, topUnlocked:false,
+      topSides: [2,2,2],
+      topAngles:[60,60,60],
+    },
+    get type(){
+      const s=this._state;
+      const N=3,ANGLE_SUM=180;
+      const eq=(x,y)=>Math.abs(x-y)<0.05;
+      const allEqSide=s.sides.every(x=>eq(x,s.sides[0]));
+      const allEqAng=s.angles.every(x=>Math.abs(x-60)<0.5);
+      const isEquilateral=allEqSide&&allEqAng;
+      const isIsosceles=!isEquilateral&&(eq(s.sides[0],s.sides[1])||eq(s.sides[1],s.sides[2])||eq(s.sides[0],s.sides[2]));
+      const baseType=isEquilateral?'Equilateral':isIsosceles?'Isosceles':'Scalene';
+      if(s.topScale<0.01){
+        if(isEquilateral) return 'Platonic Solid — Regular Tetrahedron (all edges equal)';
+        return `Polyhedron — ${baseType} Triangular Pyramid`;
+      }
+      if(isEquilateral&&!s.topUnlocked) return `Polyhedron — Regular Triangular Prism`;
+      return s.topUnlocked?`Polyhedron — Irregular Triangular Frustum`:`Polyhedron — ${baseType} Triangular Prism`;
+    },
+    dims:[],
+    get V(){ return this._state.topScale<0.01?4:6; },
+    get E(){ return this._state.topScale<0.01?6:9; },
+    get F(){ return this._state.topScale<0.01?4:5; },
+    _buildPoly:function(sides,angles){
+      // Build triangle directly — no cumulative walking drift
+      // sides[0]=AB, sides[1]=BC, sides[2]=CA
+      // angles[0] at A (between AB and AC), angles[1] at B, angles[2] at C
+      // Place A at origin, B along x-axis
+      const A={x:0,y:0};
+      const B={x:sides[0],y:0};
+      // C is at distance sides[2] from A, at angle angles[0] from AB
+      const angA=angles[0]*Math.PI/180;
+      const C={x:sides[2]*Math.cos(angA),y:sides[2]*Math.sin(angA)};
+      const pts=[A,B,C];
+      const cx=(A.x+B.x+C.x)/3,cy=(A.y+B.y+C.y)/3;
+      return pts.map(p=>({x:p.x-cx,y:p.y-cy}));
+    },
+    _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
+    volume:function(){
+      const s=this._state,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01) return (1/3)*Ab*s.h;
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top),mid=base.map((p,i)=>({x:(p.x+top[i].x)/2,y:(p.y+top[i].y)/2}));
+      return s.h/6*(Ab+4*this._polyArea(mid)+At);
+    },
+    sa:function(){
+      const s=this._state,N=3,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return Ab+lsa;}
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top);let lsa=0;
+      for(let i=0;i<N;i++){const j=(i+1)%N,bL=Math.hypot(base[j].x-base[i].x,base[j].y-base[i].y),tL=Math.hypot(top[j].x-top[i].x,top[j].y-top[i].y),mbx=(base[i].x+base[j].x)/2,mby=(base[i].y+base[j].y)/2,mtx=(top[i].x+top[j].x)/2,mty=(top[i].y+top[j].y)/2;lsa+=(bL+tL)/2*Math.sqrt((mtx-mbx)**2+(mty-mby)**2+s.h**2);}
+      return Ab+At+lsa;
+    },
+    lsa:function(){
+      const s=this._state,N=3,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return lsa;}
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      return this.sa()-Ab-this._polyArea(top);
+    },
+    build:function(){
+      const s=this._state,N=3,base=this._buildPoly(s.sides,s.angles),isPyramid=s.topScale<0.01;
+      const geo=new THREE.BufferGeometry(),bv=base.map(p=>new THREE.Vector3(p.x,0,p.y));
+      const tv=isPyramid?[new THREE.Vector3(0,s.h,0)]:(s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}))).map(p=>new THREE.Vector3(p.x,s.h,p.y));
+      const verts=[],idx=[],addTri=(a,b,c)=>{const b2=verts.length;verts.push(a,b,c);idx.push(b2,b2+1,b2+2);};
+      // Base face
+      addTri(bv[0],bv[2],bv[1]);
+      if(isPyramid){
+        for(let i=0;i<N;i++) addTri(bv[i],bv[(i+1)%N],tv[0]);
+      } else {
+        // Top face
+        addTri(tv[0],tv[1],tv[2]);
+        // 3 lateral quads
+        for(let i=0;i<N;i++){const j=(i+1)%N;addTri(bv[i],tv[i],tv[j]);addTri(bv[i],tv[j],bv[j]);}
+      }
+      const flat=[];verts.forEach(v=>flat.push(v.x,v.y,v.z));
+      geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(flat),3));
+      geo.setIndex(idx);geo.computeVertexNormals();return geo;
+    },
+    formulas:{V:'h/6·(Ab+4Am+At)',SA:'Ab+At+LSA',LSA:'Σ(face areas)'},
+    angles:function(){return[];},
+  },
+  quadrangle_solid:{
+    name:'Quadrangle Solid',
+    _state:{
+      sides: [2,2,2,2],
+      angles:[90,90,90,90],
+      sideLocked: [false,false,false,false],
+      angleLocked:[false,false,false,false],
+      h:3, topScale:1, topUnlocked:false,
+      topSides: [2,2,2,2],
+      topAngles:[90,90,90,90],
+    },
+    get type(){
+      const s=this._state;
+      const eq=(x,y)=>Math.abs(x-y)<0.05;
+      const allEqSide=s.sides.every(x=>eq(x,s.sides[0]));
+      const allRight=s.angles.every(x=>Math.abs(x-90)<0.5);
+      const allEqAng=s.angles.every(x=>eq(x,s.angles[0]));
+      const isPyramid=s.topScale<0.01;
+      if(isPyramid){
+        if(allEqSide&&allRight) return 'Platonic Solid — Square Pyramid (regular base)';
+        return 'Polyhedron — Irregular Quadrangular Pyramid';
+      }
+      if(allEqSide&&allRight&&!s.topUnlocked) return 'Platonic Solid — Cube (all sides equal, all angles 90°)';
+      if(allRight&&eq(s.sides[0],s.sides[1])&&!s.topUnlocked) return 'Polyhedron — Square Prism (all angles 90°)';
+      if(allRight&&!s.topUnlocked) return 'Polyhedron — Cuboid / Rectangular Prism (all angles 90°)';
+      if(allEqSide&&allEqAng&&!s.topUnlocked) return 'Polyhedron — Rhombohedron (all sides equal, all angles equal)';
+      if(!s.topUnlocked) return 'Polyhedron — Irregular Quadrangular Prism';
+      return 'Polyhedron — Irregular Quadrangular Frustum';
+    },
+    dims:[],
+    get V(){ return this._state.topScale<0.01?5:8; },
+    get E(){ return this._state.topScale<0.01?8:12; },
+    get F(){ return this._state.topScale<0.01?5:6; },
+    _buildPoly:function(sides,angles){
+      const N=4,pts=[{x:0,y:0}];let dir=0;
+      for(let i=0;i<N;i++){const l=pts[pts.length-1];pts.push({x:l.x+sides[i]*Math.cos(dir),y:l.y+sides[i]*Math.sin(dir)});if(i<N-1) dir+=Math.PI-(angles[i]*Math.PI/180);}
+      const cx=pts.slice(0,N).reduce((s,p)=>s+p.x,0)/N,cy=pts.slice(0,N).reduce((s,p)=>s+p.y,0)/N;
+      return pts.slice(0,N).map(p=>({x:p.x-cx,y:p.y-cy}));
+    },
+    _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
+    volume:function(){
+      const s=this._state,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01) return (1/3)*Ab*s.h;
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top),mid=base.map((p,i)=>({x:(p.x+top[i].x)/2,y:(p.y+top[i].y)/2}));
+      return s.h/6*(Ab+4*this._polyArea(mid)+At);
+    },
+    sa:function(){
+      const s=this._state,N=4,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return Ab+lsa;}
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top);let lsa=0;
+      for(let i=0;i<N;i++){const j=(i+1)%N,bL=Math.hypot(base[j].x-base[i].x,base[j].y-base[i].y),tL=Math.hypot(top[j].x-top[i].x,top[j].y-top[i].y),mbx=(base[i].x+base[j].x)/2,mby=(base[i].y+base[j].y)/2,mtx=(top[i].x+top[j].x)/2,mty=(top[i].y+top[j].y)/2;lsa+=(bL+tL)/2*Math.sqrt((mtx-mbx)**2+(mty-mby)**2+s.h**2);}
+      return Ab+At+lsa;
+    },
+    lsa:function(){
+      const s=this._state,N=4,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return lsa;}
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      return this.sa()-Ab-this._polyArea(top);
+    },
+    build:function(){
+      const s=this._state,N=4,base=this._buildPoly(s.sides,s.angles),isPyramid=s.topScale<0.01;
+      const geo=new THREE.BufferGeometry(),bv=base.map(p=>new THREE.Vector3(p.x,0,p.y));
+      const tv=isPyramid?[new THREE.Vector3(0,s.h,0)]:(s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}))).map(p=>new THREE.Vector3(p.x,s.h,p.y));
+      const verts=[],idx=[],addTri=(a,b,c)=>{const b2=verts.length;verts.push(a,b,c);idx.push(b2,b2+1,b2+2);};
+      addTri(bv[0],bv[2],bv[1]);addTri(bv[0],bv[3],bv[2]);
+      if(isPyramid){for(let i=0;i<N;i++) addTri(bv[i],bv[(i+1)%N],tv[0]);}
+      else{
+        addTri(tv[0],tv[1],tv[2]);addTri(tv[0],tv[2],tv[3]);
+        for(let i=0;i<N;i++){const j=(i+1)%N;addTri(bv[i],tv[i],tv[j]);addTri(bv[i],tv[j],bv[j]);}
+      }
+      const flat=[];verts.forEach(v=>flat.push(v.x,v.y,v.z));
+      geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(flat),3));
+      geo.setIndex(idx);geo.computeVertexNormals();return geo;
+    },
+    formulas:{V:'h/6·(Ab+4Am+At)',SA:'Ab+At+LSA',LSA:'Σ(face areas)'},
+    angles:function(){return[];},
+  },
+  dodecahedron:{
+    name:'Dodecahedron',type:'Platonic Solid — 12 pentagonal faces',
+    dims:[{id:'a',label:'Edge (a)',def:1.5,min:0.1,max:5}],
+    V:20,E:30,F:12,
+    volume:d=>((15+7*Math.sqrt(5))/4)*d.a**3,
+    sa:d=>3*Math.sqrt(25+10*Math.sqrt(5))*d.a**2,lsa:d=>3*Math.sqrt(25+10*Math.sqrt(5))*d.a**2,
+    build:d=>new THREE.DodecahedronGeometry(d.a*Math.sqrt(3)*(1+Math.sqrt(5))/4),
+    formulas:{V:'((15+7√5)/4)a³',SA:'3√(25+10√5)·a²',LSA:'= SA'},
+    angles:d=>[
+      {label:'Face angle',val:108,desc:'Interior angle of each regular pentagon face (fixed)',onEdit:()=>{}},
+      {label:'Dihedral angle',val:+(Math.acos(-1/Math.sqrt(5))*180/Math.PI).toFixed(2),desc:'Angle between adjacent pentagonal faces ≈ 116.57° (fixed)',onEdit:()=>{}},
+    ]
+  },
+
+  parallelepiped:{
+    name:'Parallelepiped',
+    get type(){
+      const d=this._dims||{};
+      const a=d.a||2,b=d.b||2,c=d.c||2;
+      const al=d.alpha||90,be=d.beta||90,ga=d.gamma||90;
+      const eq=(x,y)=>Math.abs(x-y)<0.05;
+      const right=eq(al,90)&&eq(be,90)&&eq(ga,90);
+      const allEqSide=eq(a,b)&&eq(b,c);
+      const allEqAng=eq(al,be)&&eq(be,ga);
+      if(right&&allEqSide) return 'Platonic Solid — Cube (all sides equal, all angles 90°)';
+      if(right&&eq(a,b)) return 'Polyhedron — Square Prism (a=b, all angles 90°)';
+      if(right) return 'Polyhedron — Cuboid / Rectangular Prism (all angles 90°)';
+      if(allEqSide&&allEqAng) return 'Polyhedron — Rhombohedron (all sides equal, all angles equal)';
+      return 'Polyhedron — Parallelepiped (6 parallelogram faces)';
+    },
+    dims:[
+      {id:'a',label:'Side a',  def:2,  min:0.1,max:8},
+      {id:'b',label:'Side b',  def:2,  min:0.1,max:8},
+      {id:'c',label:'Side c',  def:3,  min:0.1,max:8},
+      {id:'alpha',label:'α (b∧c)',def:90,min:10,max:170},
+      {id:'beta', label:'β (a∧c)',def:90,min:10,max:170},
+      {id:'gamma',label:'γ (a∧b)',def:90,min:10,max:170},
+    ],
+    V:8,E:12,F:6,
+    _dims:{},
+    _vecs:function(d){
+      const toR=x=>x*Math.PI/180;
+      const A=new THREE.Vector3(d.a,0,0);
+      const B=new THREE.Vector3(d.b*Math.cos(toR(d.gamma)),d.b*Math.sin(toR(d.gamma)),0);
+      const cx=d.c*Math.cos(toR(d.beta));
+      const cy=d.c*(Math.cos(toR(d.alpha))-Math.cos(toR(d.beta))*Math.cos(toR(d.gamma)))/Math.sin(toR(d.gamma));
+      const cz2=d.c**2-cx**2-cy**2;
+      const cz=cz2>0?Math.sqrt(cz2):0.001;
+      const C=new THREE.Vector3(cx,cy,cz);
+      return{A,B,C};
+    },
+    volume:function(d){
+      this._dims=d;
+      const{A,B,C}=this._vecs(d);
+      return Math.abs(A.dot(new THREE.Vector3().crossVectors(B,C)));
+    },
+    sa:function(d){
+      const{A,B,C}=this._vecs(d);
+      return 2*(new THREE.Vector3().crossVectors(A,B).length()+new THREE.Vector3().crossVectors(B,C).length()+new THREE.Vector3().crossVectors(A,C).length());
+    },
+    lsa:function(d){
+      const{A,B,C}=this._vecs(d);
+      return 2*(new THREE.Vector3().crossVectors(B,C).length()+new THREE.Vector3().crossVectors(A,C).length());
+    },
+    build:function(d){
+      this._dims=d;
+      const{A,B,C}=this._vecs(d);
+      const O=new THREE.Vector3(0,0,0);
+      const v=[O.clone(),A.clone(),A.clone().add(B),B.clone(),C.clone(),C.clone().add(A),C.clone().add(A).add(B),C.clone().add(B)];
+      const ctr=new THREE.Vector3();v.forEach(p=>ctr.add(p));ctr.divideScalar(8);v.forEach(p=>p.sub(ctr));
+      const faces=[[0,1,2,3],[4,7,6,5],[0,3,7,4],[1,5,6,2],[0,4,5,1],[3,2,6,7]];
+      const pos=[];const idx=[];let vi=0;
+      faces.forEach(([a,b,c2,dd])=>{[v[a],v[b],v[c2],v[dd]].forEach(p=>{pos.push(p.x,p.y,p.z);});idx.push(vi,vi+1,vi+2,vi,vi+2,vi+3);vi+=4;});
+      const geo=new THREE.BufferGeometry();
+      geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(pos),3));
+      geo.setIndex(idx);geo.computeVertexNormals();return geo;
+    },
+    formulas:{V:'|A·(B×C)|',SA:'2(|A×B|+|B×C|+|A×C|)',LSA:'2(|B×C|+|A×C|)'},
+    angles:function(d){
+      return[
+        {label:'α  (b ∧ c)',val:+d.alpha.toFixed(1),desc:'Angle between edges b and c',
+         onEdit:(v,dims)=>{dims.alpha=Math.max(10,Math.min(170,v));}},
+        {label:'β  (a ∧ c)',val:+d.beta.toFixed(1),desc:'Angle between edges a and c',
+         onEdit:(v,dims)=>{dims.beta=Math.max(10,Math.min(170,v));}},
+        {label:'γ  (a ∧ b)',val:+d.gamma.toFixed(1),desc:'Angle between edges a and b',
+         onEdit:(v,dims)=>{dims.gamma=Math.max(10,Math.min(170,v));}},
+      ];
+    },
+  },
+  icosahedron:{
+    name:'Icosahedron',type:'Platonic Solid — 20 equilateral triangle faces',
+    dims:[{id:'a',label:'Edge (a)',def:2,min:0.1,max:6}],
+    V:12,E:30,F:20,
+    volume:d=>(5*(3+Math.sqrt(5))/12)*d.a**3,
+    sa:d=>5*Math.sqrt(3)*d.a**2,lsa:d=>5*Math.sqrt(3)*d.a**2,
+    build:d=>new THREE.IcosahedronGeometry(d.a*Math.sin(2*Math.PI/5)),
+    formulas:{V:'(5(3+√5)/12)a³',SA:'5√3·a²',LSA:'= SA'},
+    angles:d=>[
+      {label:'Face angle',val:60,desc:'Equilateral triangle faces always have 60° corners (fixed)',onEdit:()=>{}},
+      {label:'Dihedral angle',val:+(Math.acos(-Math.sqrt(5)/3)*180/Math.PI).toFixed(2),desc:'Angle between adjacent faces ≈ 138.19° (fixed)',onEdit:()=>{}},
+    ]
+  },
+
+  // ── PRISMS ───────────────────────────────────────────────────────────────────
+  heptagon_solid:{
+    name:'Heptagon Solid',
+    _state:{
+      sides: [1.3,1.3,1.3,1.3,1.3,1.3,1.3],
+      angles:[900/7,900/7,900/7,900/7,900/7,900/7,900/7],
+      sideLocked: [false,false,false,false,false,false,false],
+      angleLocked:[false,false,false,false,false,false,false],
+      h:3, topScale:1, topUnlocked:false,
+      topSides: [1.3,1.3,1.3,1.3,1.3,1.3,1.3],
+      topAngles:[900/7,900/7,900/7,900/7,900/7,900/7,900/7],
+    },
+    get type(){
+      const s=this._state;
+      const regA=900/7;
+      const reg=s.sides.every(x=>Math.abs(x-s.sides[0])<0.05)&&s.angles.every(x=>Math.abs(x-regA)<0.5);
+      if(s.topScale<0.01) return reg?'Polyhedron — Regular Heptagonal Pyramid':'Polyhedron — Irregular Heptagonal Pyramid';
+      if(reg&&!s.topUnlocked) return 'Polyhedron — Regular Heptagonal Prism';
+      return s.topUnlocked?'Polyhedron — Irregular Heptagonal Frustum':'Polyhedron — Irregular Heptagonal Prism';
+    },
+    dims:[],
+    get V(){ return this._state.topScale<0.01?8:14; },
+    get E(){ return this._state.topScale<0.01?14:21; },
+    get F(){ return this._state.topScale<0.01?8:9; },
+    _buildPoly:function(sides,angles){
+      const pts=[{x:0,y:0}];
+      let dir=0;
+      for(let i=0;i<7-1;i++){
+        const last=pts[pts.length-1];
+        pts.push({x:last.x+sides[i]*Math.cos(dir),y:last.y+sides[i]*Math.sin(dir)});
+        dir+=Math.PI-(angles[i]*Math.PI/180);
+      }
+      // Force polygon closed: last vertex aims back to origin
+      const lastPt=pts[pts.length-1];
+      const backX=-lastPt.x, backY=-lastPt.y;
+      const backLen=Math.hypot(backX,backY);
+      if(backLen>0.001) pts.push({x:0,y:0});
+      else pts.push({x:lastPt.x+sides[7-1]*Math.cos(dir),y:lastPt.y+sides[7-1]*Math.sin(dir)});
+      const usePts=pts.slice(0,7);
+      const cx=usePts.reduce((s,p)=>s+p.x,0)/7;
+      const cy=usePts.reduce((s,p)=>s+p.y,0)/7;
+      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+    },
+    _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
+    volume:function(){
+      const s=this._state,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01) return (1/3)*Ab*s.h;
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top),midPts=base.map((p,i)=>({x:(p.x+top[i].x)/2,y:(p.y+top[i].y)/2}));
+      return s.h/6*(Ab+4*this._polyArea(midPts)+At);
+    },
+    sa:function(){
+      const s=this._state,N=7,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return Ab+lsa;}
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top);let lsa=0;
+      for(let i=0;i<N;i++){const j=(i+1)%N,bL=Math.hypot(base[j].x-base[i].x,base[j].y-base[i].y),tL=Math.hypot(top[j].x-top[i].x,top[j].y-top[i].y),mbx=(base[i].x+base[j].x)/2,mby=(base[i].y+base[j].y)/2,mtx=(top[i].x+top[j].x)/2,mty=(top[i].y+top[j].y)/2;lsa+=(bL+tL)/2*Math.sqrt((mtx-mbx)**2+(mty-mby)**2+s.h**2);}
+      return Ab+At+lsa;
+    },
+    lsa:function(){
+      const s=this._state,N=7,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return lsa;}
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      return this.sa()-Ab-this._polyArea(top);
+    },
+    build:function(){
+      const s=this._state,N=7,base=this._buildPoly(s.sides,s.angles),isPyramid=s.topScale<0.01;
+      const geo=new THREE.BufferGeometry(),bv=base.map(p=>new THREE.Vector3(p.x,0,p.y));
+      let tv=isPyramid?[new THREE.Vector3(0,s.h,0)]:(s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}))).map(p=>new THREE.Vector3(p.x,s.h,p.y));
+      const verts=[],idx=[],addTri=(a,b,c)=>{const b2=verts.length;verts.push(a,b,c);idx.push(b2,b2+1,b2+2);};
+      for(let i=1;i<N-1;i++) addTri(bv[0],bv[i+1],bv[i]);
+      if(isPyramid){for(let i=0;i<N;i++) addTri(bv[i],bv[(i+1)%N],tv[0]);}
+      else{for(let i=1;i<N-1;i++) addTri(tv[0],tv[i],tv[i+1]);for(let i=0;i<N;i++){const j=(i+1)%N;addTri(bv[i],tv[i],tv[j]);addTri(bv[i],tv[j],bv[j]);}}
+      const flat=[];verts.forEach(v=>flat.push(v.x,v.y,v.z));
+      geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(flat),3));
+      geo.setIndex(idx);geo.computeVertexNormals();return geo;
+    },
+    formulas:{V:'h/6·(Ab+4Am+At)',SA:'Ab+At+LSA',LSA:'Σ(face areas)'},
+    angles:function(){return[];},
+  },
+  octagon_solid:{
+    name:'Octagon Solid',
+    _state:{
+      sides: [1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2],
+      angles:[135,135,135,135,135,135,135,135],
+      sideLocked: [false,false,false,false,false,false,false,false],
+      angleLocked:[false,false,false,false,false,false,false,false],
+      h:3, topScale:1, topUnlocked:false,
+      topSides: [1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2],
+      topAngles:[135,135,135,135,135,135,135,135],
+    },
+    get type(){
+      const s=this._state;
+      const reg=s.sides.every(x=>Math.abs(x-s.sides[0])<0.05)&&s.angles.every(x=>Math.abs(x-135)<0.5);
+      if(s.topScale<0.01) return reg?'Polyhedron — Regular Octagonal Pyramid':'Polyhedron — Irregular Octagonal Pyramid';
+      if(reg&&!s.topUnlocked) return 'Polyhedron — Regular Octagonal Prism';
+      return s.topUnlocked?'Polyhedron — Irregular Octagonal Frustum':'Polyhedron — Irregular Octagonal Prism';
+    },
+    dims:[],
+    get V(){ return this._state.topScale<0.01?9:16; },
+    get E(){ return this._state.topScale<0.01?16:24; },
+    get F(){ return this._state.topScale<0.01?9:10; },
+    _buildPoly:function(sides,angles){
+      const pts=[{x:0,y:0}];
+      let dir=0;
+      for(let i=0;i<8-1;i++){
+        const last=pts[pts.length-1];
+        pts.push({x:last.x+sides[i]*Math.cos(dir),y:last.y+sides[i]*Math.sin(dir)});
+        dir+=Math.PI-(angles[i]*Math.PI/180);
+      }
+      // Force polygon closed: last vertex aims back to origin
+      const lastPt=pts[pts.length-1];
+      const backX=-lastPt.x, backY=-lastPt.y;
+      const backLen=Math.hypot(backX,backY);
+      if(backLen>0.001) pts.push({x:0,y:0});
+      else pts.push({x:lastPt.x+sides[8-1]*Math.cos(dir),y:lastPt.y+sides[8-1]*Math.sin(dir)});
+      const usePts=pts.slice(0,8);
+      const cx=usePts.reduce((s,p)=>s+p.x,0)/8;
+      const cy=usePts.reduce((s,p)=>s+p.y,0)/8;
+      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+    },
+    _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
+    volume:function(){
+      const s=this._state,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01) return (1/3)*Ab*s.h;
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top),mid=base.map((p,i)=>({x:(p.x+top[i].x)/2,y:(p.y+top[i].y)/2}));
+      return s.h/6*(Ab+4*this._polyArea(mid)+At);
+    },
+    sa:function(){
+      const s=this._state,N=8,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return Ab+lsa;}
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top);let lsa=0;
+      for(let i=0;i<N;i++){const j=(i+1)%N,bL=Math.hypot(base[j].x-base[i].x,base[j].y-base[i].y),tL=Math.hypot(top[j].x-top[i].x,top[j].y-top[i].y),mbx=(base[i].x+base[j].x)/2,mby=(base[i].y+base[j].y)/2,mtx=(top[i].x+top[j].x)/2,mty=(top[i].y+top[j].y)/2;lsa+=(bL+tL)/2*Math.sqrt((mtx-mbx)**2+(mty-mby)**2+s.h**2);}
+      return Ab+At+lsa;
+    },
+    lsa:function(){
+      const s=this._state,N=8,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return lsa;}
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      return this.sa()-Ab-this._polyArea(top);
+    },
+    build:function(){
+      const s=this._state,N=8,base=this._buildPoly(s.sides,s.angles),isPyramid=s.topScale<0.01;
+      const geo=new THREE.BufferGeometry(),bv=base.map(p=>new THREE.Vector3(p.x,0,p.y));
+      const tv=isPyramid?[new THREE.Vector3(0,s.h,0)]:(s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}))).map(p=>new THREE.Vector3(p.x,s.h,p.y));
+      const verts=[],idx=[],addTri=(a,b,c)=>{const b2=verts.length;verts.push(a,b,c);idx.push(b2,b2+1,b2+2);};
+      for(let i=1;i<N-1;i++) addTri(bv[0],bv[i+1],bv[i]);
+      if(isPyramid){for(let i=0;i<N;i++) addTri(bv[i],bv[(i+1)%N],tv[0]);}
+      else{for(let i=1;i<N-1;i++) addTri(tv[0],tv[i],tv[i+1]);for(let i=0;i<N;i++){const j=(i+1)%N;addTri(bv[i],tv[i],tv[j]);addTri(bv[i],tv[j],bv[j]);}}
+      const flat=[];verts.forEach(v=>flat.push(v.x,v.y,v.z));
+      geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(flat),3));
+      geo.setIndex(idx);geo.computeVertexNormals();return geo;
+    },
+    formulas:{V:'h/6·(Ab+4Am+At)',SA:'Ab+At+LSA',LSA:'Σ(face areas)'},
+    angles:function(){return[];},
+  },
+  nonagon_solid:{
+    name:'Nonagon Solid',
+    _state:{
+      sides: [1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1],
+      angles:[140,140,140,140,140,140,140,140,140],
+      sideLocked: [false,false,false,false,false,false,false,false,false],
+      angleLocked:[false,false,false,false,false,false,false,false,false],
+      h:3, topScale:1, topUnlocked:false,
+      topSides: [1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1,1.1],
+      topAngles:[140,140,140,140,140,140,140,140,140],
+    },
+    get type(){
+      const s=this._state;
+      const reg=s.sides.every(x=>Math.abs(x-s.sides[0])<0.05)&&s.angles.every(x=>Math.abs(x-140)<0.5);
+      if(s.topScale<0.01) return reg?'Polyhedron — Regular Nonagonal Pyramid':'Polyhedron — Irregular Nonagonal Pyramid';
+      if(reg&&!s.topUnlocked) return 'Polyhedron — Regular Nonagonal Prism';
+      return s.topUnlocked?'Polyhedron — Irregular Nonagonal Frustum':'Polyhedron — Irregular Nonagonal Prism';
+    },
+    dims:[],
+    get V(){ return this._state.topScale<0.01?10:18; },
+    get E(){ return this._state.topScale<0.01?18:27; },
+    get F(){ return this._state.topScale<0.01?10:11; },
+    _buildPoly:function(sides,angles){
+      const pts=[{x:0,y:0}];
+      let dir=0;
+      for(let i=0;i<9-1;i++){
+        const last=pts[pts.length-1];
+        pts.push({x:last.x+sides[i]*Math.cos(dir),y:last.y+sides[i]*Math.sin(dir)});
+        dir+=Math.PI-(angles[i]*Math.PI/180);
+      }
+      // Force polygon closed: last vertex aims back to origin
+      const lastPt=pts[pts.length-1];
+      const backX=-lastPt.x, backY=-lastPt.y;
+      const backLen=Math.hypot(backX,backY);
+      if(backLen>0.001) pts.push({x:0,y:0});
+      else pts.push({x:lastPt.x+sides[9-1]*Math.cos(dir),y:lastPt.y+sides[9-1]*Math.sin(dir)});
+      const usePts=pts.slice(0,9);
+      const cx=usePts.reduce((s,p)=>s+p.x,0)/9;
+      const cy=usePts.reduce((s,p)=>s+p.y,0)/9;
+      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+    },
+    _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
+    volume:function(){
+      const s=this._state,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01) return (1/3)*Ab*s.h;
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top),mid=base.map((p,i)=>({x:(p.x+top[i].x)/2,y:(p.y+top[i].y)/2}));
+      return s.h/6*(Ab+4*this._polyArea(mid)+At);
+    },
+    sa:function(){
+      const s=this._state,N=9,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return Ab+lsa;}
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top);let lsa=0;
+      for(let i=0;i<N;i++){const j=(i+1)%N,bL=Math.hypot(base[j].x-base[i].x,base[j].y-base[i].y),tL=Math.hypot(top[j].x-top[i].x,top[j].y-top[i].y),mbx=(base[i].x+base[j].x)/2,mby=(base[i].y+base[j].y)/2,mtx=(top[i].x+top[j].x)/2,mty=(top[i].y+top[j].y)/2;lsa+=(bL+tL)/2*Math.sqrt((mtx-mbx)**2+(mty-mby)**2+s.h**2);}
+      return Ab+At+lsa;
+    },
+    lsa:function(){
+      const s=this._state,N=9,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return lsa;}
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      return this.sa()-Ab-this._polyArea(top);
+    },
+    build:function(){
+      const s=this._state,N=9,base=this._buildPoly(s.sides,s.angles),isPyramid=s.topScale<0.01;
+      const geo=new THREE.BufferGeometry(),bv=base.map(p=>new THREE.Vector3(p.x,0,p.y));
+      const tv=isPyramid?[new THREE.Vector3(0,s.h,0)]:(s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}))).map(p=>new THREE.Vector3(p.x,s.h,p.y));
+      const verts=[],idx=[],addTri=(a,b,c)=>{const b2=verts.length;verts.push(a,b,c);idx.push(b2,b2+1,b2+2);};
+      for(let i=1;i<N-1;i++) addTri(bv[0],bv[i+1],bv[i]);
+      if(isPyramid){for(let i=0;i<N;i++) addTri(bv[i],bv[(i+1)%N],tv[0]);}
+      else{for(let i=1;i<N-1;i++) addTri(tv[0],tv[i],tv[i+1]);for(let i=0;i<N;i++){const j=(i+1)%N;addTri(bv[i],tv[i],tv[j]);addTri(bv[i],tv[j],bv[j]);}}
+      const flat=[];verts.forEach(v=>flat.push(v.x,v.y,v.z));
+      geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(flat),3));
+      geo.setIndex(idx);geo.computeVertexNormals();return geo;
+    },
+    formulas:{V:'h/6·(Ab+4Am+At)',SA:'Ab+At+LSA',LSA:'Σ(face areas)'},
+    angles:function(){return[];},
+  },
+  decagon_solid:{
+    name:'Decagon Solid',
+    _state:{
+      sides: Array(10).fill(1.0),
+      angles:Array(10).fill(144),
+      sideLocked: Array(10).fill(false),
+      angleLocked:Array(10).fill(false),
+      h:3, topScale:1, topUnlocked:false,
+      topSides: Array(10).fill(1.0),
+      topAngles:Array(10).fill(144),
+    },
+    get type(){
+      const s=this._state;
+      const reg=s.sides.every(x=>Math.abs(x-s.sides[0])<0.05)&&s.angles.every(x=>Math.abs(x-144)<0.5);
+      if(s.topScale<0.01) return reg?'Polyhedron — Regular Decagonal Pyramid':'Polyhedron — Irregular Decagonal Pyramid';
+      if(reg&&!s.topUnlocked) return 'Polyhedron — Regular Decagonal Prism';
+      return s.topUnlocked?'Polyhedron — Irregular Decagonal Frustum':'Polyhedron — Irregular Decagonal Prism';
+    },
+    dims:[],
+    get V(){ return this._state.topScale<0.01?11:20; },
+    get E(){ return this._state.topScale<0.01?20:30; },
+    get F(){ return this._state.topScale<0.01?11:12; },
+    _buildPoly:function(sides,angles){
+      const pts=[{x:0,y:0}];
+      let dir=0;
+      for(let i=0;i<10-1;i++){
+        const last=pts[pts.length-1];
+        pts.push({x:last.x+sides[i]*Math.cos(dir),y:last.y+sides[i]*Math.sin(dir)});
+        dir+=Math.PI-(angles[i]*Math.PI/180);
+      }
+      // Force polygon closed: last vertex aims back to origin
+      const lastPt=pts[pts.length-1];
+      const backX=-lastPt.x, backY=-lastPt.y;
+      const backLen=Math.hypot(backX,backY);
+      if(backLen>0.001) pts.push({x:0,y:0});
+      else pts.push({x:lastPt.x+sides[10-1]*Math.cos(dir),y:lastPt.y+sides[10-1]*Math.sin(dir)});
+      const usePts=pts.slice(0,10);
+      const cx=usePts.reduce((s,p)=>s+p.x,0)/10;
+      const cy=usePts.reduce((s,p)=>s+p.y,0)/10;
+      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+    },
+    _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
+    volume:function(){
+      const s=this._state,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01) return (1/3)*Ab*s.h;
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top),mid=base.map((p,i)=>({x:(p.x+top[i].x)/2,y:(p.y+top[i].y)/2}));
+      return s.h/6*(Ab+4*this._polyArea(mid)+At);
+    },
+    sa:function(){
+      const s=this._state,N=10,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return Ab+lsa;}
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top);let lsa=0;
+      for(let i=0;i<N;i++){const j=(i+1)%N,bL=Math.hypot(base[j].x-base[i].x,base[j].y-base[i].y),tL=Math.hypot(top[j].x-top[i].x,top[j].y-top[i].y),mbx=(base[i].x+base[j].x)/2,mby=(base[i].y+base[j].y)/2,mtx=(top[i].x+top[j].x)/2,mty=(top[i].y+top[j].y)/2;lsa+=(bL+tL)/2*Math.sqrt((mtx-mbx)**2+(mty-mby)**2+s.h**2);}
+      return Ab+At+lsa;
+    },
+    lsa:function(){
+      const s=this._state,N=10,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);
+      if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return lsa;}
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      return this.sa()-Ab-this._polyArea(top);
+    },
+    build:function(){
+      const s=this._state,N=10,base=this._buildPoly(s.sides,s.angles),isPyramid=s.topScale<0.01;
+      const geo=new THREE.BufferGeometry(),bv=base.map(p=>new THREE.Vector3(p.x,0,p.y));
+      const tv=isPyramid?[new THREE.Vector3(0,s.h,0)]:(s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}))).map(p=>new THREE.Vector3(p.x,s.h,p.y));
+      const verts=[],idx=[],addTri=(a,b,c)=>{const b2=verts.length;verts.push(a,b,c);idx.push(b2,b2+1,b2+2);};
+      for(let i=1;i<N-1;i++) addTri(bv[0],bv[i+1],bv[i]);
+      if(isPyramid){for(let i=0;i<N;i++) addTri(bv[i],bv[(i+1)%N],tv[0]);}
+      else{for(let i=1;i<N-1;i++) addTri(tv[0],tv[i],tv[i+1]);for(let i=0;i<N;i++){const j=(i+1)%N;addTri(bv[i],tv[i],tv[j]);addTri(bv[i],tv[j],bv[j]);}}
+      const flat=[];verts.forEach(v=>flat.push(v.x,v.y,v.z));
+      geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(flat),3));
+      geo.setIndex(idx);geo.computeVertexNormals();return geo;
+    },
+    formulas:{V:'h/6·(Ab+4Am+At)',SA:'Ab+At+LSA',LSA:'Σ(face areas)'},
+    angles:function(){return[];},
+  },
+  hendecagon_solid:{
+    name:'Hendecagon Solid',
+    _state:{
+      sides:Array(11).fill(1.0),angles:Array(11).fill(+(1620/11).toFixed(4)),
+      sideLocked:Array(11).fill(false),angleLocked:Array(11).fill(false),
+      h:3,topScale:1,topUnlocked:false,
+      topSides:Array(11).fill(1.0),topAngles:Array(11).fill(+(1620/11).toFixed(4)),
+    },
+    get type(){
+      const s=this._state,regA=1620/11;
+      const reg=s.sides.every(x=>Math.abs(x-s.sides[0])<0.05)&&s.angles.every(x=>Math.abs(x-regA)<0.5);
+      if(s.topScale<0.01) return reg?'Polyhedron — Regular Hendecagonal Pyramid':'Polyhedron — Irregular Hendecagonal Pyramid';
+      if(reg&&!s.topUnlocked) return 'Polyhedron — Regular Hendecagonal Prism';
+      return s.topUnlocked?'Polyhedron — Irregular Hendecagonal Frustum':'Polyhedron — Irregular Hendecagonal Prism';
+    },
+    dims:[],
+    get V(){return this._state.topScale<0.01?12:22;},
+    get E(){return this._state.topScale<0.01?22:33;},
+    get F(){return this._state.topScale<0.01?12:13;},
+    _buildPoly:function(sides,angles){
+      const pts=[{x:0,y:0}];
+      let dir=0;
+      for(let i=0;i<11-1;i++){
+        const last=pts[pts.length-1];
+        pts.push({x:last.x+sides[i]*Math.cos(dir),y:last.y+sides[i]*Math.sin(dir)});
+        dir+=Math.PI-(angles[i]*Math.PI/180);
+      }
+      // Force polygon closed: last vertex aims back to origin
+      const lastPt=pts[pts.length-1];
+      const backX=-lastPt.x, backY=-lastPt.y;
+      const backLen=Math.hypot(backX,backY);
+      if(backLen>0.001) pts.push({x:0,y:0});
+      else pts.push({x:lastPt.x+sides[11-1]*Math.cos(dir),y:lastPt.y+sides[11-1]*Math.sin(dir)});
+      const usePts=pts.slice(0,11);
+      const cx=usePts.reduce((s,p)=>s+p.x,0)/11;
+      const cy=usePts.reduce((s,p)=>s+p.y,0)/11;
+      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+    },
+    _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
+    volume:function(){const s=this._state,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);if(s.topScale<0.01)return(1/3)*Ab*s.h;const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));const At=this._polyArea(top),mid=base.map((p,i)=>({x:(p.x+top[i].x)/2,y:(p.y+top[i].y)/2}));return s.h/6*(Ab+4*this._polyArea(mid)+At);},
+    sa:function(){const s=this._state,N=11,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return Ab+lsa;}const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));const At=this._polyArea(top);let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,bL=Math.hypot(base[j].x-base[i].x,base[j].y-base[i].y),tL=Math.hypot(top[j].x-top[i].x,top[j].y-top[i].y),mbx=(base[i].x+base[j].x)/2,mby=(base[i].y+base[j].y)/2,mtx=(top[i].x+top[j].x)/2,mty=(top[i].y+top[j].y)/2;lsa+=(bL+tL)/2*Math.sqrt((mtx-mbx)**2+(mty-mby)**2+s.h**2);}return Ab+At+lsa;},
+    lsa:function(){const s=this._state,N=11,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return lsa;}const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));return this.sa()-Ab-this._polyArea(top);},
+    build:function(){const s=this._state,N=11,base=this._buildPoly(s.sides,s.angles),isPyramid=s.topScale<0.01;const geo=new THREE.BufferGeometry(),bv=base.map(p=>new THREE.Vector3(p.x,0,p.y));const tv=isPyramid?[new THREE.Vector3(0,s.h,0)]:(s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}))).map(p=>new THREE.Vector3(p.x,s.h,p.y));const verts=[],idx=[],addTri=(a,b,c)=>{const b2=verts.length;verts.push(a,b,c);idx.push(b2,b2+1,b2+2);};for(let i=1;i<N-1;i++)addTri(bv[0],bv[i+1],bv[i]);if(isPyramid){for(let i=0;i<N;i++)addTri(bv[i],bv[(i+1)%N],tv[0]);}else{for(let i=1;i<N-1;i++)addTri(tv[0],tv[i],tv[i+1]);for(let i=0;i<N;i++){const j=(i+1)%N;addTri(bv[i],tv[i],tv[j]);addTri(bv[i],tv[j],bv[j]);}}const flat=[];verts.forEach(v=>flat.push(v.x,v.y,v.z));geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(flat),3));geo.setIndex(idx);geo.computeVertexNormals();return geo;},
+    formulas:{V:'h/6·(Ab+4Am+At)',SA:'Ab+At+LSA',LSA:'Σ(face areas)'},
+    angles:function(){return[];},
+  },
+
+  dodecagon_solid:{
+    name:'Dodecagon Solid',
+    _state:{
+      sides:Array(12).fill(1.0),angles:Array(12).fill(150),
+      sideLocked:Array(12).fill(false),angleLocked:Array(12).fill(false),
+      h:3,topScale:1,topUnlocked:false,
+      topSides:Array(12).fill(1.0),topAngles:Array(12).fill(150),
+    },
+    get type(){
+      const s=this._state;
+      const reg=s.sides.every(x=>Math.abs(x-s.sides[0])<0.05)&&s.angles.every(x=>Math.abs(x-150)<0.5);
+      if(s.topScale<0.01) return reg?'Polyhedron — Regular Dodecagonal Pyramid':'Polyhedron — Irregular Dodecagonal Pyramid';
+      if(reg&&!s.topUnlocked) return 'Polyhedron — Regular Dodecagonal Prism';
+      return s.topUnlocked?'Polyhedron — Irregular Dodecagonal Frustum':'Polyhedron — Irregular Dodecagonal Prism';
+    },
+    dims:[],
+    get V(){return this._state.topScale<0.01?13:24;},
+    get E(){return this._state.topScale<0.01?24:36;},
+    get F(){return this._state.topScale<0.01?13:14;},
+    _buildPoly:function(sides,angles){
+      const pts=[{x:0,y:0}];
+      let dir=0;
+      for(let i=0;i<12-1;i++){
+        const last=pts[pts.length-1];
+        pts.push({x:last.x+sides[i]*Math.cos(dir),y:last.y+sides[i]*Math.sin(dir)});
+        dir+=Math.PI-(angles[i]*Math.PI/180);
+      }
+      // Force polygon closed: last vertex aims back to origin
+      const lastPt=pts[pts.length-1];
+      const backX=-lastPt.x, backY=-lastPt.y;
+      const backLen=Math.hypot(backX,backY);
+      if(backLen>0.001) pts.push({x:0,y:0});
+      else pts.push({x:lastPt.x+sides[12-1]*Math.cos(dir),y:lastPt.y+sides[12-1]*Math.sin(dir)});
+      const usePts=pts.slice(0,12);
+      const cx=usePts.reduce((s,p)=>s+p.x,0)/12;
+      const cy=usePts.reduce((s,p)=>s+p.y,0)/12;
+      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+    },
+    _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
+    volume:function(){const s=this._state,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);if(s.topScale<0.01)return(1/3)*Ab*s.h;const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));const At=this._polyArea(top),mid=base.map((p,i)=>({x:(p.x+top[i].x)/2,y:(p.y+top[i].y)/2}));return s.h/6*(Ab+4*this._polyArea(mid)+At);},
+    sa:function(){const s=this._state,N=12,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return Ab+lsa;}const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));const At=this._polyArea(top);let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,bL=Math.hypot(base[j].x-base[i].x,base[j].y-base[i].y),tL=Math.hypot(top[j].x-top[i].x,top[j].y-top[i].y),mbx=(base[i].x+base[j].x)/2,mby=(base[i].y+base[j].y)/2,mtx=(top[i].x+top[j].x)/2,mty=(top[i].y+top[j].y)/2;lsa+=(bL+tL)/2*Math.sqrt((mtx-mbx)**2+(mty-mby)**2+s.h**2);}return Ab+At+lsa;},
+    lsa:function(){const s=this._state,N=12,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);if(s.topScale<0.01){let lsa=0;for(let i=0;i<N;i++){const j=(i+1)%N,mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);}return lsa;}const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));return this.sa()-Ab-this._polyArea(top);},
+    build:function(){const s=this._state,N=12,base=this._buildPoly(s.sides,s.angles),isPyramid=s.topScale<0.01;const geo=new THREE.BufferGeometry(),bv=base.map(p=>new THREE.Vector3(p.x,0,p.y));const tv=isPyramid?[new THREE.Vector3(0,s.h,0)]:(s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}))).map(p=>new THREE.Vector3(p.x,s.h,p.y));const verts=[],idx=[],addTri=(a,b,c)=>{const b2=verts.length;verts.push(a,b,c);idx.push(b2,b2+1,b2+2);};for(let i=1;i<N-1;i++)addTri(bv[0],bv[i+1],bv[i]);if(isPyramid){for(let i=0;i<N;i++)addTri(bv[i],bv[(i+1)%N],tv[0]);}else{for(let i=1;i<N-1;i++)addTri(tv[0],tv[i],tv[i+1]);for(let i=0;i<N;i++){const j=(i+1)%N;addTri(bv[i],tv[i],tv[j]);addTri(bv[i],tv[j],bv[j]);}}const flat=[];verts.forEach(v=>flat.push(v.x,v.y,v.z));geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(flat),3));geo.setIndex(idx);geo.computeVertexNormals();return geo;},
+    formulas:{V:'h/6·(Ab+4Am+At)',SA:'Ab+At+LSA',LSA:'Σ(face areas)'},
+    angles:function(){return[];},
+  },
+
+  // ── PYRAMIDS ─────────────────────────────────────────────────────────────────
+  pentagon_solid:{
+    name:'Pentagon Solid',
+    _state:{
+      // Base: 5 side lengths, 5 interior angles (must sum to 540)
+      sides: [1.5,1.5,1.5,1.5,1.5],
+      angles:[108,108,108,108,108],
+      sideLocked: [false,false,false,false,false],
+      angleLocked:[false,false,false,false,false],
+      h:3,
+      topScale:1,      // 1=full prism, 0=pyramid
+      topUnlocked:false,
+      topSides: [1.5,1.5,1.5,1.5,1.5],
+      topAngles:[108,108,108,108,108],
+    },
+    get type(){
+      const s=this._state;
+      const ts=s.topScale;
+      const reg=s.sides.every(x=>Math.abs(x-s.sides[0])<0.05)&&s.angles.every(x=>Math.abs(x-108)<0.5);
+      if(ts<0.01) return reg?'Polyhedron — Regular Pentagonal Pyramid':'Polyhedron — Irregular Pentagonal Pyramid';
+      if(reg&&!s.topUnlocked) return 'Polyhedron — Regular Pentagonal Prism';
+      return s.topUnlocked?'Polyhedron — Irregular Pentagonal Frustum':'Polyhedron — Irregular Pentagonal Prism';
+    },
+    dims:[],  // unused — custom UI handles everything
+    get V(){ return this._state.topScale<0.01?6:10; },
+    get E(){ return this._state.topScale<0.01?10:15; },
+    get F(){ return this._state.topScale<0.01?6:7; },
+    // Build 2D polygon from sides+angles. Returns [{x,y}] vertices.
+    _buildPoly:function(sides,angles){
+      const pts=[{x:0,y:0}];
+      let dir=0;
+      for(let i=0;i<5-1;i++){
+        const last=pts[pts.length-1];
+        pts.push({x:last.x+sides[i]*Math.cos(dir),y:last.y+sides[i]*Math.sin(dir)});
+        dir+=Math.PI-(angles[i]*Math.PI/180);
+      }
+      // Force polygon closed: last vertex aims back to origin
+      const lastPt=pts[pts.length-1];
+      const backX=-lastPt.x, backY=-lastPt.y;
+      const backLen=Math.hypot(backX,backY);
+      if(backLen>0.001) pts.push({x:0,y:0});
+      else pts.push({x:lastPt.x+sides[5-1]*Math.cos(dir),y:lastPt.y+sides[5-1]*Math.sin(dir)});
+      const usePts=pts.slice(0,5);
+      const cx=usePts.reduce((s,p)=>s+p.x,0)/5;
+      const cy=usePts.reduce((s,p)=>s+p.y,0)/5;
+      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+    },
+    _polyArea:function(pts){
+      let a=0;
+      for(let i=0;i<pts.length;i++){
+        const j=(i+1)%pts.length;
+        a+=pts[i].x*pts[j].y - pts[j].x*pts[i].y;
+      }
+      return Math.abs(a)/2;
+    },
+    _polyPerim:function(sides){ return sides.reduce((s,x)=>s+x,0); },
+    volume:function(){
+      const s=this._state;
+      const base=this._buildPoly(s.sides,s.angles);
+      const Ab=this._polyArea(base);
+      if(s.topScale<0.01) return (1/3)*Ab*s.h;
+      const top=s.topUnlocked
+        ?this._buildPoly(s.topSides,s.topAngles)
+        :base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top);
+      // Prismatoid volume formula: V = h/6*(Ab + 4*Am + At)
+      const midPts=base.map((p,i)=>({x:(p.x+top[i].x)/2,y:(p.y+top[i].y)/2}));
+      const Am=this._polyArea(midPts);
+      return s.h/6*(Ab+4*Am+At);
+    },
+    sa:function(){
+      const s=this._state;
+      const base=this._buildPoly(s.sides,s.angles);
+      const Ab=this._polyArea(base);
+      if(s.topScale<0.01){
+        // Pyramid: base + 5 triangular faces
+        const cx=0,cy=0; // already centred
+        const apex={x:0,y:0,z:s.h};
+        let lsa=0;
+        for(let i=0;i<5;i++){
+          const j=(i+1)%5;
+          const mx=(base[i].x+base[j].x)/2, my=(base[i].y+base[j].y)/2;
+          const sl=Math.sqrt(mx*mx+my*my+s.h*s.h);
+          lsa+=0.5*s.sides[i]*sl;
+        }
+        return Ab+lsa;
+      }
+      const top=s.topUnlocked
+        ?this._buildPoly(s.topSides,s.topAngles)
+        :base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top);
+      // Lateral: 5 trapezoid/quad faces
+      let lsa=0;
+      for(let i=0;i<5;i++){
+        const j=(i+1)%5;
+        const bLen=Math.hypot(base[j].x-base[i].x,base[j].y-base[i].y);
+        const tLen=Math.hypot(top[j].x-top[i].x,top[j].y-top[i].y);
+        const avgLen=(bLen+tLen)/2;
+        // slant height approximation via midpoint
+        const mbx=(base[i].x+base[j].x)/2, mby=(base[i].y+base[j].y)/2;
+        const mtx=(top[i].x+top[j].x)/2,   mty=(top[i].y+top[j].y)/2;
+        const slant=Math.sqrt((mtx-mbx)**2+(mty-mby)**2+s.h**2);
+        lsa+=avgLen*slant;
+      }
+      return Ab+At+lsa;
+    },
+    lsa:function(){
+      return this.sa()-this._getBaseArea()-this._getTopArea();
+    },
+    _getBaseArea:function(){
+      const s=this._state;
+      return this._polyArea(this._buildPoly(s.sides,s.angles));
+    },
+    _getTopArea:function(){
+      const s=this._state;
+      if(s.topScale<0.01) return 0;
+      const base=this._buildPoly(s.sides,s.angles);
+      const top=s.topUnlocked
+        ?this._buildPoly(s.topSides,s.topAngles)
+        :base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      return this._polyArea(top);
+    },
+    build:function(){
+      const s=this._state;
+      const base=this._buildPoly(s.sides,s.angles);
+      const isPyramid=s.topScale<0.01;
+      const geo=new THREE.BufferGeometry();
+      const pos=[], idx=[];
+
+      // Base vertices (y=0), top vertices (y=h) or apex
+      const bv=base.map(p=>new THREE.Vector3(p.x,0,p.y));
+      let tv;
+      if(isPyramid){
+        tv=[new THREE.Vector3(0,s.h,0)]; // single apex
+      } else {
+        const top=s.topUnlocked
+          ?this._buildPoly(s.topSides,s.topAngles)
+          :base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+        tv=top.map(p=>new THREE.Vector3(p.x,s.h,p.y));
+      }
+
+      // Helper: add a triangle
+      const verts=[];
+      const addTri=(a,b,c)=>{
+        const base2=verts.length;
+        verts.push(a,b,c);
+        idx.push(base2,base2+1,base2+2);
+      };
+
+      // Base face (fan triangulation, wound CW from below)
+      for(let i=1;i<4;i++) addTri(bv[0],bv[i+1],bv[i]);
+
+      if(isPyramid){
+        // 5 triangular lateral faces
+        const apex=tv[0];
+        for(let i=0;i<5;i++){
+          const j=(i+1)%5;
+          addTri(bv[i],bv[j],apex);
+        }
+      } else {
+        // Top face (fan, wound CCW from above)
+        for(let i=1;i<4;i++) addTri(tv[0],tv[i],tv[i+1]);
+        // 5 quad lateral faces (2 tris each)
+        for(let i=0;i<5;i++){
+          const j=(i+1)%5;
+          addTri(bv[i],tv[i],tv[j]);
+          addTri(bv[i],tv[j],bv[j]);
+        }
+      }
+
+      const flat=[];
+      verts.forEach(v=>flat.push(v.x,v.y,v.z));
+      geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(flat),3));
+      geo.setIndex(idx);
+      geo.computeVertexNormals();
+      return geo;
+    },
+    formulas:{V:'h/6·(Ab+4Am+At)',SA:'Ab+At+LSA',LSA:'Σ(quad face areas)'},
+    angles:function(){
+      const s=this._state;
+      const rows=[];
+      for(let i=0;i<5;i++){
+        rows.push({
+          label:`Base angle ${i+1}`,
+          val:+s.angles[i].toFixed(1),
+          desc:`Interior angle at base vertex ${i+1} — angles must sum to 540°`,
+          onEdit:(v,_,idx)=>{
+            const others=s.angles.reduce((sum,a,j)=>j===idx?sum:sum+a,0);
+            s.angles[idx]=Math.max(10,Math.min(350,v));
+            // rebalance: keep sum=540 by scaling others
+            const remaining=540-s.angles[idx];
+            const scale=remaining/others;
+            for(let j=0;j<5;j++) if(j!==idx) s.angles[j]=Math.max(10,s.angles[j]*scale);
+          }
+        });
+      }
+      return rows;
+    },
+  },
+  hexagon_solid:{
+    name:'Hexagon Solid',
+    _state:{
+      sides: [1.5,1.5,1.5,1.5,1.5,1.5],
+      angles:[120,120,120,120,120,120],
+      sideLocked: [false,false,false,false,false,false],
+      angleLocked:[false,false,false,false,false,false],
+      h:3,
+      topScale:1,
+      topUnlocked:false,
+      topSides: [1.5,1.5,1.5,1.5,1.5,1.5],
+      topAngles:[120,120,120,120,120,120],
+    },
+    get type(){
+      const s=this._state;
+      const reg=s.sides.every(x=>Math.abs(x-s.sides[0])<0.05)&&s.angles.every(x=>Math.abs(x-120)<0.5);
+      if(s.topScale<0.01) return reg?'Polyhedron — Regular Hexagonal Pyramid':'Polyhedron — Irregular Hexagonal Pyramid';
+      if(reg&&!s.topUnlocked) return 'Polyhedron — Regular Hexagonal Prism';
+      return s.topUnlocked?'Polyhedron — Irregular Hexagonal Frustum':'Polyhedron — Irregular Hexagonal Prism';
+    },
+    dims:[],
+    get V(){ return this._state.topScale<0.01?7:12; },
+    get E(){ return this._state.topScale<0.01?12:18; },
+    get F(){ return this._state.topScale<0.01?7:8; },
+    _buildPoly:function(sides,angles){
+      const pts=[{x:0,y:0}];
+      let dir=0;
+      for(let i=0;i<6-1;i++){
+        const last=pts[pts.length-1];
+        pts.push({x:last.x+sides[i]*Math.cos(dir),y:last.y+sides[i]*Math.sin(dir)});
+        dir+=Math.PI-(angles[i]*Math.PI/180);
+      }
+      // Force polygon closed: last vertex aims back to origin
+      const lastPt=pts[pts.length-1];
+      const backX=-lastPt.x, backY=-lastPt.y;
+      const backLen=Math.hypot(backX,backY);
+      if(backLen>0.001) pts.push({x:0,y:0});
+      else pts.push({x:lastPt.x+sides[6-1]*Math.cos(dir),y:lastPt.y+sides[6-1]*Math.sin(dir)});
+      const usePts=pts.slice(0,6);
+      const cx=usePts.reduce((s,p)=>s+p.x,0)/6;
+      const cy=usePts.reduce((s,p)=>s+p.y,0)/6;
+      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+    },
+    _polyArea:function(pts){
+      let a=0;
+      for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}
+      return Math.abs(a)/2;
+    },
+    volume:function(){
+      const s=this._state;
+      const base=this._buildPoly(s.sides,s.angles);
+      const Ab=this._polyArea(base);
+      if(s.topScale<0.01) return (1/3)*Ab*s.h;
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top);
+      const midPts=base.map((p,i)=>({x:(p.x+top[i].x)/2,y:(p.y+top[i].y)/2}));
+      const Am=this._polyArea(midPts);
+      return s.h/6*(Ab+4*Am+At);
+    },
+    sa:function(){
+      const s=this._state;
+      const base=this._buildPoly(s.sides,s.angles);
+      const Ab=this._polyArea(base);
+      if(s.topScale<0.01){
+        let lsa=0;
+        for(let i=0;i<6;i++){
+          const j=(i+1)%6;
+          const mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;
+          const sl=Math.sqrt(mx*mx+my*my+s.h*s.h);
+          lsa+=0.5*s.sides[i]*sl;
+        }
+        return Ab+lsa;
+      }
+      const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+      const At=this._polyArea(top);
+      let lsa=0;
+      for(let i=0;i<6;i++){
+        const j=(i+1)%6;
+        const bLen=Math.hypot(base[j].x-base[i].x,base[j].y-base[i].y);
+        const tLen=Math.hypot(top[j].x-top[i].x,top[j].y-top[i].y);
+        const avgLen=(bLen+tLen)/2;
+        const mbx=(base[i].x+base[j].x)/2,mby=(base[i].y+base[j].y)/2;
+        const mtx=(top[i].x+top[j].x)/2,mty=(top[i].y+top[j].y)/2;
+        const slant=Math.sqrt((mtx-mbx)**2+(mty-mby)**2+s.h**2);
+        lsa+=avgLen*slant;
+      }
+      return Ab+At+lsa;
+    },
+    lsa:function(){
+      const s=this._state;
+      const base=this._buildPoly(s.sides,s.angles);
+      const Ab=this._polyArea(base);
+      if(s.topScale<0.01){
+        let lsa=0;
+        for(let i=0;i<6;i++){
+          const j=(i+1)%6;
+          const mx=(base[i].x+base[j].x)/2,my=(base[i].y+base[j].y)/2;
+          lsa+=0.5*s.sides[i]*Math.sqrt(mx*mx+my*my+s.h*s.h);
+        }
+        return lsa;
+      }
+      return this.sa()-Ab-this._polyArea(
+        s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}))
+      );
+    },
+    build:function(){
+      const s=this._state;
+      const N=6;
+      const base=this._buildPoly(s.sides,s.angles);
+      const isPyramid=s.topScale<0.01;
+      const geo=new THREE.BufferGeometry();
+      const bv=base.map(p=>new THREE.Vector3(p.x,0,p.y));
+      let tv;
+      if(isPyramid){
+        tv=[new THREE.Vector3(0,s.h,0)];
+      } else {
+        const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));
+        tv=top.map(p=>new THREE.Vector3(p.x,s.h,p.y));
+      }
+      const verts=[];
+      const idx=[];
+      const addTri=(a,b,c)=>{const b2=verts.length;verts.push(a,b,c);idx.push(b2,b2+1,b2+2);};
+      // Base face fan
+      for(let i=1;i<N-1;i++) addTri(bv[0],bv[i+1],bv[i]);
+      if(isPyramid){
+        const apex=tv[0];
+        for(let i=0;i<N;i++) addTri(bv[i],bv[(i+1)%N],apex);
+      } else {
+        // Top face fan
+        for(let i=1;i<N-1;i++) addTri(tv[0],tv[i],tv[i+1]);
+        // Lateral quads
+        for(let i=0;i<N;i++){
+          const j=(i+1)%N;
+          addTri(bv[i],tv[i],tv[j]);
+          addTri(bv[i],tv[j],bv[j]);
+        }
+      }
+      const flat=[];verts.forEach(v=>flat.push(v.x,v.y,v.z));
+      geo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(flat),3));
+      geo.setIndex(idx);geo.computeVertexNormals();
+      return geo;
+    },
+    formulas:{V:'h/6·(Ab+4Am+At)',SA:'Ab+At+LSA',LSA:'Σ(face areas)'},
+    angles:function(){return[];},
+  },
+
+  // ── SOLIDS OF REVOLUTION ─────────────────────────────────────────────────────
+  solid_of_revolution:{
+    name:'Circular',
+    get type(){
+      const d=this._dims||{};
+      const r1=d.r1??0, r2=d.r2??1.5, h=d.h??3;
+      const eq=(x,y)=>Math.abs(x-y)<0.05;
+      if(r1<0.01) return 'Curved Solid — Cone (top radius = 0)';
+      if(eq(r1,r2)) return 'Curved Solid — Cylinder (r₁ = r₂)';
+      return 'Curved Solid — Frustum / Truncated Cone (r₁ ≠ r₂)';
+    },
+    dims:[
+      {id:'r1',label:'Top radius (r₁)',def:0,   min:0,   max:6},
+      {id:'r2',label:'Base radius (r₂)',def:1.5, min:0.05,max:6},
+      {id:'h', label:'Height (h)',      def:3,   min:0.1, max:8},
+    ],
+    V:null,E:null,F:null,
+    _dims:{},
+    volume:function(d){
+      this._dims=d;
+      return (1/3)*Math.PI*d.h*(d.r1**2+d.r1*d.r2+d.r2**2);
+    },
+    sa:function(d){
+      this._dims=d;
+      const sl=Math.sqrt(d.h**2+(d.r2-d.r1)**2);
+      return Math.PI*(d.r1**2+d.r2**2+(d.r1+d.r2)*sl);
+    },
+    lsa:function(d){
+      const sl=Math.sqrt(d.h**2+(d.r2-d.r1)**2);
+      return Math.PI*(d.r1+d.r2)*sl;
+    },
+    build:function(d){
+      this._dims=d;
+      if(!isFinite(d.h)||d.h<=0) d.h=3; // recover from corrupt state
+      const topR=Math.max(0,d.r1);
+      return new THREE.CylinderGeometry(topR,d.r2,d.h,64);
+    },
+    formulas:{V:'⅓πh(r₁²+r₁r₂+r₂²)',SA:'π(r₁²+r₂²+(r₁+r₂)l)',LSA:'π(r₁+r₂)l'},
+    angles:function(d){
+      this._dims=d;
+      const diff=Math.abs(d.r2-d.r1);
+      const isCyl=diff<0.001;
+      const slant=isCyl?90:Math.atan(d.h/diff)*180/Math.PI;
+      return[
+        {label:'Slant angle',val:+slant.toFixed(1),
+         desc:'Angle of the slant surface from the base (1°–89°) — edit to change height',
+         onEdit:(v,dims)=>{
+           const clamped=Math.max(1,Math.min(89,v)); // never allow 0 or 90
+           const dif=Math.max(0.01,Math.abs(dims.r2-dims.r1));
+           const newH=dif*Math.tan(clamped*Math.PI/180);
+           if(isFinite(newH)&&newH>0) dims.h=Math.min(20,newH);
+           // also write the clamped value back into the input
+           const inp=document.getElementById('agl-0');
+           if(inp) inp.value=clamped.toFixed(1);
+         }},
+      ];
+    },
+  },
+  sphere:{
+    name:'Sphere',type:'Curved Solid — Sphere',
+    dims:[{id:'r',label:'Radius (r)',def:2,min:0.1,max:6}],
+    V:null,E:null,F:null,
+    volume:d=>(4/3)*Math.PI*d.r**3,sa:d=>4*Math.PI*d.r**2,lsa:d=>4*Math.PI*d.r**2,
+    build:d=>new THREE.SphereGeometry(d.r,64,64),
+    formulas:{V:'(4/3)πr³',SA:'4πr²',LSA:'4πr²'},
+    angles:d=>[
+      {label:'Curvature angle',val:360,desc:'Surface curves 360° equally in every cross-section (fixed)',onEdit:()=>{}},
+    ]
+  },
+  hemisphere:{
+    name:'Hemisphere',type:'Curved Solid — Hemisphere',
+    dims:[{id:'r',label:'Radius (r)',def:2,min:0.1,max:6}],
+    V:null,E:null,F:null,
+    volume:d=>(2/3)*Math.PI*d.r**3,sa:d=>3*Math.PI*d.r**2,lsa:d=>2*Math.PI*d.r**2,
+    build:d=>{const pts=[];for(let i=0;i<=32;i++){const a=(Math.PI/2)*(i/32);pts.push(new THREE.Vector2(Math.cos(a)*d.r,Math.sin(a)*d.r));}return new THREE.LatheGeometry(pts,64);},
+    formulas:{V:'(2/3)πr³',SA:'3πr²',LSA:'2πr²'},
+    angles:d=>[
+      {label:'Flat face angle',val:90,desc:'Flat base meets curved dome at 90° (fixed)',onEdit:()=>{}},
+    ]
+  },
+};
+
+// ─── RESIZE ───────────────────────────────────────────────────────────────────
+function resize(){
+  const isMobile=window.innerWidth<=900;
+  if(!isMobile){
+    const topbarH=document.getElementById('topbar').getBoundingClientRect().height;
+    const disclaimerH=document.getElementById('disclaimer').getBoundingClientRect().height;
+    document.getElementById('app').style.height=(window.innerHeight-topbarH-disclaimerH)+'px';
+  } else {
+    document.getElementById('app').style.height='';
+  }
+  const r=wrap.getBoundingClientRect();
+  if(r.width>0&&r.height>0){
+    renderer.setSize(r.width,r.height);
+    camera.aspect=r.width/r.height;
+    camera.updateProjectionMatrix();
+  }
+}
+
+// ─── MESH BUILDING ────────────────────────────────────────────────────────────
+function clearScene(){
+  if(shapeMesh){scene.remove(shapeMesh);shapeMesh.geometry.dispose();shapeMesh=null;}
+  if(wireframeMesh){scene.remove(wireframeMesh);wireframeMesh.geometry.dispose();wireframeMesh=null;}
+}
+function rebuildMesh(){
+  const def=SHAPES[currentShapeName];
+  const isPolygonSolid=(currentShapeName==='pentagon_solid'||currentShapeName==='hexagon_solid'||currentShapeName==='heptagon_solid'||currentShapeName==='octagon_solid'||currentShapeName==='nonagon_solid'||currentShapeName==='decagon_solid'||currentShapeName==='hendecagon_solid'||currentShapeName==='dodecagon_solid'||currentShapeName==='triangle_solid'||currentShapeName==='quadrangle_solid');
+
+  // For polygon solids validate BEFORE clearing the scene
+  if(isPolygonSolid){
+    const s=def._state;
+    const SUMS={triangle_solid:180,quadrangle_solid:360,pentagon_solid:540,hexagon_solid:720,heptagon_solid:900,octagon_solid:1080,nonagon_solid:1260,decagon_solid:1440,hendecagon_solid:1620,dodecagon_solid:1800};
+    const expected=SUMS[currentShapeName];
+    const actual=s.angles.reduce((a,b)=>a+b,0);
+    if(expected&&Math.abs(actual-expected)>2) return; // hold last valid render
+    try{
+      const pts=def._buildPoly(s.sides,s.angles);
+      if(!pts||pts.length<3) return;
+      const area=def._polyArea(pts);
+      if(!isFinite(area)||area<0.001) return;
+      if(pts.some(p=>!isFinite(p.x)||!isFinite(p.y))) return;
+    }catch(e){return;}
+  }
+
+  // Build geometry — if this throws, bail without touching the scene
+  let geo;
+  try{
+    geo=isPolygonSolid?def.build():def.build(currentDims);
+    if(!geo) return;
+    geo.computeVertexNormals();
+    geo.computeBoundingBox();
+    if(!geo.boundingBox) return;
+    // Validate bounding box is finite
+    const bb=geo.boundingBox;
+    if(!isFinite(bb.min.x)||!isFinite(bb.max.x)||!isFinite(bb.min.y)||!isFinite(bb.max.y)) return;
+    geo.center();
+    geo.computeBoundingSphere();
+    const r=geo.boundingSphere.radius;
+    if(!isFinite(r)||r<0.001) return;
+    // All good — now safe to clear old shape and show new one
+    clearScene();
+    camDist=Math.max(4,r*3.2);
+    updateCamera();
+  }catch(e){
+    if(geo) try{geo.dispose();}catch(_){}
+    return; // leave old shape visible
+  }
+
+  if(showWireframe){
+    shapeMesh=new THREE.Mesh(geo,new THREE.MeshPhongMaterial({color:SHAPE_COLOR,transparent:true,opacity:0.18,side:THREE.DoubleSide}));
+    wireframeMesh=new THREE.LineSegments(new THREE.WireframeGeometry(geo),new THREE.LineBasicMaterial({color:SHAPE_COLOR}));
+  }else{
+    shapeMesh=new THREE.Mesh(geo,new THREE.MeshPhongMaterial({color:SHAPE_COLOR,transparent:true,opacity:0.82,side:THREE.DoubleSide,shininess:60,specular:0x88bbff}));
+    shapeMesh.castShadow=true;
+    wireframeMesh=new THREE.LineSegments(new THREE.EdgesGeometry(geo,20),new THREE.LineBasicMaterial({color:0x1a73e8}));
+  }
+  scene.add(shapeMesh);scene.add(wireframeMesh);
+}
+
+// ─── LOAD SHAPE ───────────────────────────────────────────────────────────────
+window.loadShape=function(name,btnEl){
+  currentShapeName=name;
+  const def=SHAPES[name];
+  currentDims={};
+  def.dims.forEach(d=>{currentDims[d.id]=d.def;});
+  document.querySelectorAll('#toolbar .ctrl-btn').forEach(b=>b.classList.remove('active'));
+  if(btnEl) btnEl.classList.add('active');
+  document.getElementById('smsg').textContent=def.name+' selected';
+
+  // ── Full panel reset — remove any remnants from the previous shape ──
+  const oldPreset=document.getElementById('shape-presets');
+  if(oldPreset) oldPreset.remove();
+  const oldPent=document.getElementById('pent-panel');if(oldPent) oldPent.remove();
+  const oldHexS=document.getElementById('hex-solid-panel');if(oldHexS) oldHexS.remove();
+  const oldHeptS=document.getElementById('hept-solid-panel');if(oldHeptS) oldHeptS.remove();
+  const oldOctS=document.getElementById('oct-solid-panel');if(oldOctS) oldOctS.remove();
+  const oldNonS=document.getElementById('non-solid-panel');if(oldNonS) oldNonS.remove();
+  const oldDecS=document.getElementById('dec-solid-panel');if(oldDecS) oldDecS.remove();
+  const oldHenS=document.getElementById('hen-solid-panel');if(oldHenS) oldHenS.remove();
+  const oldDodS=document.getElementById('dod-solid-panel');if(oldDodS) oldDodS.remove();
+  const oldTriS=document.getElementById('tri-solid-panel');if(oldTriS) oldTriS.remove();
+  const oldQuadS=document.getElementById('quad-solid-panel');if(oldQuadS) oldQuadS.remove();
+  // Always restore dim + angle cards (pentagon hides them)
+  document.querySelector('.dim-card').style.display='';
+  document.querySelector('.angle-card-3d').style.display='';
+  // Clear stale rows
+  document.getElementById('dim-rows').innerHTML='';
+  document.getElementById('angle-rows-3d').innerHTML='';
+  window._dimLocks={};
+  // Inject preset strip for solid of revolution
+  if(name==='solid_of_revolution'){
+    const presetDiv=document.createElement('div');
+    presetDiv.id='shape-presets';
+    presetDiv.style.cssText='border:1px solid var(--border-light);border-radius:10px;overflow:hidden;';
+    presetDiv.innerHTML=`
+      <div style="background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border-light)">Quick Presets</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px;">
+        <button onclick="applyRevPreset('cone')"     style="padding:3px 10px;border:1px solid var(--border);border-radius:14px;background:var(--white);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text);">Cone</button>
+        <button onclick="applyRevPreset('cylinder')" style="padding:3px 10px;border:1px solid var(--border);border-radius:14px;background:var(--white);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text);">Cylinder</button>
+        <button onclick="applyRevPreset('frustum')"  style="padding:3px 10px;border:1px solid var(--border);border-radius:14px;background:var(--white);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text);">Frustum</button>
+        <button onclick="applyRevPreset('widecone')" style="padding:3px 10px;border:1px solid var(--border);border-radius:14px;background:var(--white);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text);">Wide Cone</button>
+      </div>`;
+    document.getElementById('panel-scroll').insertBefore(presetDiv,document.getElementById('panel-scroll').firstChild);
+  }
+  if(name==='parallelepiped'){
+    const presetDiv=document.createElement('div');
+    presetDiv.id='shape-presets';
+    presetDiv.style.cssText='border:1px solid var(--border-light);border-radius:10px;overflow:hidden;';
+    presetDiv.innerHTML=`
+      <div style="background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border-light)">Quick Presets</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px;">
+        <button onclick="applyParaPreset('rhombohedron')"   style="padding:3px 10px;border:1px solid var(--border);border-radius:14px;background:var(--white);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text);">Rhombohedron</button>
+        <button onclick="applyParaPreset('oblique')"         style="padding:3px 10px;border:1px solid var(--border);border-radius:14px;background:var(--white);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text);">Oblique</button>
+        <button onclick="applyParaPreset('skewed_prism')"    style="padding:3px 10px;border:1px solid var(--border);border-radius:14px;background:var(--white);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text);">Skewed Prism</button>
+      </div>`;
+    document.getElementById('panel-scroll').insertBefore(presetDiv,document.getElementById('panel-scroll').firstChild);
+  }
+  if(name==='triangle_solid'){ buildTrianglePanel(); }
+  if(name==='quadrangle_solid'){ buildQuadranglePanel(); }
+  if(name==='pentagon_solid'){
+    buildPentagonPanel();
+  }
+  // Hexagon solid: custom panel replaces dim/angle panels
+  if(name==='hexagon_solid'){ buildHexagonPanel(); }
+  if(name==='heptagon_solid'){ buildHeptagonPanel(); }
+  if(name==='octagon_solid'){ buildOctagonPanel(); }
+  if(name==='nonagon_solid'){ buildNonagonPanel(); }
+  if(name==='decagon_solid'){ buildDecagonPanel(); }
+  if(name==='hendecagon_solid'){ buildHendecagonPanel(); }
+  if(name==='dodecagon_solid'){ buildDodecagonPanel(); }
+  clearScene();rebuildMesh();buildDimPanel();buildAnglePanel();updatePanel();
+};
+
+window.applyRevPreset=function(preset){
+  const presets={
+    cone:     {r1:0,   r2:1.5, h:3},
+    cylinder: {r1:1.5, r2:1.5, h:3},
+    frustum:  {r1:0.8, r2:2,   h:3},
+    widecone: {r1:0,   r2:3,   h:2},
+  };
+  const p=presets[preset];if(!p) return;
+  Object.assign(currentDims,p);
+  SHAPES.solid_of_revolution._dims=currentDims;
+  SHAPES.solid_of_revolution.dims.forEach(dd=>{
+    const el=document.getElementById('dim-'+dd.id);
+    if(el) el.value=(currentDims[dd.id]).toFixed(1);
+  });
+  rebuildMesh();updatePanel();
+};
+
+// ─── TRIANGLE SOLID PANEL ────────────────────────────────────────────────────
+const showTriError=makeErrFn('tri-error','tri-error-msg','tri-solid-panel','tri-base-card');
+
+function buildTrianglePanel(){
+  buildNGonPanel({N:3,ANGLE_SUM:180,shapeKey:'triangle_solid',panelId:'tri-solid-panel',baseCardId:'tri-base-card',hintId:'tri-scale-hint',buildFn:buildTrianglePanel,errFn:showTriError,presetFn:applyTriSolidPreset,title:'Triangle'});
+}
+
+window.applyTriSolidPreset=function(preset){
+  const s=SHAPES.triangle_solid._state;
+  const presets={
+    regular_prism:   {sides:[2,2,2],  angles:[60,60,60],  h:3,topScale:1,topUnlocked:false},
+    regular_pyramid: {sides:[2,2,2],  angles:[60,60,60],  h:+(2*Math.sqrt(2/3)).toFixed(2),topScale:0,topUnlocked:false},
+    irregular:       {sides:[2,1.5,2.5],angles:[70,50,60],h:3,topScale:1,topUnlocked:false},
+  };
+  const p=presets[preset];if(!p) return;
+  Object.assign(s,p);s.topSides=[...s.sides];s.topAngles=[...s.angles];
+  s.sideLocked=Array(3).fill(false);s.angleLocked=Array(3).fill(false);
+  buildTrianglePanel();rebuildMesh();updatePanel();
+};
+
+// ─── QUADRANGLE SOLID PANEL ───────────────────────────────────────────────────
+const showQuadError=makeErrFn('quad-error','quad-error-msg','quad-solid-panel','quad-base-card');
+
+function buildQuadranglePanel(){
+  buildNGonPanel({N:4,ANGLE_SUM:360,shapeKey:'quadrangle_solid',panelId:'quad-solid-panel',baseCardId:'quad-base-card',hintId:'quad-scale-hint',buildFn:buildQuadranglePanel,errFn:showQuadError,presetFn:applyQuadSolidPreset,title:'Quadrangle',
+    presets:[
+      ['Square Prism',   ()=>applyQuadSolidPreset('regular_prism')],
+      ['Square Pyramid', ()=>applyQuadSolidPreset('regular_pyramid')],
+      ['Cuboid',         ()=>applyQuadSolidPreset('cuboid')],
+      ['Rhombus Prism',  ()=>applyQuadSolidPreset('rhombus')],
+      ['Parallelogram',  ()=>applyQuadSolidPreset('parallelogram')],
+      ['Irregular',      ()=>applyQuadSolidPreset('irregular')],
+    ]
+  });
+}
+
+window.applyQuadSolidPreset=function(preset){
+  const s=SHAPES.quadrangle_solid._state;
+  const presets={
+    regular_prism:    {sides:[2,2,2,2],      angles:[90,90,90,90],    h:3,  topScale:1,topUnlocked:false},
+    regular_pyramid:  {sides:[2,2,2,2],      angles:[90,90,90,90],    h:2.5,topScale:0,topUnlocked:false},
+    cuboid:           {sides:[3,2,3,2],      angles:[90,90,90,90],    h:1.5,topScale:1,topUnlocked:false},
+    rhombus:          {sides:[2,2,2,2],      angles:[70,110,70,110],  h:3,  topScale:1,topUnlocked:false},
+    parallelogram:    {sides:[3,2,3,2],      angles:[70,110,70,110],  h:3,  topScale:1,topUnlocked:false},
+    irregular:        {sides:[2,1.5,2.5,1.8],angles:[80,100,95,85],   h:3,  topScale:1,topUnlocked:false},
+  };
+  const p=presets[preset];if(!p) return;
+  Object.assign(s,p);s.topSides=[...s.sides];s.topAngles=[...s.angles];
+  s.sideLocked=Array(4).fill(false);s.angleLocked=Array(4).fill(false);
+  buildQuadranglePanel();rebuildMesh();updatePanel();
+};
+function pBtn(label,onclick){
+  const b=document.createElement('button');
+  b.textContent=label;b.onclick=onclick;
+  b.style.cssText='padding:3px 10px;border:1px solid var(--border);border-radius:14px;background:var(--white);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text);';
+  return b;
+}
+function pCard(title,content){
+  const d=document.createElement('div');
+  d.style.cssText='border:1px solid var(--border-light);border-radius:10px;overflow:hidden;margin-bottom:0;';
+  d.innerHTML=`<div style="background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border-light)">${title}</div>`;
+  d.appendChild(content);
+  return d;
+}
+function pNumRow(label,val,min,max,step,color,onchange,locked,onLockToggle){
+  const row=document.createElement('div');
+  row.style.cssText='display:flex;align-items:center;gap:8px;padding:5px 10px;border-bottom:1px solid var(--border-light);';
+  const lbl=document.createElement('span');
+  lbl.style.cssText=`font-size:11px;color:${color||'var(--muted)'};flex-shrink:0;min-width:90px;`;
+  lbl.textContent=label;
+  const inp=document.createElement('input');
+  inp.type='number';inp.min=min;inp.max=max;inp.step=step;inp.value=val;
+  inp.disabled=!!locked;
+  inp.style.cssText=`flex:1;padding:3px 6px;border:1px solid ${locked?'var(--border-light)':color?color:'var(--border)'};border-radius:5px;font-size:11px;font-family:'DM Mono',monospace;color:${locked?'var(--muted)':'var(--text)'};background:${locked?'#f8f9fa':'var(--white)'};text-align:right;min-width:0;`;
+
+  function applyValue(){
+    const v=parseFloat(inp.value);
+    if(!isNaN(v)&&v>=min&&v<=max) setTimeout(()=>onchange(v,inp),0);
+  }
+  inp.addEventListener('change',applyValue);
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();applyValue();}});
+
+  row.append(lbl,inp);
+
+  // Confirm button (green arrow) — always shown when not locked
+  if(!locked){
+    const confirmBtn=document.createElement('button');
+    confirmBtn.textContent='➤';
+    confirmBtn.title='Apply value';
+    confirmBtn.style.cssText='flex-shrink:0;width:28px;height:28px;border:1px solid #1e8e3e;border-radius:6px;background:#e6f4ea;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;color:#1e8e3e;';
+    confirmBtn.addEventListener('click',()=>applyValue());
+    row.append(confirmBtn);
+  }
+
+  if(onLockToggle!==undefined){
+    const lockBtn=document.createElement('button');
+    lockBtn.textContent=locked?'🔒':'🔓';
+    lockBtn.title=locked?'Locked — click to unlock':'Unlocked — click to lock';
+    lockBtn.style.cssText='flex-shrink:0;width:28px;height:28px;border:1px solid '+(locked?'#d93025':'#1e8e3e')+';border-radius:6px;background:'+(locked?'#fce8e6':'#e6f4ea')+';cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;padding:0;line-height:1;';
+    lockBtn.addEventListener('click',()=>onLockToggle());
+    row.append(lockBtn);
+  }
+  return{row,inp};
+}
+
+// ── Pentagon error banner ─────────────────────────────────────────────────────
+const showPentError=makeErrFn('pent-error','pent-error-msg','pent-panel','pent-base-card');
+
+
+function buildPentagonPanel(){
+  buildNGonPanel({N:5,ANGLE_SUM:540,shapeKey:'pentagon_solid',panelId:'pent-panel',baseCardId:'pent-base-card',hintId:'pent-scale-hint',buildFn:buildPentagonPanel,errFn:showPentError,presetFn:applyPentPreset,title:'Pentagon'});
+}
+
+window.applyPentPreset=function(preset){
+  const s=SHAPES.pentagon_solid._state;
+  const presets={
+    regular_prism:   {sides:[1.5,1.5,1.5,1.5,1.5],angles:[108,108,108,108,108],h:3,topScale:1,topUnlocked:false},
+    regular_pyramid: {sides:[1.5,1.5,1.5,1.5,1.5],angles:[108,108,108,108,108],h:3,topScale:0,topUnlocked:false},
+    house:           {sides:[2,2,1.4,2,2],         angles:[90,90,135,135,90],  h:2,topScale:1,topUnlocked:false},
+    irregular:       {sides:[1.2,1.8,2.1,1.5,0.9], angles:[95,115,100,120,110],h:3,topScale:1,topUnlocked:false},
+  };
+  const p=presets[preset];if(!p) return;
+  Object.assign(s,p);
+  s.topSides=[...s.sides];s.topAngles=[...s.angles];
+  s.sideLocked=[false,false,false,false,false];
+  s.angleLocked=[false,false,false,false,false];
+  buildPentagonPanel();rebuildMesh();updatePanel();
+};
+
+// ─── HEXAGON SOLID PANEL ─────────────────────────────────────────────────────
+function buildHexagonPanel(){
+  buildNGonPanel({N:6,ANGLE_SUM:720,shapeKey:'hexagon_solid',panelId:'hex-solid-panel',baseCardId:'hex-base-card',hintId:'hex-scale-hint',buildFn:buildHexagonPanel,errFn:showHexError,presetFn:applyHexSolidPreset,title:'Hexagon'});
+}
+
+const showHexError=makeErrFn('hex-error','hex-error-msg','hex-solid-panel','hex-base-card');
+
+window.applyHexSolidPreset=function(preset){
+  const s=SHAPES.hexagon_solid._state;
+  const presets={
+    regular_prism:   {sides:[1.5,1.5,1.5,1.5,1.5,1.5],angles:[120,120,120,120,120,120],h:3,topScale:1,topUnlocked:false},
+    regular_pyramid: {sides:[1.5,1.5,1.5,1.5,1.5,1.5],angles:[120,120,120,120,120,120],h:3,topScale:0,topUnlocked:false},
+    irregular:       {sides:[1.2,1.8,1.5,2.0,1.3,1.7], angles:[110,125,115,120,105,125],h:3,topScale:1,topUnlocked:false},
+  };
+  const p=presets[preset];if(!p) return;
+  Object.assign(s,p);
+  s.topSides=[...s.sides];s.topAngles=[...s.angles];
+  s.sideLocked=[false,false,false,false,false,false];
+  s.angleLocked=[false,false,false,false,false,false];
+  buildHexagonPanel();rebuildMesh();updatePanel();
+};
+
+// ─── HEPTAGON SOLID PANEL ────────────────────────────────────────────────────
+function buildHeptagonPanel(){
+  buildNGonPanel({N:7,ANGLE_SUM:900,shapeKey:'heptagon_solid',panelId:'hept-solid-panel',baseCardId:'hept-base-card',hintId:'hept-scale-hint',buildFn:buildHeptagonPanel,errFn:showHeptError,presetFn:applyHeptSolidPreset,title:'Heptagon'});
+}
+
+const showHeptError=makeErrFn('hept-error','hept-error-msg','hept-solid-panel','hept-base-card');
+
+window.applyHeptSolidPreset=function(preset){
+  const s=SHAPES.heptagon_solid._state;
+  const regA=+(900/7).toFixed(4);
+  const presets={
+    regular_prism:   {sides:[1.3,1.3,1.3,1.3,1.3,1.3,1.3],angles:[regA,regA,regA,regA,regA,regA,regA],h:3,topScale:1,topUnlocked:false},
+    regular_pyramid: {sides:[1.3,1.3,1.3,1.3,1.3,1.3,1.3],angles:[regA,regA,regA,regA,regA,regA,regA],h:3,topScale:0,topUnlocked:false},
+    irregular:       {sides:[1.1,1.5,1.3,1.7,1.0,1.4,1.2],angles:[120,135,125,130,115,140,135],h:3,topScale:1,topUnlocked:false},
+  };
+  const p=presets[preset];if(!p) return;
+  Object.assign(s,p);s.topSides=[...s.sides];s.topAngles=[...s.angles];
+  s.sideLocked=Array(7).fill(false);s.angleLocked=Array(7).fill(false);
+  buildHeptagonPanel();rebuildMesh();updatePanel();
+};
+
+// ─── OCTAGON SOLID PANEL ─────────────────────────────────────────────────────
+function buildOctagonPanel(){
+  buildNGonPanel({N:8,ANGLE_SUM:1080,shapeKey:'octagon_solid',panelId:'oct-solid-panel',baseCardId:'oct-base-card',hintId:'oct-scale-hint',buildFn:buildOctagonPanel,errFn:showOctError,presetFn:applyOctSolidPreset,title:'Octagon'});
+}
+
+const showOctError=makeErrFn('oct-error','oct-error-msg','oct-solid-panel','oct-base-card');
+
+window.applyOctSolidPreset=function(preset){
+  const s=SHAPES.octagon_solid._state;
+  const presets={
+    regular_prism:   {sides:[1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2],angles:[135,135,135,135,135,135,135,135],h:3,topScale:1,topUnlocked:false},
+    regular_pyramid: {sides:[1.2,1.2,1.2,1.2,1.2,1.2,1.2,1.2],angles:[135,135,135,135,135,135,135,135],h:3,topScale:0,topUnlocked:false},
+    irregular:       {sides:[1.0,1.4,1.2,1.6,0.9,1.3,1.1,1.5],angles:[125,140,130,135,120,145,130,135],h:3,topScale:1,topUnlocked:false},
+  };
+  const p=presets[preset];if(!p) return;
+  Object.assign(s,p);s.topSides=[...s.sides];s.topAngles=[...s.angles];
+  s.sideLocked=Array(8).fill(false);s.angleLocked=Array(8).fill(false);
+  buildOctagonPanel();rebuildMesh();updatePanel();
+};
+
+// ─── NONAGON SOLID PANEL ─────────────────────────────────────────────────────
+function buildNonagonPanel(){
+  buildNGonPanel({N:9,ANGLE_SUM:1260,shapeKey:'nonagon_solid',panelId:'non-solid-panel',baseCardId:'non-base-card',hintId:'non-scale-hint',buildFn:buildNonagonPanel,errFn:showNonError,presetFn:applyNonSolidPreset,title:'Nonagon'});
+}
+
+const showNonError=makeErrFn('non-error','non-error-msg','non-solid-panel','non-base-card');
+
+window.applyNonSolidPreset=function(preset){
+  const s=SHAPES.nonagon_solid._state;
+  const presets={
+    regular_prism:   {sides:Array(9).fill(1.1),angles:Array(9).fill(140),h:3,topScale:1,topUnlocked:false},
+    regular_pyramid: {sides:Array(9).fill(1.1),angles:Array(9).fill(140),h:3,topScale:0,topUnlocked:false},
+    irregular:       {sides:[1.0,1.3,1.1,1.5,0.9,1.2,1.4,1.0,1.2],angles:[135,145,138,142,130,140,145,138,147],h:3,topScale:1,topUnlocked:false},
+  };
+  const p=presets[preset];if(!p) return;
+  Object.assign(s,p);s.topSides=[...s.sides];s.topAngles=[...s.angles];
+  s.sideLocked=Array(9).fill(false);s.angleLocked=Array(9).fill(false);
+  buildNonagonPanel();rebuildMesh();updatePanel();
+};
+
+// ─── DECAGON SOLID PANEL ─────────────────────────────────────────────────────
+function buildDecagonPanel(){
+  buildNGonPanel({N:10,ANGLE_SUM:1440,shapeKey:'decagon_solid',panelId:'dec-solid-panel',baseCardId:'dec-base-card',hintId:'dec-scale-hint',buildFn:buildDecagonPanel,errFn:showDecError,presetFn:applyDecSolidPreset,title:'Decagon'});
+}
+
+const showDecError=makeErrFn('dec-error','dec-error-msg','dec-solid-panel','dec-base-card');
+
+window.applyDecSolidPreset=function(preset){
+  const s=SHAPES.decagon_solid._state;
+  const presets={
+    regular_prism:   {sides:Array(10).fill(1.0),angles:Array(10).fill(144),h:3,topScale:1,topUnlocked:false},
+    regular_pyramid: {sides:Array(10).fill(1.0),angles:Array(10).fill(144),h:3,topScale:0,topUnlocked:false},
+    irregular:       {sides:[0.9,1.2,1.0,1.4,0.8,1.1,1.3,0.9,1.1,1.2],angles:[138,148,142,145,135,144,148,140,146,154],h:3,topScale:1,topUnlocked:false},
+  };
+  const p=presets[preset];if(!p) return;
+  Object.assign(s,p);s.topSides=[...s.sides];s.topAngles=[...s.angles];
+  s.sideLocked=Array(10).fill(false);s.angleLocked=Array(10).fill(false);
+  buildDecagonPanel();rebuildMesh();updatePanel();
+};
+
+// ─── GENERIC N-GON PANEL BUILDER ─────────────────────────────────────────────
+function buildNGonPanel(cfg){
+  const {N,ANGLE_SUM,shapeKey,panelId,baseCardId,hintId,buildFn,errFn,presetFn,title,presets}=cfg;
+  const s=SHAPES[shapeKey]._state;
+  const scroll=document.getElementById('panel-scroll');
+  const old=document.getElementById(panelId);if(old) old.remove();
+  document.querySelector('.dim-card').style.display='none';
+  document.querySelector('.angle-card-3d').style.display='none';
+  const wrap=document.createElement('div');wrap.id=panelId;
+
+  const presetBody=document.createElement('div');presetBody.style.cssText='display:flex;flex-wrap:wrap;gap:6px;padding:8px 10px;';
+  const presetList=presets||[['Regular Prism',()=>presetFn('regular_prism')],['Regular Pyramid',()=>presetFn('regular_pyramid')],['Irregular',()=>presetFn('irregular')]];
+  presetList.forEach(([l,fn])=>presetBody.appendChild(pBtn(l,fn)));
+  wrap.appendChild(pCard('Quick Presets',presetBody));
+
+  const htBody=document.createElement('div');
+  const {row:hRow}=pNumRow('Height (h)',s.h,0.1,10,0.1,'var(--blue)',v=>{s.h=v;rebuildMesh();updatePanel();});
+  const {row:tsRow}=pNumRow('Top scale',s.topScale,0,1,0.05,'var(--green)',v=>{
+    s.topScale=v;if(!s.topUnlocked){s.topSides=[...s.sides];s.topAngles=[...s.angles];}rebuildMesh();updatePanel();
+    document.getElementById(hintId).textContent=v<0.01?'▲ Pyramid mode':v===1?'■ Prism mode':'◆ Frustum mode';
+  });
+  const hint=document.createElement('div');hint.id=hintId;hint.style.cssText='font-size:10px;color:var(--muted);padding:4px 10px 6px;';
+  hint.textContent=s.topScale<0.01?'▲ Pyramid mode':s.topScale===1?'■ Prism mode':'◆ Frustum mode';
+  htBody.appendChild(hRow);htBody.appendChild(tsRow);htBody.appendChild(hint);
+  wrap.appendChild(pCard('Height & Form',htBody));
+
+  const baseBody=document.createElement('div');
+  // Min angle scales with polygon — triangles can go nearly to 0, others keep 1°
+  const MIN_ANGLE=ANGLE_SUM<=180?0.1:1;
+  const MAX_ANGLE=ANGLE_SUM-((N-1)*MIN_ANGLE); // max any single angle can be
+  function onAngleChange(i,newVal){
+    const delta=newVal-s.angles[i];s.angles[i]=newVal;
+    if(!s.topUnlocked) s.topAngles=[...s.angles];
+    const left=(i+N-1)%N,right=i,lL=s.sideLocked[left],rL=s.sideLocked[right];
+    if(!lL&&!rL){const adj=Math.abs(delta)*0.05;s.sides[left]=Math.max(0.1,s.sides[left]+(delta>0?adj:-adj));s.sides[right]=Math.max(0.1,s.sides[right]+(delta>0?adj:-adj));}
+    else if(!lL){const adj=Math.abs(delta)*0.1;s.sides[left]=Math.max(0.1,s.sides[left]+(delta>0?adj:-adj));errFn(`Side ${right+1} is locked — adjusting side ${left+1} only.`);}
+    else if(!rL){const adj=Math.abs(delta)*0.1;s.sides[right]=Math.max(0.1,s.sides[right]+(delta>0?adj:-adj));errFn(`Side ${left+1} is locked — adjusting side ${right+1} only.`);}
+    else{const ul=Array.from({length:N},(_,j)=>j).filter(j=>j!==left&&j!==right&&!s.sideLocked[j]);if(ul.length>0){const adj=(Math.abs(delta)*0.1)/ul.length;ul.forEach(j=>{s.sides[j]=Math.max(0.1,s.sides[j]+(delta>0?adj:-adj));});errFn(`Sides ${left+1} & ${right+1} locked — distributing across others.`);}else errFn('All sides locked — angle change cannot adjust any side.');}
+    if(!s.topUnlocked) s.topSides=[...s.sides];
+    buildFn();rebuildMesh();updatePanel();
+  }
+  // Compute actual interior angles from polygon vertices
+  function computeAnglesFromPoly(pts){
+    const N2=pts.length;
+    return pts.map((p,i)=>{
+      const prev=pts[(i+N2-1)%N2],next=pts[(i+1)%N2];
+      const ax=prev.x-p.x,ay=prev.y-p.y;
+      const bx=next.x-p.x,by=next.y-p.y;
+      const dot=ax*bx+ay*by;
+      const cross=ax*by-ay*bx;
+      const ang=Math.atan2(Math.abs(cross),dot)*180/Math.PI;
+      return Math.round(ang);
+    });
+  }
+
+  for(let i=0;i<N;i++){
+    const {row:sr}=pNumRow(`Side ${i+1}`,s.sides[i].toFixed(2),0.1,8,0.1,'var(--blue)',v=>{
+      if(s.sideLocked[i]) return;
+      s.sides[i]=v;
+      if(!s.topUnlocked) s.topSides[i]=v;
+      // Recompute actual angles from new polygon shape
+      const pts=buildFn===buildTrianglePanel||buildFn===buildQuadranglePanel||true
+        ? (()=>{
+            // Use the shape's _buildPoly to get actual vertices
+            const shape=SHAPES[shapeKey];
+            return shape._buildPoly(s.sides,s.angles);
+          })()
+        : null;
+      if(pts){
+        const computed=computeAnglesFromPoly(pts);
+        // Only update unlocked angles
+        computed.forEach((a,j)=>{ if(!s.angleLocked[j]) s.angles[j]=a; });
+        // Ensure locked angles haven't drifted — keep them fixed
+      }
+      if(!s.topUnlocked) s.topAngles=[...s.angles];
+      buildFn();rebuildMesh();updatePanel();
+    },s.sideLocked[i],()=>{s.sideLocked[i]=!s.sideLocked[i];buildFn();});
+    const {row:ar}=pNumRow(`Angle ${i+1}°`,Math.round(s.angles[i]),MIN_ANGLE,MAX_ANGLE,1,'var(--purple)',v=>{
+      if(s.angleLocked[i]) return;
+      const vr=Math.round(v);
+      const uo=Array.from({length:N},(_,j)=>j).filter(j=>j!==i&&!s.angleLocked[j]);
+      // Check all others locked first — before any budget calculation
+      if(uo.length===0){buildFn();errFn('All other angles are locked — unlock at least one to change this angle.');return;}
+      // Sum of angles that are locked (and not i) — these can't move
+      const lockedSum=s.angles.reduce((sum,a,j)=>(j===i||!s.angleLocked[j])?sum:sum+a,0);
+      // Check there is enough room: new value + locked others + min×unlocked others ≤ ANGLE_SUM
+      const available=ANGLE_SUM-vr-lockedSum;
+      const maxAllowed=ANGLE_SUM-lockedSum-uo.length*MIN_ANGLE;
+      if(available<uo.length*MIN_ANGLE){
+        buildFn();errFn(`Angle ${i+1} is too large — locked angles only leave room for ${maxAllowed}° maximum here.`);
+        return;
+      }
+      // Scale unlocked others to fill the available room
+      const others=s.angles.reduce((sum,a,j)=>(j===i||s.angleLocked[j])?sum:sum+a,0);
+      const scale=available/Math.max(0.001,others);
+      uo.forEach(j=>{s.angles[j]=Math.max(MIN_ANGLE,Math.round(s.angles[j]*scale));});
+      // Correct any rounding drift so sum stays exact
+      const drift=ANGLE_SUM-vr-lockedSum-uo.reduce((sum,j)=>sum+s.angles[j],0);
+      if(drift!==0) s.angles[uo[0]]+=drift;
+      onAngleChange(i,vr);
+    },s.angleLocked[i],()=>{s.angleLocked[i]=!s.angleLocked[i];buildFn();});
+    baseBody.appendChild(sr);baseBody.appendChild(ar);
+  }
+  const sum=s.angles.reduce((a,b)=>a+b,0);
+  const sumDiv=document.createElement('div');
+  sumDiv.style.cssText=`padding:5px 10px;font-size:10px;font-family:'DM Mono',monospace;color:${Math.abs(sum-ANGLE_SUM)<1?'var(--green)':'var(--red)'};background:#f8f9fa;`;
+  sumDiv.textContent=`∑ angles = ${Math.round(sum)}° (must = ${ANGLE_SUM}°)`;
+  baseBody.appendChild(sumDiv);
+  const baseCard=pCard(`Base ${title}`,baseBody);baseCard.id=baseCardId;
+  wrap.appendChild(baseCard);
+
+  if(s.topScale>=0.01){
+    const topHeader=document.createElement('div');
+    topHeader.style.cssText='background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;';
+    topHeader.innerHTML=`<span>Top ${title}</span>`;
+    const lockBtn=document.createElement('button');
+    lockBtn.textContent=s.topUnlocked?'🔓 Independent':'🔒 Linked to base';
+    lockBtn.style.cssText='font-size:10px;padding:2px 8px;border:1px solid var(--border);border-radius:10px;cursor:pointer;background:var(--white);font-family:'DM Sans',sans-serif;';
+    lockBtn.onclick=()=>{s.topUnlocked=!s.topUnlocked;if(!s.topUnlocked){s.topSides=[...s.sides];s.topAngles=[...s.angles];}buildFn();rebuildMesh();updatePanel();};
+    topHeader.appendChild(lockBtn);
+    const topCard=document.createElement('div');topCard.style.cssText='border:1px solid var(--border-light);border-radius:10px;overflow:hidden;';
+    topCard.appendChild(topHeader);
+    const topBody=document.createElement('div');
+    if(s.topUnlocked){
+      if(!s.topSideLocked) s.topSideLocked=Array(N).fill(false);
+      if(!s.topAngleLocked) s.topAngleLocked=Array(N).fill(false);
+      for(let i=0;i<N;i++){
+        const {row:sr}=pNumRow(`Side ${i+1}`,s.topSides[i].toFixed(2),0.1,8,0.1,'var(--blue)',v=>{if(s.topSideLocked[i]) return;s.topSides[i]=v;rebuildMesh();updatePanel();},s.topSideLocked[i],()=>{s.topSideLocked[i]=!s.topSideLocked[i];buildFn();});
+        const {row:ar}=pNumRow(`Angle ${i+1}°`,Math.round(s.topAngles[i]),MIN_ANGLE,MAX_ANGLE,1,'var(--purple)',v=>{
+          if(s.topAngleLocked[i]) return;
+          const vr=Math.round(v);
+          const uo=Array.from({length:N},(_,j)=>j).filter(j=>j!==i&&!s.topAngleLocked[j]);
+          if(uo.length===0){buildFn();errFn('All other top angles locked — unlock at least one.');return;}
+          const lockedSum=s.topAngles.reduce((sum,a,j)=>(j===i||!s.topAngleLocked[j])?sum:sum+a,0);
+          const available=ANGLE_SUM-vr-lockedSum;
+          if(available<uo.length*MIN_ANGLE){buildFn();errFn(`Top angle ${i+1} is too large — locked angles only leave room for ${ANGLE_SUM-lockedSum-uo.length*MIN_ANGLE}° maximum.`);return;}
+          const others=s.topAngles.reduce((sum,a,j)=>(j===i||s.topAngleLocked[j])?sum:sum+a,0);
+          const scale=available/Math.max(0.001,others);
+          uo.forEach(j=>{s.topAngles[j]=Math.max(MIN_ANGLE,Math.round(s.topAngles[j]*scale));});
+          const drift=ANGLE_SUM-vr-lockedSum-uo.reduce((sum,j)=>sum+s.topAngles[j],0);
+          if(drift!==0) s.topAngles[uo[0]]+=drift;
+          s.topAngles[i]=vr;buildFn();rebuildMesh();updatePanel();
+        },s.topAngleLocked[i],()=>{s.topAngleLocked[i]=!s.topAngleLocked[i];buildFn();});
+        topBody.appendChild(sr);topBody.appendChild(ar);
+      }
+    } else {
+      const linked=document.createElement('div');linked.style.cssText='padding:8px 12px;font-size:11px;color:var(--muted);font-style:italic;';
+      linked.textContent='Top face mirrors the base. Click 🔓 to edit independently.';topBody.appendChild(linked);
+    }
+    topCard.appendChild(topBody);wrap.appendChild(topCard);
+  }
+  scroll.insertBefore(wrap,document.getElementById('shape-presets')?document.getElementById('shape-presets').nextSibling:scroll.firstChild);
+}
+
+function makeErrFn(bannerId,msgId,panelId,baseCardId){
+  let timer=null;
+  return function(msg){
+    let banner=document.getElementById(bannerId);
+    if(!banner){
+      banner=document.createElement('div');banner.id=bannerId;
+      banner.style.cssText='border-radius:8px;padding:8px 12px;background:#fce8e6;border:1px solid #f5c6c3;color:var(--red);font-size:11px;font-weight:500;display:flex;align-items:center;gap:8px;';
+      banner.innerHTML=`<span style="font-size:14px">⚠️</span><span id="${msgId}"></span>`;
+      const panel=document.getElementById(panelId);
+      if(panel){const bc=panel.querySelector('#'+baseCardId);if(bc)panel.insertBefore(banner,bc);else panel.appendChild(banner);}
+    }
+    document.getElementById(msgId).textContent=msg;banner.style.display='flex';
+    if(timer) clearTimeout(timer);timer=setTimeout(()=>{if(banner) banner.style.display='none';},3000);
+  };
+}
+
+const showHenError=makeErrFn('hen-error','hen-error-msg','hen-solid-panel','hen-base-card');
+const showDodError=makeErrFn('dod-error','dod-error-msg','dod-solid-panel','dod-base-card');
+
+function buildHendecagonPanel(){buildNGonPanel({N:11,ANGLE_SUM:1620,shapeKey:'hendecagon_solid',panelId:'hen-solid-panel',baseCardId:'hen-base-card',hintId:'hen-scale-hint',buildFn:buildHendecagonPanel,errFn:showHenError,presetFn:applyHenSolidPreset,title:'Hendecagon'});}
+function buildDodecagonPanel(){buildNGonPanel({N:12,ANGLE_SUM:1800,shapeKey:'dodecagon_solid',panelId:'dod-solid-panel',baseCardId:'dod-base-card',hintId:'dod-scale-hint',buildFn:buildDodecagonPanel,errFn:showDodError,presetFn:applyDodSolidPreset,title:'Dodecagon'});}
+
+window.applyHenSolidPreset=function(preset){
+  const s=SHAPES.hendecagon_solid._state,regA=+(1620/11).toFixed(4);
+  const presets={
+    regular_prism:   {sides:Array(11).fill(1.0),angles:Array(11).fill(regA),h:3,topScale:1,topUnlocked:false},
+    regular_pyramid: {sides:Array(11).fill(1.0),angles:Array(11).fill(regA),h:3,topScale:0,topUnlocked:false},
+    irregular:       {sides:[0.9,1.2,1.0,1.3,0.8,1.1,1.2,0.9,1.0,1.3,1.0],angles:[142,150,145,148,138,147,152,143,146,150,159],h:3,topScale:1,topUnlocked:false},
+  };
+  const p=presets[preset];if(!p) return;
+  Object.assign(s,p);s.topSides=[...s.sides];s.topAngles=[...s.angles];
+  s.sideLocked=Array(11).fill(false);s.angleLocked=Array(11).fill(false);
+  buildHendecagonPanel();rebuildMesh();updatePanel();
+};
+window.applyDodSolidPreset=function(preset){
+  const s=SHAPES.dodecagon_solid._state;
+  const presets={
+    regular_prism:   {sides:Array(12).fill(1.0),angles:Array(12).fill(150),h:3,topScale:1,topUnlocked:false},
+    regular_pyramid: {sides:Array(12).fill(1.0),angles:Array(12).fill(150),h:3,topScale:0,topUnlocked:false},
+    irregular:       {sides:[0.9,1.2,1.0,1.3,0.8,1.1,1.2,0.9,1.0,1.3,1.0,1.1],angles:[144,153,147,151,140,149,154,145,148,152,146,157],h:3,topScale:1,topUnlocked:false},
+  };
+  const p=presets[preset];if(!p) return;
+  Object.assign(s,p);s.topSides=[...s.sides];s.topAngles=[...s.angles];
+  s.sideLocked=Array(12).fill(false);s.angleLocked=Array(12).fill(false);
+  buildDodecagonPanel();rebuildMesh();updatePanel();
+};
+
+window.applyParaPreset=function(preset){
+  const presets={
+    rhombohedron:  {a:2,   b:2,   c:2,   alpha:70, beta:70,  gamma:70},
+    oblique:       {a:3,   b:2,   c:2.5, alpha:75, beta:80,  gamma:70},
+    skewed_prism:  {a:3,   b:2,   c:3,   alpha:90, beta:90,  gamma:70},
+  };
+  const p=presets[preset];if(!p) return;
+  Object.assign(currentDims,p);
+  SHAPES.parallelepiped._dims=currentDims;
+  SHAPES.parallelepiped.dims.forEach(dd=>{
+    const el=document.getElementById('dim-'+dd.id);
+    if(el) el.value=(currentDims[dd.id]).toFixed(1);
+  });
+  rebuildMesh();updatePanel();
+};
+
+function buildDimPanel(){
+  const isPent=currentShapeName==='pentagon_solid'||currentShapeName==='hexagon_solid'||currentShapeName==='heptagon_solid'||currentShapeName==='octagon_solid'||currentShapeName==='nonagon_solid'||currentShapeName==='decagon_solid'||currentShapeName==='hendecagon_solid'||currentShapeName==='dodecagon_solid'||currentShapeName==='triangle_solid'||currentShapeName==='quadrangle_solid';
+  document.querySelector('.dim-card').style.display=isPent?'none':'';
+  document.querySelector('.angle-card-3d').style.display=isPent?'none':'';
+  if(isPent) return;
+  const def=SHAPES[currentShapeName];
+  const cont=document.getElementById('dim-rows');cont.innerHTML='';
+  if(!window._dimLocks) window._dimLocks={};
+  def.dims.forEach(d=>{
+    const lockKey=currentShapeName+'_'+d.id;
+    if(window._dimLocks[lockKey]===undefined) window._dimLocks[lockKey]=false;
+    const locked=window._dimLocks[lockKey];
+    const isAngleDim=d.id==='alpha'||d.id==='beta'||d.id==='gamma';
+    const row=document.createElement('div');row.className='dim-row';
+    if(isAngleDim) row.style.cssText='border-top:1px solid var(--border-light);background:#fafafe;';
+    row.style.display='flex';row.style.alignItems='center';row.style.gap='6px';row.style.padding='5px 10px';
+    const lbl=document.createElement('span');lbl.className='dim-label';
+    lbl.style.fontStyle=isAngleDim?'normal':'italic';
+    lbl.style.color=isAngleDim?'var(--purple)':'';
+    lbl.style.minWidth='90px';lbl.style.flexShrink='0';
+    lbl.textContent=d.label;
+    const inp=document.createElement('input');
+    inp.type='number';inp.min=d.min;inp.max=d.max;inp.step=isAngleDim?1:0.1;
+    inp.className='dim-input';inp.id='dim-'+d.id;
+    inp.value=currentDims[d.id].toFixed(isAngleDim?0:1);
+    inp.disabled=locked;
+    if(isAngleDim) inp.style.borderColor='var(--purple)';
+    if(locked){inp.style.background='#f8f9fa';inp.style.color='var(--muted)';}
+    function applyDim(){
+      const v=parseFloat(inp.value);
+      if(!isNaN(v)&&v>=d.min&&v<=d.max) setTimeout(()=>{currentDims[d.id]=v;rebuildMesh();updatePanel();},0);
+    }
+    inp.addEventListener('change',applyDim);
+    inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();inp.blur();applyDim();}});
+    // Confirm button
+    const confirmBtn=document.createElement('button');
+    confirmBtn.textContent='➤';confirmBtn.title='Apply value';
+    confirmBtn.style.cssText='flex-shrink:0;width:28px;height:28px;border:1px solid #1e8e3e;border-radius:6px;background:#e6f4ea;cursor:pointer;font-size:12px;display:'+(locked?'none':'flex')+';align-items:center;justify-content:center;padding:0;color:#1e8e3e;';
+    confirmBtn.addEventListener('click',applyDim);
+    // Lock button
+    const lockBtn=document.createElement('button');
+    lockBtn.textContent=locked?'🔒':'🔓';
+    lockBtn.title=locked?'Locked — click to unlock':'Unlocked — click to lock';
+    lockBtn.style.cssText='flex-shrink:0;width:28px;height:28px;border:1px solid '+(locked?'#d93025':'#1e8e3e')+';border-radius:6px;background:'+(locked?'#fce8e6':'#e6f4ea')+';cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;padding:0;';
+    lockBtn.addEventListener('click',()=>{
+      window._dimLocks[lockKey]=!window._dimLocks[lockKey];
+      buildDimPanel();
+    });
+    const unit=document.createElement('span');unit.className='dim-unit';
+    unit.textContent=isAngleDim?'°':'u';
+    if(isAngleDim) unit.style.color='var(--purple)';
+    row.append(lbl,inp,unit,confirmBtn,lockBtn);
+    cont.appendChild(row);
+  });
+  const fRow=document.createElement('div');
+  fRow.style.cssText='padding:6px 10px;background:#f8f9fa;border-top:1px solid var(--border-light);font-size:9.5px;color:var(--muted);font-family:Roboto Mono,monospace;line-height:1.7';
+  const f=def.formulas;
+  fRow.innerHTML=`V = ${f.V}<br>SA = ${f.SA}<br>LSA = ${f.LSA}`;
+  cont.appendChild(fRow);
+}
+
+// ─── ANGLE PANEL ──────────────────────────────────────────────────────────────
+function isReallyEditable(onEdit){
+  // onEdit is a real function but does nothing if body is just empty ()=>{}
+  // We detect by checking function source length — real ones have > 30 chars
+  return onEdit&&onEdit.toString().replace(/\s/g,'').length>20;
+}
+
+function buildAnglePanel(){
+  if(currentShapeName==='pentagon_solid'||currentShapeName==='hexagon_solid'||currentShapeName==='heptagon_solid'||currentShapeName==='octagon_solid'||currentShapeName==='nonagon_solid'||currentShapeName==='decagon_solid'||currentShapeName==='hendecagon_solid'||currentShapeName==='dodecagon_solid'||currentShapeName==='triangle_solid'||currentShapeName==='quadrangle_solid') return;
+  const def=SHAPES[currentShapeName];
+  const cont=document.getElementById('angle-rows-3d');cont.innerHTML='';
+  if(!def.angles) return;
+  const list=def.angles(currentDims);
+  list.forEach((a,idx)=>{
+    const editable=isReallyEditable(a.onEdit);
+    const row=document.createElement('div');row.className='angle-row-3d';
+    const lbl=document.createElement('span');lbl.className='angle-label-3d';
+    lbl.textContent=a.label;lbl.title=a.desc||'';
+    const inp=document.createElement('input');
+    inp.type='number';inp.step='0.01';inp.min='0';inp.max='360';
+    inp.className='angle-input-3d';inp.id='agl-'+idx;
+    inp.value=(+a.val).toFixed(1);
+    if(!editable){
+      inp.readOnly=true;
+      inp.style.cssText='background:#f1f3f4;color:var(--muted);';
+      inp.title=(a.desc||'')+' — fixed for this shape';
+    } else {
+      inp.addEventListener('change',()=>{
+        const v=parseFloat(inp.value);
+        if(isNaN(v)||v<=0||v>=360) return;
+        a.onEdit(v,currentDims);
+        SHAPES[currentShapeName].dims.forEach(dd=>{
+          if(currentDims[dd.id]!==undefined)
+            currentDims[dd.id]=Math.max(dd.min,Math.min(dd.max,currentDims[dd.id]));
+        });
+        SHAPES[currentShapeName].dims.forEach(dd=>{
+          const el=document.getElementById('dim-'+dd.id);
+          if(el) el.value=(currentDims[dd.id]||dd.def).toFixed(2);
+        });
+        rebuildMesh();updatePanel();
+      });
+    }
+    const deg=document.createElement('span');deg.className='angle-deg-3d';deg.textContent='°';
+    const tag=document.createElement('span');
+    tag.style.cssText='font-size:9px;flex-shrink:0;padding:1px 6px;border-radius:8px;margin-left:2px;';
+    if(editable){tag.textContent='editable';tag.style.background='var(--purple-light)';tag.style.color='var(--purple)';}
+    else{tag.textContent='fixed';tag.style.background='#f1f3f4';tag.style.color='var(--muted)';}
+    row.append(lbl,inp,deg,tag);
+    cont.appendChild(row);
+  });
+}
+
+function updateAnglePanel(){
+  if(currentShapeName==='pentagon_solid'||currentShapeName==='hexagon_solid'||currentShapeName==='heptagon_solid'||currentShapeName==='octagon_solid'||currentShapeName==='nonagon_solid'||currentShapeName==='decagon_solid'||currentShapeName==='hendecagon_solid'||currentShapeName==='dodecagon_solid'||currentShapeName==='triangle_solid'||currentShapeName==='quadrangle_solid') return;
+  const def=SHAPES[currentShapeName];
+  if(!def.angles) return;
+  const list=def.angles(currentDims);
+  list.forEach((a,idx)=>{
+    const el=document.getElementById('agl-'+idx);
+    if(el&&!el.matches(':focus')) el.value=(+a.val).toFixed(1);
+  });
+}
+
+// ─── MAIN PANEL UPDATE ────────────────────────────────────────────────────────
+function fmt(n){
+  if(n===null||n===undefined) return '—';
+  if(n>=1000) return n.toFixed(0);
+  if(n>=100) return n.toFixed(1);
+  return n.toFixed(2);
+}
+function updatePanel(){
+  const def=SHAPES[currentShapeName];const d=currentDims;
+  // solid_of_revolution needs _dims set before type getter reads it
+  if(currentShapeName==='solid_of_revolution'||currentShapeName==='parallelepiped') def._dims=d;
+  const noArg=currentShapeName==='pentagon_solid'||currentShapeName==='hexagon_solid'||currentShapeName==='heptagon_solid'||currentShapeName==='octagon_solid'||currentShapeName==='nonagon_solid'||currentShapeName==='decagon_solid'||currentShapeName==='hendecagon_solid'||currentShapeName==='dodecagon_solid'||currentShapeName==='triangle_solid'||currentShapeName==='quadrangle_solid';
+  document.getElementById('val-volume').textContent=fmt(noArg?def.volume():def.volume(d))+' u³';
+  document.getElementById('val-sa').textContent=fmt(noArg?def.sa():def.sa(d))+' u²';
+  document.getElementById('val-lsa').textContent=fmt(noArg?def.lsa():def.lsa(d))+' u²';
+  document.getElementById('val-type').textContent=def.type;
+  const V=def.V,E=def.E,F=def.F;
+  const euler=document.getElementById('euler-formula');
+  if(V!==null){
+    document.getElementById('val-v').textContent=V;
+    document.getElementById('val-e').textContent=E;
+    document.getElementById('val-f').textContent=F;
+    const res=V-E+F;
+    document.getElementById('val-euler').textContent=res+(res===2?' ✓':'');
+    euler.textContent=`${V} − ${E} + ${F} = ${res}${res===2?' ✓':''}`;
+    euler.style.background=res===2?'var(--green-light)':'var(--red-light)';
+    euler.style.color=res===2?'var(--green)':'var(--red)';
+    euler.style.borderColor=res===2?'#b7dfbf':'#f5c6c3';
+  }else{
+    ['val-v','val-e','val-f','val-euler'].forEach(id=>{document.getElementById(id).textContent='—';});
+    euler.textContent="Euler's formula applies to polyhedra only";
+    euler.style.background='var(--blue-light)';euler.style.color='var(--blue)';euler.style.borderColor='#c5d8fb';
+  }
+  updateAnglePanel();
+}
+
+// ─── ANIMATION LOOP ───────────────────────────────────────────────────────────
+function animate(){requestAnimationFrame(animate);updateCamera();renderer.render(scene,camera);}
+
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
+  resize();
+  resetView();
+  loadShape('solid_of_revolution',document.querySelector('#toolbar .ctrl-btn'));
+  window.addEventListener('resize',resize);
+  animate();
+
+} // end initApp
+</script>
+<footer class="rf-footer">
+  <span class="rf-footer-label">DISCLAIMER</span>
+  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. — Leon Dudhill
+</footer>
+</body>
+</html>
