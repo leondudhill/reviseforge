@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SubtractionForge — Leon Dudhill</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #eef2ff;
+    --surface2: #dbeafe;
+    --border: #b3c6f5;
+    --text: #0d1835;
+    --text-muted: #3d5585;
+    --accent: #1d4ed8;
+    --accent2: #f5a623;
+    --correct: #2a9d5c;
+    --wrong: #c0392b;
+    --acc-yellow: #f5c518;
+    --acc-orange: #f5821e;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===================== HEADER ===================== */
+  header {
+    padding: 14px 24px;
+    border-bottom: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 2px;
+    color: var(--text);
+    line-height: 1;
+  }
+  .logo span { color: var(--accent); }
+  .byline { font-size: 11px; color: var(--text-muted); letter-spacing: 0.5px; font-weight: 500; }
+  .byline strong { color: var(--accent); font-weight: 700; }
+
+  /* ===================== SCORE BAR (tablet + mobile) ===================== */
+  .score-bar {
+    display: none;
+    background: var(--surface);
+    border-bottom: 1.5px solid var(--border);
+    padding: 10px 20px;
+    gap: 16px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .score-bar-item { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .score-bar-label { font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); }
+  .score-bar-value { font-family: 'Bebas Neue', sans-serif; font-size: 22px; line-height: 1; color: var(--text); }
+  .score-bar-pct-wrap { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .score-bar-pct-track { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .score-bar-pct-fill { height: 100%; background: var(--correct); border-radius: 3px; transition: width 0.5s ease; width: 0%; }
+  .score-bar-pct-label { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: var(--text-muted); }
+
+  /* ===================== DESKTOP LAYOUT ===================== */
+  .layout {
+    display: grid;
+    grid-template-columns: 210px 1fr 210px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* ===================== SIDEBARS ===================== */
+  .sidebar { border-right: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; }
+  .sidebar-right { border-right: none; border-left: 1.5px solid var(--border); }
+  .sidebar-title { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 14px; }
+
+  /* ===================== LEVEL TOGGLES ===================== */
+  .level-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+
+  .lv-toggle { position: relative; cursor: pointer; }
+  .lv-toggle input { display: none; }
+  .lv-toggle .pill {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 44px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: var(--surface); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    transition: all 0.15s ease; user-select: none; padding: 0 14px;
+  }
+  .lv-toggle .pill .lv-name { }
+  .lv-toggle .pill .lv-range {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    font-weight: 400; color: var(--text-muted); opacity: 0.7;
+  }
+  .lv-toggle input:checked + .pill { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .lv-toggle input:checked + .pill .lv-range { color: rgba(255,255,255,0.75); opacity: 1; }
+  .lv-toggle .mastered-badge {
+    position: absolute; top: -4px; right: -4px;
+    width: 10px; height: 10px; background: var(--accent2);
+    border-radius: 50%; border: 1.5px solid #fff; display: none;
+  }
+  .lv-toggle.has-mastered .mastered-badge { display: block; }
+
+  .toggle-all-btn {
+    margin-top: 12px; width: 100%; padding: 8px; background: none;
+    border: 1.5px solid var(--border); border-radius: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+    color: var(--text-muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px;
+  }
+  .toggle-all-btn:hover { border-color: var(--text); color: var(--text); }
+  .reset-btn {
+    margin-top: 8px; width: 100%; padding: 8px; background: none;
+    border: 1.5px solid #f2c4bb; border-radius: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+    color: var(--wrong); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px;
+  }
+  .reset-btn:hover { background: #fff0ed; }
+
+  /* ===================== LEVEL BADGE in sidebar ===================== */
+  .level-info {
+    margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
+  }
+  .level-info-title { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+  .level-desc { font-size: 11px; color: var(--text-muted); line-height: 1.6; }
+
+  /* ===================== MAIN ===================== */
+  .main {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 40px 20px; gap: 28px;
+  }
+  .question-card { text-align: center; }
+  .level-chip {
+    display: inline-block; font-family: 'DM Mono', monospace; font-size: 10px;
+    font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
+    background: var(--surface); border: 1.5px solid var(--border);
+    border-radius: 20px; padding: 3px 10px; color: var(--text-muted);
+    margin-bottom: 10px; transition: all 0.3s;
+  }
+  .level-chip.l1 { border-color: #f9a8a8; color: #c0392b; background: #fff5f5; }
+  .level-chip.l2 { border-color: #f5c518; color: #8a6d00; background: #fffbea; }
+  .level-chip.l3 { border-color: #6bc5a0; color: #1a6e4a; background: #f0faf5; }
+  .level-chip.l4 { border-color: #9b8de8; color: #4a3a8a; background: #f5f3ff; }
+  .question-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 9vw, 88px);
+    letter-spacing: 3px; line-height: 1; color: var(--text);
+  }
+  .question-sub { font-size: 13px; color: var(--text-muted); margin-top: 6px; font-weight: 500; letter-spacing: 0.5px; min-height: 20px; }
+
+  .timer-wrap { width: min(280px, 80vw); height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .timer-bar { height: 100%; width: 100%; background: var(--correct); border-radius: 2px; transition: width 0.1s linear, background 0.3s; }
+  .timer-bar.warning { background: var(--acc-yellow); }
+  .timer-bar.urgent  { background: var(--wrong); }
+
+  .streak-dots { display: flex; gap: 6px; justify-content: center; }
+  .streak-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); transition: all 0.2s ease; }
+  .streak-dot.filled { background: var(--correct); border-color: var(--correct); transform: scale(1.2); }
+
+  .input-row { display: flex; gap: 10px; align-items: center; }
+  .answer-input {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(16px, 5vw, 28px);
+    font-weight: 500; width: 140px; text-align: center;
+    border: 2px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; outline: none;
+    background: var(--surface); color: var(--text);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .answer-input:focus        { border-color: var(--text); background: #fff; }
+  .answer-input.correct-flash { border-color: var(--correct); background: #edfaf3; }
+  .answer-input.wrong-flash   { border-color: var(--wrong);   background: #fff0ed; }
+  .answer-input:disabled { opacity: 0.5; }
+
+  .submit-btn {
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+    padding: 12px 22px; border: none; border-radius: 10px;
+    background: var(--text); color: #fff; cursor: pointer;
+    transition: all 0.15s; letter-spacing: 0.3px;
+    min-height: 48px; min-width: 64px;
+  }
+  .submit-btn:hover  { background: var(--accent); }
+  .submit-btn:active { transform: scale(0.97); }
+
+  .feedback-msg { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; min-height: 26px; }
+  .feedback-msg.correct  { color: var(--correct); }
+  .feedback-msg.wrong    { color: var(--wrong); }
+  .feedback-msg.mastered { color: var(--accent2); }
+
+  /* ===================== RIGHT SIDEBAR STATS ===================== */
+  .stat-block { margin-bottom: 22px; }
+  .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 1px; line-height: 1; color: var(--text); }
+  .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .pct-bar-wrap { height: 5px; background: var(--surface2); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+  .pct-bar { height: 100%; background: var(--correct); border-radius: 3px; transition: width 0.5s ease; }
+  .divider { border: none; border-top: 1.5px solid var(--border); margin: 18px 0; }
+  .mastered-list { display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto; }
+  .mastered-item { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); padding: 3px 6px; background: var(--surface); border-radius: 4px; }
+
+  /* ===================== MOBILE DRAWER ===================== */
+  .mobile-drawer-toggle {
+    display: none;
+    width: 100%; padding: 12px 20px;
+    background: var(--surface); border: none;
+    border-top: 1.5px solid var(--border);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--text); cursor: pointer; text-align: left; letter-spacing: 0.3px;
+    align-items: center; justify-content: space-between; flex-shrink: 0;
+  }
+  .mobile-drawer-toggle .arrow { font-size: 10px; transition: transform 0.25s; color: var(--text-muted); }
+  .mobile-drawer-toggle.open .arrow { transform: rotate(180deg); }
+
+  .mobile-drawer { display: none; background: var(--surface); border-top: 1px solid var(--border); padding: 16px 20px 20px; flex-shrink: 0; }
+  .mobile-drawer.open { display: block; }
+  .mobile-drawer .level-grid { grid-template-columns: repeat(2, 1fr); }
+  .mobile-drawer-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .mobile-drawer-actions .toggle-all-btn,
+  .mobile-drawer-actions .reset-btn { margin: 0; flex: 1; }
+
+  /* ===================== TOAST ===================== */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--text); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px;
+    padding: 12px 24px; border-radius: 30px;
+    pointer-events: none;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+    opacity: 0; z-index: 999; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast.mastered-toast { background: var(--accent2); color: var(--text); }
+
+  /* ===================== FOOTER ===================== */
+  footer {
+    border-top: 1.5px solid var(--border); padding: 11px 24px;
+    font-size: 11.5px; color: var(--text-muted);
+    background: var(--surface); line-height: 1.5; flex-shrink: 0;
+  }
+  .footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; }
+
+  /* ===================== BREAKPOINTS ===================== */
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 200px 1fr; }
+    .sidebar-right { display: none; }
+    .score-bar { display: flex; }
+  }
+  @media (max-width: 580px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .sidebar-right { display: none; }
+    .score-bar { display: flex; }
+    .mobile-drawer-toggle { display: flex; }
+    .main { padding: 28px 16px; gap: 22px; }
+    header { padding: 12px 16px; }
+    .byline { display: none; }
+    footer { padding: 10px 16px; font-size: 10.5px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Subtraction<span>Forge</span></div>
+  <div class="byline">A tool by <strong>Leon Dudhill</strong></div>
+</header>
+
+<!-- Score bar visible on tablet + mobile -->
+<div class="score-bar" id="scoreBar">
+  <div class="score-bar-item">
+    <span class="score-bar-label">Correct</span>
+    <span class="score-bar-value" id="sbCorrect">0</span>
+  </div>
+  <div class="score-bar-item">
+    <span class="score-bar-label">Total</span>
+    <span class="score-bar-value" id="sbTotal">0</span>
+  </div>
+  <div class="score-bar-pct-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span class="score-bar-label">Accuracy</span>
+      <span class="score-bar-pct-label" id="sbPct">—</span>
+    </div>
+    <div class="score-bar-pct-track"><div class="score-bar-pct-fill" id="sbPctBar"></div></div>
+  </div>
+  <div class="score-bar-item">
+    <span class="score-bar-label">Mastered</span>
+    <span class="score-bar-value" id="sbMastered">0</span>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="sidebar">
+    <div class="level-grid" id="levelListDesktop" style="margin-top:4px;"></div>
+    <button class="toggle-all-btn" id="toggleAllBtnDesktop">Toggle All</button>
+    <button class="reset-btn" id="resetBtnDesktop">Reset Progress</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="question-card">
+      <div class="question-text" id="questionText">—</div>
+      <div class="question-sub" id="questionSub"></div>
+    </div>
+    <div class="timer-wrap"><div class="timer-bar" id="timerBar"></div></div>
+    <div class="streak-dots" id="streakDots"></div>
+    <div class="input-row">
+      <input type="number" class="answer-input" id="answerInput"
+             placeholder="?" autocomplete="off" inputmode="numeric">
+      <button class="submit-btn" id="submitBtn">Go</button>
+    </div>
+    <div class="feedback-msg" id="feedbackMsg"></div>
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="sidebar sidebar-right">
+    <div class="sidebar-title">Score</div>
+    <div class="stat-block">
+      <div class="stat-label">Correct / Total</div>
+      <div class="stat-value">
+        <span id="statCorrect">0</span>
+        <span style="font-size:20px;color:var(--border)">/</span>
+        <span id="statTotal">0</span>
+      </div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">Accuracy</div>
+      <div class="stat-value"><span id="statPct">—</span></div>
+      <div class="pct-bar-wrap"><div class="pct-bar" id="pctBar" style="width:0%"></div></div>
+      <div class="stat-sub" id="statStreak"></div>
+    </div>
+    <hr class="divider">
+    <div class="stat-block">
+      <div class="stat-label">Mastered (<span id="masteredCount">0</span>)</div>
+      <div class="mastered-list" id="masteredList">
+        <div style="font-size:12px;color:var(--text-muted)">None yet</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MOBILE DRAWER TOGGLE -->
+<button class="mobile-drawer-toggle" id="drawerToggle">
+  <span>⚙ Difficulty Levels &amp; Options</span>
+  <span class="arrow">▼</span>
+</button>
+<div class="mobile-drawer" id="mobileDrawer">
+  <div class="level-grid" id="levelListMobile" style="grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;"></div>
+  <div class="mobile-drawer-actions">
+    <button class="toggle-all-btn" id="toggleAllBtnMobile">Toggle All</button>
+    <button class="reset-btn" id="resetBtnMobile">Reset Progress</button>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-label">DISCLAIMER</span>
+  This tool was built for personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. — Leon Dudhill
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// LEVEL DEFINITIONS
+// Each level: id, label, tag, min/max for both operands
+// Questions are always: larger − smaller (result always ≥ 0)
+// ============================================================
+const LEVELS = [
+  { id: 'l1', label: '1 Digit',  tag: '1–9',       min: 1,    max: 9    },
+  { id: 'l2', label: '2 Digit',  tag: '10–99',      min: 10,   max: 99   },
+  { id: 'l3', label: '3 Digit',  tag: '100–999',    min: 100,  max: 999  },
+  { id: 'l4', label: '4 Digit',  tag: '1000–9999',  min: 1000, max: 9999 },
+];
+
+// Time limits scale with level difficulty (ms)
+const TIME_LIMITS = { l1: 5000, l2: 8000, l3: 12000, l4: 16000 };
+
+// ============================================================
+// STATE & STORAGE
+// ============================================================
+const STORAGE_KEY = 'subtractionforge_v1';
+
+function loadState() {
+  try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch(e) {}
+  return null;
+}
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    enabledLevels, mastered: [...mastered], stats, streaks
+  }));
+}
+
+const saved = loadState();
+let enabledLevels = saved?.enabledLevels || { l1: true, l2: true, l3: false, l4: false };
+let mastered  = new Set(Array.isArray(saved?.mastered) ? saved.mastered : []);
+let stats     = (saved?.stats && typeof saved.stats === 'object') ? saved.stats : { correct: 0, total: 0, sessionStreak: 0 };
+let streaks   = (saved?.streaks && typeof saved.streaks === 'object' && !Array.isArray(saved.streaks)) ? saved.streaks : {};
+
+// Ensure all level keys exist
+LEVELS.forEach(l => { if (enabledLevels[l.id] === undefined) enabledLevels[l.id] = false; });
+
+// ============================================================
+// RANDOM HELPERS
+// ============================================================
+function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+// ============================================================
+// POOL — pick a random enabled level, generate a question
+// ============================================================
+function pickLevel() {
+  const active = LEVELS.filter(l => enabledLevels[l.id] && !mastered.has(l.id));
+  if (active.length === 0) {
+    // If all enabled levels are mastered, allow repeats
+    const any = LEVELS.filter(l => enabledLevels[l.id]);
+    return any.length ? any[Math.floor(Math.random() * any.length)] : null;
+  }
+  return active[Math.floor(Math.random() * active.length)];
+}
+
+function generateQuestion(level) {
+  let a = randInt(level.min, level.max);
+  let b = randInt(level.min, level.max);
+  // Ensure a >= b so answer is always non-negative
+  if (b > a) [a, b] = [b, a];
+  // Avoid trivial a - a = 0 questions
+  while (a === b) {
+    a = randInt(level.min, level.max);
+    b = randInt(level.min, level.max);
+    if (b > a) [a, b] = [b, a];
+  }
+  return { a, b, answer: a - b, levelId: level.id };
+}
+
+// ============================================================
+// DOM
+// ============================================================
+const questionText  = document.getElementById('questionText');
+const questionSub   = document.getElementById('questionSub');
+const levelChip     = document.getElementById('levelChip');
+const answerInput   = document.getElementById('answerInput');
+const submitBtn     = document.getElementById('submitBtn');
+const feedbackMsg   = document.getElementById('feedbackMsg');
+const timerBar      = document.getElementById('timerBar');
+const streakDotsEl  = document.getElementById('streakDots');
+const statCorrect   = document.getElementById('statCorrect');
+const statTotal     = document.getElementById('statTotal');
+const statPct       = document.getElementById('statPct');
+const pctBar        = document.getElementById('pctBar');
+const statStreak    = document.getElementById('statStreak');
+const masteredList  = document.getElementById('masteredList');
+const masteredCount = document.getElementById('masteredCount');
+const sbCorrect     = document.getElementById('sbCorrect');
+const sbTotal       = document.getElementById('sbTotal');
+const sbPct         = document.getElementById('sbPct');
+const sbPctBar      = document.getElementById('sbPctBar');
+const sbMastered    = document.getElementById('sbMastered');
+const levelListDesktop = document.getElementById('levelListDesktop');
+const levelListMobile  = document.getElementById('levelListMobile');
+const toast         = document.getElementById('toast');
+const drawerToggle  = document.getElementById('drawerToggle');
+const mobileDrawer  = document.getElementById('mobileDrawer');
+
+// ============================================================
+// RENDER TOGGLES
+// ============================================================
+function renderLevelList(container) {
+  container.innerHTML = '';
+  LEVELS.forEach(level => {
+    const isMastered = mastered.has(level.id);
+    const wrapper = document.createElement('label');
+    wrapper.className = 'lv-toggle' + (isMastered ? ' has-mastered' : '');
+
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.checked = enabledLevels[level.id];
+    input.addEventListener('change', () => {
+      enabledLevels[level.id] = input.checked;
+      syncToggle(level.id, input.checked);
+      saveState();
+      nextQuestion();
+    });
+
+    const pill = document.createElement('div');
+    pill.className = 'pill';
+    pill.innerHTML = `<span class="lv-name">${level.label}</span><span class="lv-range">${level.tag}</span>`;
+
+    const badge = document.createElement('div');
+    badge.className = 'mastered-badge';
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(pill);
+    wrapper.appendChild(badge);
+    container.appendChild(wrapper);
+  });
+}
+
+function renderToggles() {
+  renderLevelList(levelListDesktop);
+  renderLevelList(levelListMobile);
+}
+
+function syncToggle(levelId, checked) {
+  [levelListDesktop, levelListMobile].forEach(container => {
+    const inputs = container.querySelectorAll('input[type=checkbox]');
+    const idx = LEVELS.findIndex(l => l.id === levelId);
+    if (inputs[idx]) inputs[idx].checked = checked;
+  });
+}
+
+// ============================================================
+// STREAK DOTS
+// ============================================================
+function renderStreakDots(count) {
+  streakDotsEl.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'streak-dot' + (i < count ? ' filled' : '');
+    streakDotsEl.appendChild(dot);
+  }
+}
+
+// ============================================================
+// TIMER — time limit varies by level
+// ============================================================
+let currentQ = null, timerInterval = null, timerStart = null, currentTimeLimit = 8000;
+
+function startTimer(timeLimit) {
+  currentTimeLimit = timeLimit;
+  clearInterval(timerInterval);
+  timerStart = Date.now();
+  timerBar.style.transition = 'none';
+  timerBar.style.width = '100%';
+  timerBar.className = 'timer-bar';
+  timerInterval = setInterval(() => {
+    const pct = Math.max(0, 100 - ((Date.now() - timerStart) / currentTimeLimit) * 100);
+    timerBar.style.transition = 'width 0.1s linear';
+    timerBar.style.width = pct + '%';
+    if (pct < 33)      timerBar.className = 'timer-bar urgent';
+    else if (pct < 66) timerBar.className = 'timer-bar warning';
+    else               timerBar.className = 'timer-bar';
+  }, 100);
+}
+function stopTimer() { clearInterval(timerInterval); }
+function getElapsed() { return Date.now() - (timerStart || Date.now()); }
+
+// ============================================================
+// NEXT QUESTION
+// ============================================================
+function nextQuestion() {
+  stopTimer();
+  feedbackMsg.textContent = '';
+  feedbackMsg.className = 'feedback-msg';
+  answerInput.value = '';
+  answerInput.className = 'answer-input';
+  answerInput.disabled = false;
+
+  const anyEnabled = LEVELS.some(l => enabledLevels[l.id]);
+  if (!anyEnabled) {
+    questionText.textContent = '—';
+    questionSub.textContent = 'Enable a difficulty level.';
+    answerInput.disabled = true;
+    currentQ = null;
+    timerBar.style.width = '0%';
+    renderStreakDots(0);
+    return;
+  }
+
+  const level = pickLevel();
+  if (!level) {
+    questionText.textContent = '🎉';
+    questionSub.textContent = 'All enabled levels mastered!';
+    answerInput.disabled = true;
+    currentQ = null;
+    timerBar.style.width = '0%';
+    renderStreakDots(0);
+    return;
+  }
+
+  const q = generateQuestion(level);
+  currentQ = q;
+
+  questionText.innerHTML = `${q.a} <span style="color:var(--accent)">−</span> ${q.b}`;
+  const streak = streaks[level.id] || 0;
+  renderStreakDots(streak);
+  questionSub.textContent = streak > 0 ? `${streak}/6 mastery streak` : '';
+  startTimer(TIME_LIMITS[level.id]);
+  if (!('ontouchstart' in window)) answerInput.focus();
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+function submitAnswer() {
+  if (!currentQ || answerInput.disabled) return;
+  const val = parseInt(answerInput.value, 10);
+  if (isNaN(val)) { answerInput.focus(); return; }
+
+  const correct = currentQ.answer;
+  const elapsed = getElapsed();
+  stopTimer();
+  stats.total++;
+
+  if (val === correct) {
+    stats.correct++;
+    stats.sessionStreak = (stats.sessionStreak || 0) + 1;
+    answerInput.className = 'answer-input correct-flash';
+    const withinTime = elapsed <= currentTimeLimit;
+    streaks[currentQ.levelId] = withinTime ? (streaks[currentQ.levelId] || 0) + 1 : 0;
+    const streak = streaks[currentQ.levelId];
+    renderStreakDots(streak);
+
+    if (streak >= 6) {
+      mastered.add(currentQ.levelId);
+      streaks[currentQ.levelId] = 0;
+      feedbackMsg.textContent = '★ MASTERED!';
+      feedbackMsg.className = 'feedback-msg mastered';
+      const lvl = LEVELS.find(l => l.id === currentQ.levelId);
+      showToast(`${lvl ? lvl.label : 'Level'} mastered! 🔥`, true);
+      renderToggles();
+      renderMastered();
+    } else {
+      const msgs = ['Correct!', 'Nice!', 'Spot on!', 'Yes!', '✓ Right!'];
+      feedbackMsg.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+      feedbackMsg.className = 'feedback-msg correct';
+    }
+  } else {
+    stats.sessionStreak = 0;
+    streaks[currentQ.levelId] = 0;
+    renderStreakDots(0);
+    answerInput.className = 'answer-input wrong-flash';
+    feedbackMsg.textContent = `✗  Answer was ${correct}`;
+    feedbackMsg.className = 'feedback-msg wrong';
+  }
+
+  updateStats();
+  saveState();
+  answerInput.disabled = true;
+  setTimeout(() => nextQuestion(), 900);
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function updateStats() {
+  const c = stats.correct, t = stats.total;
+  const pct = t > 0 ? Math.round((c / t) * 100) : null;
+  const pctStr = pct !== null ? pct + '%' : '—';
+  const pctW   = pct !== null ? pct + '%' : '0%';
+  statCorrect.textContent = c; statTotal.textContent = t;
+  statPct.textContent = pctStr; pctBar.style.width = pctW;
+  sbCorrect.textContent = c; sbTotal.textContent = t;
+  sbPct.textContent = pctStr; sbPctBar.style.width = pctW;
+  sbMastered.textContent = mastered.size;
+  const ss = stats.sessionStreak || 0;
+  statStreak.textContent = ss >= 3 ? `🔥 ${ss} in a row` : '';
+  // Accuracy bar colour
+  let accColor;
+  if (pct === null)   accColor = 'var(--correct)';
+  else if (pct <= 25) accColor = 'var(--wrong)';
+  else if (pct <= 50) accColor = 'var(--acc-orange)';
+  else if (pct <= 70) accColor = 'var(--acc-yellow)';
+  else                accColor = 'var(--correct)';
+  pctBar.style.background = accColor;
+  sbPctBar.style.background = accColor;
+}
+
+function renderMastered() {
+  masteredCount.textContent = mastered.size;
+  sbMastered.textContent = mastered.size;
+  if (mastered.size === 0) {
+    masteredList.innerHTML = '<div style="font-size:12px;color:var(--text-muted)">None yet</div>';
+    return;
+  }
+  masteredList.innerHTML = [...mastered].map(id => {
+    const lvl = LEVELS.find(l => l.id === id);
+    return lvl ? `<div class="mastered-item">★ ${lvl.label}</div>` : '';
+  }).join('');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTimeout;
+function showToast(msg, isMastered = false) {
+  toast.textContent = msg;
+  toast.className = 'toast' + (isMastered ? ' mastered-toast' : '') + ' show';
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => { toast.className = 'toast' + (isMastered ? ' mastered-toast' : ''); }, 2500);
+}
+
+// ============================================================
+// TOGGLE ALL / RESET
+// ============================================================
+let allOn = true;
+function toggleAll() {
+  allOn = !allOn;
+  LEVELS.forEach(l => enabledLevels[l.id] = allOn);
+  saveState(); renderToggles(); nextQuestion();
+}
+function doReset() {
+  if (!confirm('Reset all mastery progress and stats? This cannot be undone.')) return;
+  mastered = new Set(); streaks = {};
+  stats = { correct: 0, total: 0, sessionStreak: 0 };
+  allOn = true;
+  LEVELS.forEach(l => enabledLevels[l.id] = l.id === 'l1' || l.id === 'l2');
+  saveState(); renderToggles(); renderMastered(); updateStats(); nextQuestion();
+  showToast('Progress reset.');
+}
+
+document.getElementById('toggleAllBtnDesktop').addEventListener('click', toggleAll);
+document.getElementById('toggleAllBtnMobile').addEventListener('click', toggleAll);
+document.getElementById('resetBtnDesktop').addEventListener('click', doReset);
+document.getElementById('resetBtnMobile').addEventListener('click', doReset);
+
+// ============================================================
+// DRAWER
+// ============================================================
+drawerToggle.addEventListener('click', () => {
+  const open = mobileDrawer.classList.toggle('open');
+  drawerToggle.classList.toggle('open', open);
+});
+
+// ============================================================
+// INPUT
+// ============================================================
+submitBtn.addEventListener('click', submitAnswer);
+answerInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitAnswer(); });
+
+// ============================================================
+// INIT
+// ============================================================
+renderToggles();
+renderMastered();
+updateStats();
+nextQuestion();
+</script>
+</body>
+</html>

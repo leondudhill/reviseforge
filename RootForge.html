@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RootForge — Leon Dudhill</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #ecfeff;
+    --surface2: #cffafe;
+    --border: #a5f3fc;
+    --text: #0c2e38;
+    --text-muted: #3a7080;
+    --accent: #0891b2;
+    --accent2: #f5a623;
+    --correct: #2a9d5c;
+    --wrong: #e84c1e;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===================== HEADER ===================== */
+  header {
+    padding: 14px 24px;
+    border-bottom: 1.5px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    letter-spacing: 2px;
+    color: var(--text);
+    line-height: 1;
+  }
+  .logo span { color: var(--accent); }
+  .byline { font-size: 11px; color: var(--text-muted); letter-spacing: 0.5px; font-weight: 500; }
+  .byline strong { font-weight: 700; color: var(--accent); }
+
+  /* ===================== SCORE BAR ===================== */
+  .score-bar {
+    display: none;
+    background: var(--surface);
+    border-bottom: 1.5px solid var(--border);
+    padding: 10px 20px;
+    gap: 16px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .score-bar-item { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+  .score-bar-label { font-size: 9px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--text-muted); }
+  .score-bar-value { font-family: 'Bebas Neue', sans-serif; font-size: 22px; line-height: 1; color: var(--text); }
+  .score-bar-pct-wrap { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .score-bar-pct-track { height: 5px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .score-bar-pct-fill { height: 100%; background: var(--correct); border-radius: 3px; transition: width 0.5s ease; width: 0%; }
+  .score-bar-pct-label { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: var(--text-muted); }
+
+  /* ===================== LAYOUT ===================== */
+  .layout {
+    display: grid;
+    grid-template-columns: 210px 1fr 210px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  /* ===================== SIDEBARS ===================== */
+  .sidebar { border-right: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; }
+  .sidebar-right { border-right: none; border-left: 1.5px solid var(--border); }
+  .sidebar-title { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 14px; }
+
+  /* ===================== RANGE TOGGLES ===================== */
+  .range-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+
+  .rng-toggle { position: relative; cursor: pointer; }
+  .rng-toggle input { display: none; }
+  .rng-toggle .pill {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 44px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: var(--surface); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    transition: all 0.15s ease; user-select: none;
+    padding: 0 14px;
+  }
+  .rng-toggle .pill .rng-name { }
+  .rng-toggle .pill .rng-range {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 400;
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+  .rng-toggle input:checked + .pill {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .rng-toggle input:checked + .pill .rng-range { color: rgba(255,255,255,0.75); opacity: 1; }
+
+  .rng-toggle .mastered-badge {
+    position: absolute; top: -4px; right: -4px;
+    width: 10px; height: 10px; background: var(--accent2);
+    border-radius: 50%; border: 1.5px solid #fff; display: none;
+  }
+  .rng-toggle.has-mastered .mastered-badge { display: block; }
+
+  .toggle-all-btn {
+    margin-top: 12px; width: 100%; padding: 8px; background: none;
+    border: 1.5px solid var(--border); border-radius: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+    color: var(--text-muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px;
+  }
+  .toggle-all-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .reset-btn {
+    margin-top: 8px; width: 100%; padding: 8px; background: none;
+    border: 1.5px solid #f2c4bb; border-radius: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+    color: var(--wrong); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px;
+  }
+  .reset-btn:hover { background: #fff0ed; }
+
+  /* ===================== MAIN ===================== */
+  .main {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 40px 20px; gap: 28px;
+  }
+  .question-card { text-align: center; }
+
+  /* Square notation: big number with superscript 2 */
+  .question-text {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 12vw, 110px);
+    letter-spacing: 3px; line-height: 1; color: var(--text);
+    display: flex; align-items: flex-start; justify-content: center; gap: 2px;
+  }
+  .question-text .base { }
+  .question-text .root-symbol {
+    font-size: 0.7em;
+    color: var(--accent);
+    margin-right: 4px;
+    align-self: center;
+  }
+  .question-text .placeholder { font-size: clamp(72px, 12vw, 110px); }
+
+  .question-sub { font-size: 13px; color: var(--text-muted); margin-top: 6px; font-weight: 500; letter-spacing: 0.5px; min-height: 20px; text-align: center; }
+
+  .timer-wrap { width: min(280px, 80vw); height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
+  .timer-bar { height: 100%; width: 100%; background: var(--correct); border-radius: 2px; transition: width 0.1s linear, background 0.3s; }
+  .timer-bar.warning        { background: #f5c518; }
+  .timer-bar.warning-orange { background: #f07d20; }
+  .timer-bar.urgent         { background: var(--wrong); }
+
+  .streak-dots { display: flex; gap: 6px; justify-content: center; }
+  .streak-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); transition: all 0.2s ease; }
+  .streak-dot.filled { background: var(--correct); border-color: var(--correct); transform: scale(1.2); }
+
+  .input-row { display: flex; gap: 10px; align-items: center; }
+  .answer-input {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(16px, 5vw, 28px);
+    font-weight: 500; width: 140px; text-align: center;
+    border: 2px solid var(--border); border-radius: 10px;
+    padding: 10px 12px; outline: none;
+    background: var(--surface); color: var(--text);
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .answer-input:focus         { border-color: var(--accent); background: #fff; }
+  .answer-input.correct-flash { border-color: var(--correct); background: #edfaf3; }
+  .answer-input.wrong-flash   { border-color: var(--wrong);   background: #fff0ed; }
+  .answer-input:disabled { opacity: 0.5; }
+
+  .submit-btn {
+    font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
+    padding: 12px 22px; border: none; border-radius: 10px;
+    background: var(--accent); color: #fff; cursor: pointer;
+    transition: all 0.15s; letter-spacing: 0.3px;
+    min-height: 48px; min-width: 64px;
+  }
+  .submit-btn:hover  { filter: brightness(1.15); }
+  .submit-btn:active { transform: scale(0.97); }
+
+  .feedback-msg { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; min-height: 26px; }
+  .feedback-msg.correct  { color: var(--correct); }
+  .feedback-msg.wrong    { color: var(--wrong); }
+  .feedback-msg.mastered { color: var(--accent2); }
+
+  /* ===================== RIGHT SIDEBAR ===================== */
+  .stat-block { margin-bottom: 22px; }
+  .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
+  .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 1px; line-height: 1; color: var(--text); }
+  .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .pct-bar-wrap { height: 5px; background: var(--surface2); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+  .pct-bar { height: 100%; background: var(--correct); border-radius: 3px; transition: width 0.5s ease; }
+  .divider { border: none; border-top: 1.5px solid var(--border); margin: 18px 0; }
+  .mastered-list { display: flex; flex-direction: column; gap: 4px; max-height: 260px; overflow-y: auto; }
+  .mastered-item { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); padding: 3px 6px; background: var(--surface); border-radius: 4px; }
+
+  /* ===================== MOBILE DRAWER ===================== */
+  .mobile-drawer-toggle {
+    display: none;
+    width: 100%; padding: 12px 20px;
+    background: var(--surface); border: none;
+    border-top: 1.5px solid var(--border);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--text); cursor: pointer; text-align: left; letter-spacing: 0.3px;
+    align-items: center; justify-content: space-between; flex-shrink: 0;
+  }
+  .mobile-drawer-toggle .arrow { font-size: 10px; transition: transform 0.25s; color: var(--text-muted); }
+  .mobile-drawer-toggle.open .arrow { transform: rotate(180deg); }
+  .mobile-drawer { display: none; background: var(--surface); border-top: 1px solid var(--border); padding: 16px 20px 20px; flex-shrink: 0; }
+  .mobile-drawer.open { display: block; }
+  .mobile-drawer .range-grid { grid-template-columns: repeat(2, 1fr); }
+  .mobile-drawer-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .mobile-drawer-actions .toggle-all-btn,
+  .mobile-drawer-actions .reset-btn { margin: 0; flex: 1; }
+
+  /* ===================== TOAST ===================== */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--text); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px;
+    padding: 12px 24px; border-radius: 30px; pointer-events: none;
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
+    opacity: 0; z-index: 999; white-space: nowrap;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast.mastered-toast { background: var(--accent2); color: var(--text); }
+
+  /* ===================== FOOTER ===================== */
+  footer {
+    border-top: 1.5px solid var(--border); padding: 11px 24px;
+    font-size: 11.5px; color: var(--text-muted);
+    background: var(--surface); line-height: 1.5; flex-shrink: 0;
+  }
+  .footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; }
+
+  /* ===================== BREAKPOINTS ===================== */
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 200px 1fr; }
+    .sidebar-right { display: none; }
+    .score-bar { display: flex; }
+  }
+  @media (max-width: 580px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .sidebar-right { display: none; }
+    .score-bar { display: flex; }
+    .mobile-drawer-toggle { display: flex; }
+    .main { padding: 28px 16px; gap: 22px; }
+    header { padding: 12px 16px; }
+    .byline { display: none; }
+    footer { padding: 10px 16px; font-size: 10.5px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Root<span>Forge</span></div>
+  <div class="byline">A tool by <strong>Leon Dudhill</strong></div>
+</header>
+
+<!-- Score bar: tablet + mobile -->
+<div class="score-bar">
+  <div class="score-bar-item">
+    <span class="score-bar-label">Correct</span>
+    <span class="score-bar-value" id="sbCorrect">0</span>
+  </div>
+  <div class="score-bar-item">
+    <span class="score-bar-label">Total</span>
+    <span class="score-bar-value" id="sbTotal">0</span>
+  </div>
+  <div class="score-bar-pct-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span class="score-bar-label">Accuracy</span>
+      <span class="score-bar-pct-label" id="sbPct">—</span>
+    </div>
+    <div class="score-bar-pct-track"><div class="score-bar-pct-fill" id="sbPctBar"></div></div>
+  </div>
+  <div class="score-bar-item">
+    <span class="score-bar-label">Mastered</span>
+    <span class="score-bar-value" id="sbMastered">0</span>
+  </div>
+</div>
+
+<div class="layout">
+
+  <!-- LEFT SIDEBAR -->
+  <div class="sidebar">
+    <div class="range-grid" id="rangeGridDesktop"></div>
+    <button class="toggle-all-btn" id="toggleAllBtnDesktop">Toggle All</button>
+    <button class="reset-btn" id="resetBtnDesktop">Reset Progress</button>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="question-card">
+      <div class="question-text" id="questionText">
+        <span class="placeholder">—</span>
+      </div>
+      <div class="question-sub" id="questionSub"></div>
+    </div>
+    <div class="timer-wrap"><div class="timer-bar" id="timerBar"></div></div>
+    <div class="streak-dots" id="streakDots"></div>
+    <div class="input-row">
+      <input type="number" class="answer-input" id="answerInput"
+             placeholder="?" autocomplete="off" inputmode="numeric" min="0">
+      <button class="submit-btn" id="submitBtn">Go</button>
+    </div>
+    <div class="feedback-msg" id="feedbackMsg"></div>
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="sidebar sidebar-right">
+    <div class="sidebar-title">Score</div>
+    <div class="stat-block">
+      <div class="stat-label">Correct / Total</div>
+      <div class="stat-value">
+        <span id="statCorrect">0</span>
+        <span style="font-size:20px;color:var(--border)">/</span>
+        <span id="statTotal">0</span>
+      </div>
+    </div>
+    <div class="stat-block">
+      <div class="stat-label">Accuracy</div>
+      <div class="stat-value"><span id="statPct">—</span></div>
+      <div class="pct-bar-wrap"><div class="pct-bar" id="pctBar" style="width:0%"></div></div>
+      <div class="stat-sub" id="statStreak"></div>
+    </div>
+    <hr class="divider">
+    <div class="stat-block">
+      <div class="stat-label">Mastered (<span id="masteredCount">0</span>)</div>
+      <div class="mastered-list" id="masteredList">
+        <div style="font-size:12px;color:var(--text-muted)">None yet</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MOBILE DRAWER -->
+<button class="mobile-drawer-toggle" id="drawerToggle">
+  <span>⚙ Options</span>
+  <span class="arrow">▼</span>
+</button>
+<div class="mobile-drawer" id="mobileDrawer">
+  <div class="range-grid" id="rangeGridMobile" style="grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;"></div>
+  <div class="mobile-drawer-actions">
+    <button class="toggle-all-btn" id="toggleAllBtnMobile">Toggle All</button>
+    <button class="reset-btn" id="resetBtnMobile">Reset Progress</button>
+  </div>
+</div>
+
+<footer>
+  <span class="footer-label">DISCLAIMER</span>
+  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. — Leon Dudhill
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// SQUARE NUMBERS: 1² to 20²
+// Grouped into 4 ranges for toggles
+// ============================================================
+const RANGES = [
+  { id: 1, name: '1² – 5²',   min: 1,  max: 5  },
+  { id: 2, name: '6² – 10²',  min: 6,  max: 10 },
+  { id: 3, name: '11² – 15²', min: 11, max: 15 },
+  { id: 4, name: '16² – 20²', min: 16, max: 20 },
+];
+
+// Full list of square numbers as individual question objects
+const ALL_SQUARES = [];
+for (let n = 1; n <= 20; n++) {
+  ALL_SQUARES.push({ n, answer: n * n, key: `${n}²` });
+}
+
+function getRange(n) {
+  return RANGES.find(r => n >= r.min && n <= r.max);
+}
+
+// ============================================================
+// STATE & STORAGE
+// ============================================================
+const STORAGE_KEY = 'rootforge_v1';
+
+function loadState() {
+  try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch(e) {}
+  return null;
+}
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    enabledRanges, mastered: [...mastered], stats, streaks
+  }));
+}
+
+const saved = loadState();
+let enabledRanges = saved?.enabledRanges || { 1: true, 2: true, 3: false, 4: false };
+let mastered  = new Set(Array.isArray(saved?.mastered) ? saved.mastered : []);
+let stats     = (saved?.stats && typeof saved.stats === 'object') ? saved.stats : { correct: 0, total: 0, sessionStreak: 0 };
+let streaks   = (saved?.streaks && typeof saved.streaks === 'object' && !Array.isArray(saved.streaks)) ? saved.streaks : {};
+
+RANGES.forEach(r => { if (enabledRanges[r.id] === undefined) enabledRanges[r.id] = false; });
+
+// ============================================================
+// POOL
+// ============================================================
+function buildPool() {
+  return ALL_SQUARES.filter(q => {
+    const range = getRange(q.n);
+    return range && enabledRanges[range.id] && !mastered.has(q.key);
+  });
+}
+
+// ============================================================
+// DOM
+// ============================================================
+const questionText  = document.getElementById('questionText');
+const questionSub   = document.getElementById('questionSub');
+const answerInput   = document.getElementById('answerInput');
+const submitBtn     = document.getElementById('submitBtn');
+const feedbackMsg   = document.getElementById('feedbackMsg');
+const timerBar      = document.getElementById('timerBar');
+const streakDotsEl  = document.getElementById('streakDots');
+const statCorrect   = document.getElementById('statCorrect');
+const statTotal     = document.getElementById('statTotal');
+const statPct       = document.getElementById('statPct');
+const pctBar        = document.getElementById('pctBar');
+const statStreak    = document.getElementById('statStreak');
+const masteredList  = document.getElementById('masteredList');
+const masteredCount = document.getElementById('masteredCount');
+const sbCorrect     = document.getElementById('sbCorrect');
+const sbTotal       = document.getElementById('sbTotal');
+const sbPct         = document.getElementById('sbPct');
+const sbPctBar      = document.getElementById('sbPctBar');
+const sbMastered    = document.getElementById('sbMastered');
+const rangeGridDesktop = document.getElementById('rangeGridDesktop');
+const rangeGridMobile  = document.getElementById('rangeGridMobile');
+const toast         = document.getElementById('toast');
+const drawerToggle  = document.getElementById('drawerToggle');
+const mobileDrawer  = document.getElementById('mobileDrawer');
+
+// ============================================================
+// RENDER RANGE TOGGLES
+// ============================================================
+function renderRangeGrid(gridEl) {
+  gridEl.innerHTML = '';
+  RANGES.forEach(r => {
+    const hasMastered = ALL_SQUARES
+      .filter(q => q.n >= r.min && q.n <= r.max)
+      .some(q => mastered.has(q.key));
+
+    const wrapper = document.createElement('label');
+    wrapper.className = 'rng-toggle' + (hasMastered ? ' has-mastered' : '');
+
+    const input = document.createElement('input');
+    input.type = 'checkbox';
+    input.checked = enabledRanges[r.id];
+    input.addEventListener('change', () => {
+      enabledRanges[r.id] = input.checked;
+      syncRangeToggles(r.id, input.checked);
+      saveState();
+      nextQuestion();
+    });
+
+    const pill = document.createElement('div');
+    pill.className = 'pill';
+    pill.innerHTML = `<span class="rng-name">${r.name}</span>`;
+
+    const badge = document.createElement('div');
+    badge.className = 'mastered-badge';
+
+    wrapper.appendChild(input);
+    wrapper.appendChild(pill);
+    wrapper.appendChild(badge);
+    gridEl.appendChild(wrapper);
+  });
+}
+
+function renderToggles() {
+  renderRangeGrid(rangeGridDesktop);
+  renderRangeGrid(rangeGridMobile);
+}
+
+function syncRangeToggles(rangeId, checked) {
+  [rangeGridDesktop, rangeGridMobile].forEach(grid => {
+    const inputs = grid.querySelectorAll('input[type=checkbox]');
+    const idx = RANGES.findIndex(r => r.id === rangeId);
+    if (inputs[idx]) inputs[idx].checked = checked;
+  });
+}
+
+// ============================================================
+// STREAK DOTS
+// ============================================================
+function renderStreakDots(count) {
+  streakDotsEl.innerHTML = '';
+  for (let i = 0; i < 6; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'streak-dot' + (i < count ? ' filled' : '');
+    streakDotsEl.appendChild(dot);
+  }
+}
+
+// ============================================================
+// TIMER
+// ============================================================
+let currentQ = null, timerInterval = null, timerStart = null;
+const TIME_LIMIT = 6000;
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerStart = Date.now();
+  timerBar.style.transition = 'none';
+  timerBar.style.width = '100%';
+  timerBar.className = 'timer-bar';
+  timerInterval = setInterval(() => {
+    const pct = Math.max(0, 100 - ((Date.now() - timerStart) / TIME_LIMIT) * 100);
+    timerBar.style.transition = 'width 0.1s linear';
+    timerBar.style.width = pct + '%';
+    if (pct <= 16)      timerBar.className = 'timer-bar urgent';
+    else if (pct <= 33) timerBar.className = 'timer-bar warning-orange';
+    else if (pct <= 55) timerBar.className = 'timer-bar warning';
+    else                timerBar.className = 'timer-bar';
+  }, 100);
+}
+function stopTimer() { clearInterval(timerInterval); }
+function getElapsed() { return Date.now() - (timerStart || Date.now()); }
+
+// ============================================================
+// NEXT QUESTION
+// ============================================================
+function nextQuestion() {
+  stopTimer();
+  feedbackMsg.textContent = '';
+  feedbackMsg.className = 'feedback-msg';
+  answerInput.value = '';
+  answerInput.className = 'answer-input';
+  answerInput.disabled = false;
+
+  const pool = buildPool();
+
+  if (pool.length === 0) {
+    const anyEnabled = Object.values(enabledRanges).some(Boolean);
+    questionText.innerHTML = anyEnabled ? '<span class="placeholder">🎉</span>' : '<span class="placeholder">—</span>';
+    questionSub.textContent = anyEnabled ? 'All mastered! Enable more ranges.' : 'Enable a range to begin.';
+    answerInput.disabled = true;
+    currentQ = null;
+    timerBar.style.width = '0%';
+    renderStreakDots(0);
+    return;
+  }
+
+  // Avoid repeating same question if possible
+  let candidates = pool;
+  if (currentQ && pool.length > 1) {
+    candidates = pool.filter(q => q.key !== currentQ.key);
+  }
+  const q = candidates[Math.floor(Math.random() * candidates.length)];
+  currentQ = q;
+
+  // Render as n² with styled superscript
+  questionText.innerHTML = `<span class="root-symbol">√</span><span class="base">${q.answer}</span>`;
+  const streak = streaks[q.key] || 0;
+  renderStreakDots(streak);
+  questionSub.textContent = streak > 0 ? `${streak}/6 mastery streak` : '';
+  startTimer();
+  if (!('ontouchstart' in window)) answerInput.focus();
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+function submitAnswer() {
+  if (!currentQ || answerInput.disabled) return;
+  const val = parseInt(answerInput.value, 10);
+  if (isNaN(val)) { answerInput.focus(); return; }
+
+  const correct = currentQ.n;
+  const elapsed = getElapsed();
+  stopTimer();
+  stats.total++;
+
+  if (val === correct) {
+    stats.correct++;
+    stats.sessionStreak = (stats.sessionStreak || 0) + 1;
+    answerInput.className = 'answer-input correct-flash';
+    streaks[currentQ.key] = elapsed <= TIME_LIMIT ? (streaks[currentQ.key] || 0) + 1 : 0;
+    const streak = streaks[currentQ.key];
+    renderStreakDots(streak);
+
+    if (streak >= 6) {
+      mastered.add(currentQ.key);
+      streaks[currentQ.key] = 0;
+      feedbackMsg.textContent = '★ MASTERED!';
+      feedbackMsg.className = 'feedback-msg mastered';
+      showToast(`√${currentQ.answer} = ${correct} mastered! 🔥`, true);
+      renderToggles();
+      renderMastered();
+    } else {
+      const msgs = ['Correct!', 'Nice!', 'Spot on!', 'Yes!', '✓ Right!'];
+      feedbackMsg.textContent = msgs[Math.floor(Math.random() * msgs.length)];
+      feedbackMsg.className = 'feedback-msg correct';
+    }
+  } else {
+    stats.sessionStreak = 0;
+    streaks[currentQ.key] = 0;
+    renderStreakDots(0);
+    answerInput.className = 'answer-input wrong-flash';
+    feedbackMsg.textContent = `✗  Answer was ${correct}`;
+    feedbackMsg.className = 'feedback-msg wrong';
+  }
+
+  updateStats();
+  saveState();
+  answerInput.disabled = true;
+  setTimeout(() => nextQuestion(), 900);
+}
+
+// ============================================================
+// STATS
+// ============================================================
+function updateStats() {
+  const c = stats.correct, t = stats.total;
+  const pct = t > 0 ? Math.round((c / t) * 100) : null;
+  const pctStr = pct !== null ? pct + '%' : '—';
+  const pctW   = pct !== null ? pct + '%' : '0%';
+
+  statCorrect.textContent = c; statTotal.textContent = t;
+  statPct.textContent = pctStr; pctBar.style.width = pctW;
+  sbCorrect.textContent = c; sbTotal.textContent = t;
+  sbPct.textContent = pctStr; sbPctBar.style.width = pctW;
+  sbMastered.textContent = mastered.size;
+
+  const barColor = pct === null ? 'var(--correct)'
+    : pct <= 25 ? '#e84c1e'
+    : pct <= 50 ? '#f07d20'
+    : pct <= 70 ? '#f5c518'
+    : 'var(--correct)';
+  pctBar.style.background = barColor;
+  sbPctBar.style.background = barColor;
+
+  const ss = stats.sessionStreak || 0;
+  statStreak.textContent = ss >= 3 ? `🔥 ${ss} in a row` : '';
+}
+
+function renderMastered() {
+  masteredCount.textContent = mastered.size;
+  sbMastered.textContent = mastered.size;
+  if (mastered.size === 0) {
+    masteredList.innerHTML = '<div style="font-size:12px;color:var(--text-muted)">None yet</div>';
+    return;
+  }
+  const sorted = [...mastered].sort((a, b) => {
+    return parseInt(a) - parseInt(b);
+  });
+  masteredList.innerHTML = sorted.map(k => {
+    const n = parseInt(k);
+    return `<div class="mastered-item">★ √${n * n} = ${n}</div>`;
+  }).join('');
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTimeout;
+function showToast(msg, isMastered = false) {
+  toast.textContent = msg;
+  toast.className = 'toast' + (isMastered ? ' mastered-toast' : '') + ' show';
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => { toast.className = 'toast' + (isMastered ? ' mastered-toast' : ''); }, 2500);
+}
+
+// ============================================================
+// TOGGLE ALL / RESET
+// ============================================================
+let allOn = true;
+function toggleAll() {
+  allOn = !allOn;
+  RANGES.forEach(r => enabledRanges[r.id] = allOn);
+  saveState(); renderToggles(); nextQuestion();
+}
+function doReset() {
+  if (!confirm('Reset all mastery progress and stats? This cannot be undone.')) return;
+  mastered = new Set(); streaks = {};
+  stats = { correct: 0, total: 0, sessionStreak: 0 };
+  allOn = true;
+  RANGES.forEach(r => enabledRanges[r.id] = r.id <= 2);
+  saveState(); renderToggles(); renderMastered(); updateStats(); nextQuestion();
+  showToast('Progress reset.');
+}
+
+document.getElementById('toggleAllBtnDesktop').addEventListener('click', toggleAll);
+document.getElementById('toggleAllBtnMobile').addEventListener('click', toggleAll);
+document.getElementById('resetBtnDesktop').addEventListener('click', doReset);
+document.getElementById('resetBtnMobile').addEventListener('click', doReset);
+
+// ============================================================
+// DRAWER
+// ============================================================
+drawerToggle.addEventListener('click', () => {
+  const open = mobileDrawer.classList.toggle('open');
+  drawerToggle.classList.toggle('open', open);
+});
+
+// ============================================================
+// INPUT
+// ============================================================
+submitBtn.addEventListener('click', submitAnswer);
+answerInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitAnswer(); });
+answerInput.addEventListener('input', () => { if (answerInput.value < 0) answerInput.value = ''; });
+
+// ============================================================
+// INIT
+// ============================================================
+renderToggles();
+renderMastered();
+updateStats();
+nextQuestion();
+</script>
+</body>
+</html>
