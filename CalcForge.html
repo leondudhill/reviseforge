@@ -385,7 +385,7 @@ textarea.pi { width: 100%; resize: none; height: 50px; }
 
 <header>
   <a href="../index.html" class="rf-logo"><span class="rf-study">Calc</span><span class="rf-forge">Forge</span></a>
-  <div class="rf-byline">A website by <strong>Leon Dudhill</strong></div>
+  <div class="rf-byline">A website by <strong style="color:var(--accent)">Leon Dudhill</strong></div>
 </header>
 
 
@@ -397,7 +397,7 @@ textarea.pi { width: 100%; resize: none; height: 50px; }
 
   <!-- HEADER -->
   <div class="header">
-    <div class="logo">Calc<span style="color:#2563eb">Forge</span></div>
+    <div class="logo" style="display:none">Calc<span style="color:#2563eb">Forge</span></div>
     <div style="display:flex;gap:6px;align-items:center;">
       <span class="ind" id="ind-shift" style="display:none"></span>
       <span class="ind" id="ind-alpha" style="display:none"></span>
@@ -408,9 +408,9 @@ textarea.pi { width: 100%; resize: none; height: 50px; }
 
   <!-- TOP MODE SWITCHER -->
   <div class="top-mode-bar">
-    <button class="top-mode-btn tm-std active"  onclick="switchTopMode('std')">Standard<span class="sub">basic</span></button>
-    <button class="top-mode-btn tm-gcse"         onclick="switchTopMode('gcse')">GCSE<span class="sub">scientific</span></button>
-    <button class="top-mode-btn tm-alv"          onclick="switchTopMode('alv')">A-Level<span class="sub">graphing</span></button>
+    <button class="top-mode-btn tm-std active"  onclick="switchTopMode('std')">Standard</button>
+    <button class="top-mode-btn tm-gcse"         onclick="switchTopMode('gcse')">GCSE</button>
+    <button class="top-mode-btn tm-alv"          onclick="switchTopMode('alv')">A-Level</button>
   </div>
 
   <!-- DISPLAY BEZEL -->
@@ -426,7 +426,7 @@ textarea.pi { width: 100%; resize: none; height: 50px; }
   </div>
 
   <!-- STATUS BAR -->
-  <div class="status-bar">
+  <div class="status-bar" style="display:none">
     <span class="s-mode"  id="sMode">STANDARD</span>
     <span class="s-angle" id="sAngle">DEG</span>
     <span class="s-mem"   id="sMem">M=0</span>
@@ -930,7 +930,7 @@ function switchTopMode(m) {
   });
 
   syncCanvasDisplay();
-  document.getElementById('sMode').textContent = {std:'STANDARD',gcse:'GCSE·SCI',alv:'A-LEVEL·CG50'}[m];
+  document.getElementById('sMode').textContent = '';
   if (m === 'alv' && alvSubMode === 'graph') { buildFnRows(); drawGraph(); }
 }
 

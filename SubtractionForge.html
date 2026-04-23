@@ -96,10 +96,7 @@
     transition: all 0.15s ease; user-select: none; padding: 0 14px;
   }
   .lv-toggle .pill .lv-name { }
-  .lv-toggle .pill .lv-range {
-    font-family: 'DM Mono', monospace; font-size: 11px;
-    font-weight: 400; color: var(--text-muted); opacity: 0.7;
-  }
+  .lv-toggle .pill .lv-range { display: none; }
   .lv-toggle input:checked + .pill { background: var(--accent); border-color: var(--accent); color: #fff; }
   .lv-toggle input:checked + .pill .lv-range { color: rgba(255,255,255,0.75); opacity: 1; }
   .lv-toggle .mastered-badge {
@@ -242,7 +239,7 @@
   /* ===================== FOOTER ===================== */
   footer {
     border-top: 1.5px solid var(--border); padding: 11px 24px;
-    font-size: 11.5px; color: var(--text-muted);
+    font-size: 11.5px; color: #111111;
     background: var(--surface); line-height: 1.5; flex-shrink: 0;
   }
   .footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; }
@@ -270,7 +267,7 @@
 
 <header>
   <div class="logo">Subtraction<span>Forge</span></div>
-  <div class="byline">A tool by <strong>Leon Dudhill</strong></div>
+  <div class="byline">A tool by <strong style="color:var(--accent)">Leon Dudhill</strong></div>
 </header>
 
 <!-- Score bar visible on tablet + mobile -->
@@ -364,7 +361,7 @@
 
 <footer>
   <span class="footer-label">DISCLAIMER</span>
-  This tool was built for personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. — Leon Dudhill
+  This tool was built for my own personal GCSE revision. You\'re welcome to use it, but it may contain errors and shouldn\'t be solely relied upon. Consider this a beta. — Leon Dudhill
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -376,8 +373,8 @@
 // Questions are always: larger − smaller (result always ≥ 0)
 // ============================================================
 const LEVELS = [
-  { id: 'l1', label: '1 Digit',  tag: '1–9',       min: 1,    max: 9    },
-  { id: 'l2', label: '2 Digit',  tag: '10–99',      min: 10,   max: 99   },
+  { id: 'l1', label: '1 Digits',  tag: '1–9',       min: 1,    max: 9    },
+  { id: 'l2', label: '2 Digits',  tag: '10–99',      min: 10,   max: 99   },
   { id: 'l3', label: '3 Digit',  tag: '100–999',    min: 100,  max: 999  },
   { id: 'l4', label: '4 Digit',  tag: '1000–9999',  min: 1000, max: 9999 },
 ];
@@ -662,7 +659,7 @@ function updateStats() {
   sbPct.textContent = pctStr; sbPctBar.style.width = pctW;
   sbMastered.textContent = mastered.size;
   const ss = stats.sessionStreak || 0;
-  statStreak.textContent = ss >= 3 ? `🔥 ${ss} in a row` : '';
+  statStreak.textContent = ss >= 5 ? `🔥 ${ss} in a row` : '';
   // Accuracy bar colour
   let accColor;
   if (pct === null)   accColor = 'var(--correct)';

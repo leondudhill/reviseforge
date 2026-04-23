@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ReviseForge — Leon Dudhill</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #fdf4f8;
+    --surface2: #f5e0ec;
+    --border: #e0b8d0;
+    --text: #1e0e18;
+    --text-muted: #7a4f68;
+    --accent: #d63384;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ===================== SPLASH ===================== */
+  #splash {
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+  }
+  #splash.fade-in  { animation: splashIn 0.7s ease forwards; pointer-events: all; }
+  #splash.fade-out { animation: splashOut 0.7s ease forwards; }
+
+  @keyframes splashIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes splashOut {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+  }
+
+  .splash-text {
+    font-family: 'DM Sans', sans-serif;
+    font-size: clamp(15px, 3vw, 20px);
+    font-weight: 400;
+    color: #111111;
+    letter-spacing: 0.5px;
+  }
+  .splash-text strong {
+    font-weight: 700;
+    color: #111111;
+  }
+
+  /* ===================== HEADER ===================== */
+  header {
+    padding: 14px 24px;
+    border-bottom: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 2px; color: var(--text); line-height: 1; }
+  .logo .logo-study { font-weight: 700; color: #111111; }
+  .logo .logo-forge { font-weight: 700; color: #888888; }
+  .header-byline { font-size: 11px; color: #111111; font-weight: 400; letter-spacing: 0.3px; text-align: right; }
+  .header-byline strong { font-weight: 700; color: #111111; }
+
+
+  /* ===================== MAIN ===================== */
+  .main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    gap: 16px;
+  }
+
+  .main-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 5vw, 42px);
+    letter-spacing: 3px;
+    color: var(--text);
+    text-align: center;
+  }
+  .main-title strong { font-weight: 700; color: #444444; }
+  .main-title .title-study { color: var(--text); }
+  .main-title .title-forge { color: #444444; font-weight: 700; }
+  .main-sub {
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.4px;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  /* ===================== GRID ===================== */
+  .grid-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: min(700px, 100%);
+    gap: 8px;
+  }
+  .subject-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    width: 100%;
+  }
+
+  .subject-card {
+    position: relative;
+    border-radius: 16px;
+    border: 2px solid transparent;
+    padding: 36px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    overflow: hidden;
+    min-height: 200px;
+    text-align: center;
+  }
+  .subject-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.10);
+  }
+  .subject-card:active { transform: translateY(-1px) scale(0.99); }
+
+  /* Subtle tinted background per subject */
+  .subject-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.08;
+    background: var(--card-color);
+    transition: opacity 0.18s ease;
+  }
+  .subject-card:hover::before { opacity: 0.14; }
+
+  /* Accent stripe at top */
+  .subject-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--card-color);
+    border-radius: 16px 16px 0 0;
+  }
+
+  .card-icon {
+    font-size: 32px;
+    line-height: 1;
+  }
+  .card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(12px, 4.2vw, 32px);
+    letter-spacing: 2px;
+    color: var(--text);
+    line-height: 1.1;
+    white-space: nowrap;
+  }
+  .card-name span {
+    color: var(--card-color);
+    font-weight: 700;
+  }
+  .card-desc {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+    line-height: 1.5;
+  }
+
+  /* Per-subject colours */
+  .card-maths    { --card-color: #2563eb; border-color: #bdd0f7; background: #f5f8ff; }
+  .card-physics  { --card-color: #dc2626; border-color: #fbbcbc; background: #fff5f5; }
+  .card-chem     { --card-color: #7c3aed; border-color: #d4b8f7; background: #f8f4ff; }
+  .card-bio      { --card-color: #16a34a; border-color: #b6e4ca; background: #f4fbf6; }
+
+  /* ===================== FOOTER ===================== */
+  footer {
+    border-top: 1.5px solid var(--border); padding: 11px 24px;
+    font-size: 11.5px; color: #111111;
+    background: var(--surface); line-height: 1.5; flex-shrink: 0;
+  }
+  .footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; }
+
+  /* ===================== RESPONSIVE ===================== */
+  @media (max-width: 540px) {
+    .subject-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+    .subject-card { padding: 24px 18px; min-height: 160px; }
+    header { padding: 12px 16px; }
+    footer { padding: 10px 16px; font-size: 10.5px; }
+    .main { padding: 32px 16px; }
+  }
+  @media (max-width: 360px) {
+    .subject-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <p class="splash-text">A website by <strong>Leon Dudhill</strong></p>
+</div>
+
+<header>
+  <div class="logo"><span class="logo-study">Revise</span><span class="logo-forge">Forge</span></div>
+  <div class="header-byline">A website by <strong style="color:var(--accent)">Leon Dudhill</strong></div>
+</header>
+
+<main class="main">
+  <div class="main-title">Choose a <strong>Forge</strong></div>
+  <p class="main-sub">to begin revising</p>
+
+  <div class="grid-wrapper">
+    <div class="subject-grid">
+
+    <!-- MATHS -->
+    <a href="maths/index.html" class="subject-card card-maths">
+      <div class="card-icon">📐</div>
+      <div class="card-name">Maths<span>Forge</span></div>
+      <div class="card-desc">Numbers, algebra, geometry &amp; more</div>
+    </a>
+
+    <!-- PHYSICS -->
+    <a href="physics/index.html" class="subject-card card-physics">
+      <div class="card-icon">⚡</div>
+      <div class="card-name">Physics<span>Forge</span></div>
+      <div class="card-desc">Forces, energy, waves &amp; space</div>
+    </a>
+
+    <!-- CHEMISTRY -->
+    <a href="chemistry/index.html" class="subject-card card-chem">
+      <div class="card-icon">🧪</div>
+      <div class="card-name">Chemistry<span>Forge</span></div>
+      <div class="card-desc">Atoms, reactions &amp; the periodic table</div>
+    </a>
+
+    <!-- BIOLOGY -->
+    <a href="biology/index.html" class="subject-card card-bio">
+      <div class="card-icon">🧬</div>
+      <div class="card-name">Biology<span>Forge</span></div>
+      <div class="card-desc">Cells, genetics, ecosystems &amp; more</div>
+    </a>
+
+  </div>
+  </div>
+</main>
+
+<footer>
+  <span class="footer-label">DISCLAIMER</span>
+  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. — Leon Dudhill
+</footer>
+
+<script>
+  const splash = document.getElementById('splash');
+
+  // Only show splash on first visit, not when navigating back
+  if (sessionStorage.getItem('visited')) {
+    splash.style.display = 'none';
+  } else {
+    sessionStorage.setItem('visited', '1');
+    splash.classList.add('fade-in');
+    setTimeout(() => {
+      splash.classList.remove('fade-in');
+      splash.classList.add('fade-out');
+      setTimeout(() => { splash.style.display = 'none'; }, 700);
+    }, 1700);
+  }
+</script>
+</body>
+</html>

@@ -41,7 +41,7 @@
   .lv-toggle { position: relative; cursor: pointer; }
   .lv-toggle input { display: none; }
   .lv-toggle .pill { display: flex; align-items: center; justify-content: space-between; height: 44px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: all 0.15s ease; user-select: none; padding: 0 14px; }
-  .lv-toggle .pill .lv-range { font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400; color: var(--text-muted); opacity: 0.7; }
+  .lv-toggle .pill .lv-range { display: none; }
   .lv-toggle input:checked + .pill { background: var(--accent); border-color: var(--accent); color: #fff; }
   .lv-toggle input:checked + .pill .lv-range { color: rgba(255,255,255,0.75); opacity: 1; }
   .lv-toggle .mastered-badge { position: absolute; top: -4px; right: -4px; width: 10px; height: 10px; background: var(--accent2); border-radius: 50%; border: 1.5px solid #fff; display: none; }
@@ -96,7 +96,7 @@
   .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--text); color: #fff; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px; padding: 12px 24px; border-radius: 30px; pointer-events: none; transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s; opacity: 0; z-index: 999; white-space: nowrap; }
   .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
   .toast.mastered-toast { background: var(--accent2); color: var(--text); }
-  footer { border-top: 1.5px solid var(--border); padding: 11px 24px; font-size: 11.5px; color: var(--text-muted); background: var(--surface); line-height: 1.5; flex-shrink: 0; }
+  footer { border-top: 1.5px solid var(--border); padding: 11px 24px; font-size: 11.5px; color: #111111; background: var(--surface); line-height: 1.5; flex-shrink: 0; }
   .footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; }
   @media (max-width: 860px) { .layout { grid-template-columns: 200px 1fr; } .sidebar-right { display: none; } .score-bar { display: flex; } }
   @media (max-width: 580px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } .sidebar-right { display: none; } .score-bar { display: flex; } .mobile-drawer-toggle { display: flex; } .main { padding: 28px 16px; gap: 22px; } header { padding: 12px 16px; } .byline { display: none; } footer { padding: 10px 16px; font-size: 10.5px; } }
@@ -105,7 +105,7 @@
 <body>
 <header>
   <div class="logo">Round<span>Forge</span></div>
-  <div class="byline">A tool by <strong>Leon Dudhill</strong></div>
+  <div class="byline">A tool by <strong style="color:var(--accent)">Leon Dudhill</strong></div>
 </header>
 <div class="score-bar" id="scoreBar">
   <div class="score-bar-item"><span class="score-bar-label">Correct</span><span class="score-bar-value" id="sbCorrect">0</span></div>
@@ -163,16 +163,16 @@
     <button class="reset-btn" id="resetBtnMobile">Reset Progress</button>
   </div>
 </div>
-<footer><span class="footer-label">DISCLAIMER</span> This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. &#8212; Leon Dudhill</footer>
+<footer><span class="footer-label">DISCLAIMER</span> This tool was built for my own personal GCSE revision. You\'re welcome to use it, but it may contain errors and shouldn\'t be solely relied upon. Consider this a beta. — Leon Dudhill</footer>
 <div class="toast" id="toast"></div>
 <script>
 const LEVELS = [
-  { id: 1, name: 'Nearest 10',   desc: 'whole', type: 'nearest', place: 10   },
-  { id: 2, name: 'Nearest 100',  desc: 'whole', type: 'nearest', place: 100  },
-  { id: 3, name: 'Nearest 1000', desc: 'whole', type: 'nearest', place: 1000 },
-  { id: 4, name: '1 Dec Place',  desc: '1 d.p.',type: 'dp',      place: 1    },
-  { id: 5, name: '2 Dec Places', desc: '2 d.p.',type: 'dp',      place: 2    },
-  { id: 6, name: '3 Dec Places', desc: '3 d.p.',type: 'dp',      place: 3    },
+  { id: 1, name: 'Nearest 10',   desc: '', type: 'nearest', place: 10   },
+  { id: 2, name: 'Nearest 100',  desc: '', type: 'nearest', place: 100  },
+  { id: 3, name: 'Nearest 1000', desc: '', type: 'nearest', place: 1000 },
+  { id: 4, name: '1 Dec Place',  desc: '',type: 'dp',      place: 1    },
+  { id: 5, name: '2 Dec Places', desc: '',type: 'dp',      place: 2    },
+  { id: 6, name: '3 Dec Places', desc: '',type: 'dp',      place: 3    },
 ];
 const LEVEL_LABELS = {
   1: 'Round to the nearest 10',
@@ -270,14 +270,16 @@ const mobileDrawer  = document.getElementById('mobileDrawer');
 function renderLevelGrid(gridEl) {
   gridEl.innerHTML = '';
   const sections = [
-    { label: 'Whole Numbers', ids: [1, 2, 3] },
-    { label: 'Decimal Places', ids: [4, 5, 6] },
+    { label: '', ids: [1, 2, 3] },
+    { label: '', ids: [4, 5, 6] },
   ];
   sections.forEach(sec => {
-    const heading = document.createElement('div');
-    heading.className = 'level-section-label';
-    heading.textContent = sec.label;
-    gridEl.appendChild(heading);
+    if(sec.label){
+      const heading = document.createElement('div');
+      heading.className = 'level-section-label';
+      heading.textContent = sec.label;
+      gridEl.appendChild(heading);
+    }
     const grid = document.createElement('div');
     grid.className = 'level-grid';
     gridEl.appendChild(grid);

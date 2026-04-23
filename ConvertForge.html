@@ -75,9 +75,9 @@
     font-size: 13px; font-weight: 600; color: var(--text-muted);
     transition: all 0.15s ease; user-select: none; padding: 0 12px;
   }
-  .cat-toggle .pill .cat-icon { font-size: 15px; }
+  .cat-toggle .pill .cat-icon { display: none; }
   .cat-toggle input:checked + .pill { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .cat-toggle input:checked + .pill .cat-icon { filter: none; }
+  .cat-toggle input:checked + .pill .cat-icon { display: none; }
 
   .toggle-all-btn {
     margin-top: 12px; width: 100%; padding: 8px; background: none;
@@ -133,7 +133,7 @@
   .question-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; font-weight: 500; letter-spacing: 0.5px; min-height: 18px; }
 
   /* Hint / formula strip */
-  .hint-strip {
+  .hint-strip { display: none; } .hint-strip-HIDE {
     font-size: 11.5px; color: var(--text-muted);
     background: var(--surface);
     border: 1px solid var(--border);
@@ -229,7 +229,7 @@
   /* ===================== FOOTER ===================== */
   footer {
     border-top: 1.5px solid var(--border); padding: 11px 24px;
-    font-size: 11.5px; color: var(--text-muted);
+    font-size: 11.5px; color: #111111;
     background: var(--surface); line-height: 1.5; flex-shrink: 0;
   }
   .footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; }
@@ -257,7 +257,7 @@
 
 <header>
   <div class="logo">Convert<span>Forge</span></div>
-  <div class="byline">A tool by <strong>Leon Dudhill</strong></div>
+  <div class="byline">A tool by <strong style="color:var(--accent)">Leon Dudhill</strong></div>
 </header>
 
 <div class="score-bar">
@@ -296,11 +296,9 @@
     <div class="cat-chip" id="catChip"></div>
     <div class="question-card">
       <div class="question-from" id="questionFrom">—</div>
-      <div class="question-arrow">↓</div>
       <div class="question-to" id="questionTo"></div>
       <div class="question-sub" id="questionSub"></div>
     </div>
-    <div class="hint-strip" id="hintStrip"></div>
     <div class="timer-wrap"><div class="timer-bar" id="timerBar"></div></div>
     <div class="streak-dots" id="streakDots"></div>
     <div class="input-row">
@@ -354,7 +352,7 @@
 
 <footer>
   <span class="footer-label">DISCLAIMER</span>
-  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. — Leon Dudhill
+  This tool was built for my own personal GCSE revision. You\'re welcome to use it, but it may contain errors and shouldn\'t be solely relied upon. Consider this a beta. — Leon Dudhill
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -375,7 +373,7 @@ const CATEGORIES = [
   {
     id: 'metric-length',
     name: 'Metric Length',
-    icon: '📏',
+    icon: '',
     conversions: [
       { from: 'mm',  to: 'cm',  factor: 0.1,    nice: [10,20,50,100,150,200,250,500],   hint: '÷ 10' },
       { from: 'cm',  to: 'mm',  factor: 10,      nice: [1,2,5,10,15,20,25,50],           hint: '× 10' },
@@ -390,7 +388,7 @@ const CATEGORIES = [
   {
     id: 'metric-mass',
     name: 'Metric Mass',
-    icon: '⚖️',
+    icon: '',
     conversions: [
       { from: 'g',   to: 'kg',  factor: 0.001,   nice: [500,1000,1500,2000,2500,5000],   hint: '÷ 1000' },
       { from: 'kg',  to: 'g',   factor: 1000,    nice: [1,2,3,5,10,0.5,1.5,2.5],        hint: '× 1000' },
@@ -401,7 +399,7 @@ const CATEGORIES = [
   {
     id: 'metric-volume',
     name: 'Metric Volume',
-    icon: '🧪',
+    icon: '',
     conversions: [
       { from: 'ml',  to: 'l',   factor: 0.001,   nice: [500,1000,1500,2000,2500,3000],   hint: '÷ 1000' },
       { from: 'l',   to: 'ml',  factor: 1000,    nice: [1,2,3,5,0.5,1.5,2.5],           hint: '× 1000' },
@@ -412,7 +410,7 @@ const CATEGORIES = [
   {
     id: 'time',
     name: 'Time',
-    icon: '⏱️',
+    icon: '',
     conversions: [
       { from: 'sec', to: 'min', factor: 1/60,    nice: [60,120,180,240,300,600],         hint: '÷ 60' },
       { from: 'min', to: 'sec', factor: 60,      nice: [1,2,3,4,5,10,15,30],            hint: '× 60' },
@@ -425,7 +423,7 @@ const CATEGORIES = [
   {
     id: 'imperial-metric',
     name: 'Imperial ↔ Metric',
-    icon: '🌍',
+    icon: '',
     conversions: [
       { from: 'miles', to: 'km',   factor: 1.6,   nice: [5,10,15,20,25,40,50,80,100],   hint: '× 1.6  (5 miles ≈ 8 km)' },
       { from: 'km',   to: 'miles', factor: 0.625, nice: [8,16,24,32,40,80,160],         hint: '÷ 1.6  (8 km ≈ 5 miles)' },
@@ -443,7 +441,7 @@ const CATEGORIES = [
   {
     id: 'temperature',
     name: 'Temperature',
-    icon: '🌡️',
+    icon: '',
     conversions: [
       // C to F: (C × 9/5) + 32   F to C: (F − 32) × 5/9
       // These are handled specially below
@@ -553,7 +551,7 @@ function renderCatGrid(gridEl) {
     });
     const pill = document.createElement('div');
     pill.className = 'pill';
-    pill.innerHTML = `<span class="cat-icon">${cat.icon}</span><span>${cat.name}</span>`;
+    pill.innerHTML = `<span>${cat.name}</span>`;
     wrapper.appendChild(input);
     wrapper.appendChild(pill);
     gridEl.appendChild(wrapper);
@@ -745,7 +743,7 @@ function updateStats() {
   sbPctBar.style.background = barColor;
 
   const ss = stats.sessionStreak || 0;
-  statStreak.textContent = ss >= 3 ? `🔥 ${ss} in a row` : '';
+  statStreak.textContent = ss >= 5 ? `🔥 ${ss} in a row` : '';
 }
 
 function renderRecentCorrect() {

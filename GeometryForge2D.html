@@ -250,7 +250,7 @@ footer {
   font-size: 11.5px; color: var(--text-muted);
   background: var(--surface); line-height: 1.5; flex-shrink: 0;
 }
-.footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; }
+.footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; font-family: "DM Sans", sans-serif; }
 
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
@@ -296,16 +296,16 @@ footer {
       <span class="mode-pill" id="mode-pill">Drag any vertex to reshape</span>
     </div>
 
-    <div id="canvas-wrap">
-      <canvas id="geo-canvas"></canvas>
-    </div>
-
     <div id="status-bar">
       <div class="sdot"></div>
       <span id="smsg">Triangle selected</span>
       <span id="sdetail">Drag any vertex to change the shape</span>
     </div>
     <div id="hint">Drag vertices to reshape &middot; Edit angles &amp; side lengths in the right panel &middot; Buttons show number of sides</div>
+
+    <div id="canvas-wrap">
+      <canvas id="geo-canvas"></canvas>
+    </div>
   </div>
 
   <!-- RIGHT: INFO PANEL -->
