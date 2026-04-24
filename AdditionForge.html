@@ -86,21 +86,16 @@
 
   .lv-toggle { position: relative; cursor: pointer; }
   .lv-toggle input { display: none; }
-  .lv-toggle .pill {
+    .lv-toggle .pill {
     display: flex; align-items: center; justify-content: space-between;
     height: 44px; border-radius: 8px; border: 1.5px solid var(--border);
     background: var(--surface); font-family: 'DM Sans', sans-serif;
     font-size: 13px; font-weight: 600; color: var(--text-muted);
-    transition: all 0.15s ease; user-select: none;
-    padding: 0 14px;
+    transition: all 0.15s ease; user-select: none; padding: 0 14px;
   }
+  .lv-toggle input:checked + .pill { background: var(--accent); border-color: var(--accent); color: #fff; }
   .lv-toggle .pill .lv-name { }
   .lv-toggle .pill .lv-range { display: none; }
-  .lv-toggle input:checked + .pill {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
   .lv-toggle input:checked + .pill .lv-range { color: rgba(255,255,255,0.75); opacity: 1; }
 
   .lv-toggle .mastered-badge {
@@ -287,7 +282,7 @@
 
 <header>
   <div class="logo">Addition<span>Forge</span></div>
-  <div class="byline">A tool by <strong style="color:var(--accent)">Leon Dudhill</strong></div>
+  <div class="byline">A tool by <strong>Leon Dudhill</strong></div>
 </header>
 
 <!-- Score bar: tablet + mobile -->
@@ -380,7 +375,7 @@
 
 <footer>
   <span class="footer-label">DISCLAIMER</span>
-  This tool was built for my own personal GCSE revision. You\'re welcome to use it, but it may contain errors and shouldn\'t be solely relied upon. Consider this a beta. — Leon Dudhill
+  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta test. — Leon Dudhill
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -719,7 +714,7 @@ function updateStats() {
   sbPctBar.style.background = barColor;
 
   const ss = stats.sessionStreak || 0;
-  statStreak.textContent = ss >= 5 ? `🔥 ${ss} in a row` : '';
+  statStreak.textContent = ss >= 5 ? '🔥'.repeat(Math.floor(ss / 5)) + ' ' + ss + ' in a row' : '';
 }
 
 function renderMastered() {

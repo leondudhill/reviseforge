@@ -88,19 +88,16 @@
 
   .lv-toggle { position: relative; cursor: pointer; }
   .lv-toggle input { display: none; }
-  .lv-toggle .pill {
+    .lv-toggle .pill {
     display: flex; align-items: center; justify-content: space-between;
     height: 44px; border-radius: 8px; border: 1.5px solid var(--border);
     background: var(--surface); font-family: 'DM Sans', sans-serif;
     font-size: 13px; font-weight: 600; color: var(--text-muted);
     transition: all 0.15s ease; user-select: none; padding: 0 14px;
   }
-  .lv-toggle .pill .lv-name { }
-  .lv-toggle .pill .lv-range {
-    font-family: 'DM Mono', monospace; font-size: 11px;
-    font-weight: 400; color: var(--text-muted); opacity: 0.7;
-  }
   .lv-toggle input:checked + .pill { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .lv-toggle .pill .lv-name { }
+  .lv-toggle .pill .lv-range { display: none; }
   .lv-toggle input:checked + .pill .lv-range { color: rgba(255,255,255,0.75); opacity: 1; }
   .lv-toggle .mastered-badge {
     position: absolute; top: -4px; right: -4px;
@@ -180,7 +177,7 @@
   .submit-btn {
     font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
     padding: 12px 22px; border: none; border-radius: 10px;
-    background: var(--text); color: #fff; cursor: pointer;
+    background: var(--accent); color: #fff; cursor: pointer;
     transition: all 0.15s; letter-spacing: 0.3px;
     min-height: 48px; min-width: 64px;
   }
@@ -238,7 +235,7 @@
   /* ===================== FOOTER ===================== */
   footer {
     border-top: 1.5px solid var(--border); padding: 11px 24px;
-    font-size: 11.5px; color: var(--text-muted);
+    font-size: 11.5px; color: #111111;
     background: var(--surface); line-height: 1.5; flex-shrink: 0;
   }
   .footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; }
@@ -360,7 +357,7 @@
 
 <footer>
   <span class="footer-label">DISCLAIMER</span>
-  This tool was built for personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. — Leon Dudhill
+  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta test. — Leon Dudhill
 </footer>
 
 <div class="toast" id="toast"></div>
@@ -714,7 +711,7 @@ function updateStats() {
   sbPctBar.style.background = barColor;
 
   const ss = stats.sessionStreak || 0;
-  statStreak.textContent = ss >= 3 ? `🔥 ${ss} in a row` : '';
+  statStreak.textContent = ss >= 5 ? '🔥'.repeat(Math.floor(ss / 5)) + ' ' + ss + ' in a row' : '';
 }
 
 function renderMastered() {

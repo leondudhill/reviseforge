@@ -8,7 +8,8 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#ffffff;--white:#ffffff;--border:#bdd0f7;--border-light:#dbeafe;
+  --accent: #1976d2;
+  --bg:#ffffff;--white:#ffffff;--border:#90caf9;--border-light:#dbeafe;
   --text:#0d1b3e;--muted:#4a6190;
   --blue:#2563eb;--blue-light:#eff6ff;
   --green:#2a9d5c;--green-light:#edfaf3;
@@ -30,13 +31,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min
 /* ── REVISEFORGE HEADER ── */
 header{padding:14px 24px;border-bottom:1.5px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:var(--white);position:sticky;top:0;z-index:200;}
 .rf-logo{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:2px;color:var(--text);line-height:1;text-decoration:none;}
-.rf-forge{color:var(--blue);}
+.rf-forge{color:var(--accent);}
 .rf-dim{color:#111111;}
 .rf-byline{font-size:11px;color:#111111;font-weight:400;letter-spacing:0.3px;text-align:right;}
-.rf-byline strong{font-weight:700;color:#111111;}
+.rf-byline strong { font-weight: 700; color: var(--accent); }
 /* ── REVISEFORGE FOOTER ── */
-footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-size:11.5px;color:var(--muted);background:#f0f5ff;line-height:1.5;flex-shrink:0;}
-.rf-footer-label{font-weight:700;letter-spacing:1px;color:var(--blue);margin-right:6px;}
+footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-size:11.5px;color:#111111;background:#f0f5ff;line-height:1.5;flex-shrink:0;position:sticky;bottom:0;z-index:150;}
+.rf-footer-label{font-weight:700;letter-spacing:1px;color:var(--accent);margin-right:6px;}
 
 
 /* MAIN LAYOUT */
@@ -66,6 +67,8 @@ footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-siz
 #wireframe-btn{position:absolute;top:10px;right:110px;padding:5px 12px;border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,0.92);font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--text);font-weight:500;box-shadow:var(--shadow-sm);backdrop-filter:blur(4px)}
 #wireframe-btn:hover{background:var(--blue-light);border-color:var(--blue);color:var(--blue)}
 #wireframe-btn.active{background:var(--blue-light);border-color:var(--blue);color:var(--blue)}
+#reset-shape-btn{position:absolute;top:10px;right:230px;padding:5px 12px;border:1px solid var(--border);border-radius:20px;background:rgba(255,255,255,0.92);font-size:11px;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--wrong);font-weight:500;box-shadow:var(--shadow-sm);backdrop-filter:blur(4px)}
+#reset-shape-btn:hover{background:var(--red-light);border-color:var(--wrong);color:var(--wrong)}
 
 /* STATUS BAR */
 #status-bar{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:8px;border:1px solid var(--border-light);background:var(--white);font-size:12px;box-shadow:var(--shadow-sm)}
@@ -76,7 +79,7 @@ footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-siz
 
 /* RIGHT PANEL */
 #info-panel{background:var(--white);border-left:1px solid var(--border-light);display:flex;flex-direction:column;overflow:hidden;min-height:0;height:100%}
-.panel-header{padding:12px 14px 8px;border-bottom:1px solid var(--border-light);flex-shrink:0}
+.panel-header{padding:12px 14px 8px;border-bottom:1.5px solid var(--border);flex-shrink:0}
 .panel-title{font-family:'Bebas Neue',sans-serif;font-size:13px;font-weight:500;color:var(--text);margin-bottom:1px}
 .panel-sub{font-size:10px;color:var(--muted)}
 .panel-scroll{flex:1;overflow-y:auto;padding:10px 10px 20px;display:flex;flex-direction:column;gap:8px;min-height:0;box-sizing:border-box}
@@ -84,12 +87,11 @@ footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-siz
 .panel-scroll::-webkit-scrollbar-track{background:var(--bg)}
 .panel-scroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
 .panel-scroll::-webkit-scrollbar-thumb:hover{background:#bbb}
-.panel-footer{border-top:1px solid var(--border-light);padding:8px 12px;font-size:10px;color:var(--muted);text-align:center;flex-shrink:0}
+.panel-footer{border-top:1px solid var(--border-light);padding:8px 12px;font-size:10px;color:#111111;text-align:center;flex-shrink:0}
 
 /* STATS CARD */
 .stats-card{border:1px solid var(--border-light);border-radius:10px;overflow:hidden;flex-shrink:0}
-.stats-card-header{background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border-light)}
-.stat-row{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--border-light);gap:6px}
+.stats-card-header{background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid var(--border);align-items:center;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--border-light);gap:6px}
 .stat-row:last-child{border-bottom:none}
 .stat-label{font-size:11.5px;color:var(--muted);flex-shrink:0}
 .stat-value{font-size:12px;font-weight:500;color:var(--text);font-family:'Bebas Neue',sans-serif;text-align:right}
@@ -99,8 +101,7 @@ footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-siz
 
 /* DIMENSION CARD */
 .dim-card{border:1px solid var(--border-light);border-radius:10px;overflow:hidden;flex-shrink:0}
-.dim-card-header{background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border-light)}
-.dim-row{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border-light)}
+.dim-card-header{background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid var(--border);align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border-light)}
 .dim-row:last-child{border-bottom:none}
 .dim-label{font-size:11px;color:var(--muted);flex-shrink:0;min-width:60px;font-style:italic}
 .dim-input{flex:1;padding:3px 6px;border:1px solid var(--border);border-radius:5px;font-size:11px;font-family:'DM Mono',monospace;color:var(--text);background:var(--white);text-align:right;min-width:0}
@@ -109,9 +110,7 @@ footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-siz
 
 /* ANGLE CARD */
 .angle-card-3d{border:1px solid var(--border-light);border-radius:10px;overflow:hidden;flex-shrink:0}
-.angle-card-3d-header{background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border-light)}
-#angle-rows-3d{overflow:visible}
-.angle-row-3d{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border-light)}
+.angle-card-3d-header{background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid var(--border);align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--border-light)}
 .angle-row-3d:last-child{border-bottom:none}
 .angle-label-3d{font-size:11px;color:var(--muted);flex-shrink:0;min-width:110px;font-style:italic}
 .angle-input-3d{flex:1;padding:3px 6px;border:1px solid var(--border);border-radius:5px;font-size:11px;font-family:'DM Mono',monospace;color:var(--text);background:var(--white);text-align:right;min-width:0}
@@ -121,8 +120,7 @@ footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-siz
 
 /* EULER CARD */
 .euler-card{border:1px solid var(--border-light);border-radius:10px;overflow:hidden;flex-shrink:0}
-.euler-card-header{background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border-light)}
-.euler-row{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--border-light);gap:6px}
+.euler-card-header{background:#f8f9fa;padding:7px 12px;font-size:10.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;border-bottom:1.5px solid var(--border);align-items:center;justify-content:space-between;padding:7px 12px;border-bottom:1px solid var(--border-light);gap:6px}
 .euler-row:last-child{border-bottom:none}
 .euler-label{font-size:11px;color:var(--muted)}
 .euler-val{font-size:12px;font-weight:500;font-family:'Bebas Neue',sans-serif}
@@ -146,6 +144,8 @@ footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-siz
 </head>
 <body>
 <div id="splash" style="display:none"></div>
+<div id="topbar" style="display:none"></div>
+<div id="disclaimer" style="display:none"></div>
 
 </div>
 
@@ -188,6 +188,7 @@ footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-siz
     <div id="canvas-wrap">
       <canvas id="three-canvas"></canvas>
       <button id="wireframe-btn" onclick="toggleWireframe()">⬡ Wireframe</button>
+      <button id="reset-shape-btn" onclick="resetCurrentShape()">↺ Reset Shape</button>
       <button id="reset-view-btn" onclick="resetView()">↺ Reset View</button>
     </div>
 
@@ -265,7 +266,6 @@ footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-siz
       <div class="notice">Curved shapes (sphere, cone, cylinder) use calculus-based formulas · Euler's formula applies to polyhedra only</div>
 
     </div>
-    <div class="panel-footer">A tool by Leon Dudhill · Geometry Explorer 3D</div>
   </div>
 
 </div>
@@ -273,6 +273,13 @@ footer.rf-footer{border-top:1.5px solid var(--border);padding:11px 24px;font-siz
 
 
 <script>
+// Safe stub so onclick handlers work before Three.js loads
+window._pendingLoad = null;
+window.loadShape = function(name, btn) {
+  window._pendingLoad = {name: name, btn: btn};
+  if (window._appReady) window._doLoadShape(name, btn);
+};
+
 (function(){
   const s=document.createElement('script');
   s.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
@@ -328,6 +335,13 @@ window.resetView = function() {
   camTheta = Math.PI / 6; camPhi = Math.PI / 4; camDist = 7;
   camTarget.set(0,0,0);
   updateCamera();
+}
+
+window.resetCurrentShape = function() {
+  if(!currentShapeName) return;
+  // Re-call loadShape with the current shape name — resets state to defaults
+  window._doLoadShape(currentShapeName, document.querySelector('#toolbar .ctrl-btn.active'));
+  resetView();
 }
 
 wrap.addEventListener('mousedown', e => { isDragging = true; lastMX = e.clientX; lastMY = e.clientY; });
@@ -698,7 +712,7 @@ const SHAPES={
       const usePts=pts.slice(0,7);
       const cx=usePts.reduce((s,p)=>s+p.x,0)/7;
       const cy=usePts.reduce((s,p)=>s+p.y,0)/7;
-      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+      return usePts.map(p=>({x:p.x-cx,y:p.y-cy}));
     },
     _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
     volume:function(){
@@ -776,7 +790,7 @@ const SHAPES={
       const usePts=pts.slice(0,8);
       const cx=usePts.reduce((s,p)=>s+p.x,0)/8;
       const cy=usePts.reduce((s,p)=>s+p.y,0)/8;
-      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+      return usePts.map(p=>({x:p.x-cx,y:p.y-cy}));
     },
     _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
     volume:function(){
@@ -854,7 +868,7 @@ const SHAPES={
       const usePts=pts.slice(0,9);
       const cx=usePts.reduce((s,p)=>s+p.x,0)/9;
       const cy=usePts.reduce((s,p)=>s+p.y,0)/9;
-      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+      return usePts.map(p=>({x:p.x-cx,y:p.y-cy}));
     },
     _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
     volume:function(){
@@ -932,7 +946,7 @@ const SHAPES={
       const usePts=pts.slice(0,10);
       const cx=usePts.reduce((s,p)=>s+p.x,0)/10;
       const cy=usePts.reduce((s,p)=>s+p.y,0)/10;
-      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+      return usePts.map(p=>({x:p.x-cx,y:p.y-cy}));
     },
     _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
     volume:function(){
@@ -1007,7 +1021,7 @@ const SHAPES={
       const usePts=pts.slice(0,11);
       const cx=usePts.reduce((s,p)=>s+p.x,0)/11;
       const cy=usePts.reduce((s,p)=>s+p.y,0)/11;
-      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+      return usePts.map(p=>({x:p.x-cx,y:p.y-cy}));
     },
     _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
     volume:function(){const s=this._state,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);if(s.topScale<0.01)return(1/3)*Ab*s.h;const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));const At=this._polyArea(top),mid=base.map((p,i)=>({x:(p.x+top[i].x)/2,y:(p.y+top[i].y)/2}));return s.h/6*(Ab+4*this._polyArea(mid)+At);},
@@ -1054,7 +1068,7 @@ const SHAPES={
       const usePts=pts.slice(0,12);
       const cx=usePts.reduce((s,p)=>s+p.x,0)/12;
       const cy=usePts.reduce((s,p)=>s+p.y,0)/12;
-      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+      return usePts.map(p=>({x:p.x-cx,y:p.y-cy}));
     },
     _polyArea:function(pts){let a=0;for(let i=0;i<pts.length;i++){const j=(i+1)%pts.length;a+=pts[i].x*pts[j].y-pts[j].x*pts[i].y;}return Math.abs(a)/2;},
     volume:function(){const s=this._state,base=this._buildPoly(s.sides,s.angles),Ab=this._polyArea(base);if(s.topScale<0.01)return(1/3)*Ab*s.h;const top=s.topUnlocked?this._buildPoly(s.topSides,s.topAngles):base.map(p=>({x:p.x*s.topScale,y:p.y*s.topScale}));const At=this._polyArea(top),mid=base.map((p,i)=>({x:(p.x+top[i].x)/2,y:(p.y+top[i].y)/2}));return s.h/6*(Ab+4*this._polyArea(mid)+At);},
@@ -1110,7 +1124,7 @@ const SHAPES={
       const usePts=pts.slice(0,5);
       const cx=usePts.reduce((s,p)=>s+p.x,0)/5;
       const cy=usePts.reduce((s,p)=>s+p.y,0)/5;
-      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+      return usePts.map(p=>({x:p.x-cx,y:p.y-cy}));
     },
     _polyArea:function(pts){
       let a=0;
@@ -1305,7 +1319,7 @@ const SHAPES={
       const usePts=pts.slice(0,6);
       const cx=usePts.reduce((s,p)=>s+p.x,0)/6;
       const cy=usePts.reduce((s,p)=>s+p.y,0)/6;
-      return usePts.map(p=>{x:p.x-cx,y:p.y-cy});
+      return usePts.map(p=>({x:p.x-cx,y:p.y-cy}));
     },
     _polyArea:function(pts){
       let a=0;
@@ -1496,8 +1510,10 @@ const SHAPES={
 function resize(){
   const isMobile=window.innerWidth<=900;
   if(!isMobile){
-    const topbarH=document.getElementById('topbar').getBoundingClientRect().height;
-    const disclaimerH=document.getElementById('disclaimer').getBoundingClientRect().height;
+    const headerEl=document.querySelector('header');
+    const footerEl=document.querySelector('footer.rf-footer');
+    const topbarH=headerEl?headerEl.getBoundingClientRect().height:82;
+    const disclaimerH=footerEl?footerEl.getBoundingClientRect().height:44;
     document.getElementById('app').style.height=(window.innerHeight-topbarH-disclaimerH)+'px';
   } else {
     document.getElementById('app').style.height='';
@@ -1567,11 +1583,39 @@ function rebuildMesh(){
     shapeMesh.castShadow=true;
     wireframeMesh=new THREE.LineSegments(new THREE.EdgesGeometry(geo,20),new THREE.LineBasicMaterial({color:0x1a73e8}));
   }
+  // Sync _state.angles back from actual rendered polygon vertices
+  // so panel always shows what's rendered, not what was typed
+  if(isPolygonSolid){
+    try{
+      const def2=SHAPES[currentShapeName];
+      const s2=def2._state;
+      const actualPts=def2._buildPoly(s2.sides,s2.angles);
+      const N2=actualPts.length;
+      const syncedAngles=actualPts.map((p,i)=>{
+        const prev=actualPts[(i+N2-1)%N2],next=actualPts[(i+1)%N2];
+        const ax=prev.x-p.x,ay=prev.y-p.y;
+        const bx=next.x-p.x,by=next.y-p.y;
+        const dot=ax*bx+ay*by;
+        const cross=ax*by-ay*bx;
+        return Math.round(Math.atan2(Math.abs(cross),dot)*180/Math.PI);
+      });
+      // Only update if the synced angles are valid (sum close to expected)
+      const SUMS2={triangle_solid:180,quadrangle_solid:360,pentagon_solid:540,
+        hexagon_solid:720,heptagon_solid:900,octagon_solid:1080,
+        nonagon_solid:1260,decagon_solid:1440,hendecagon_solid:1620,dodecagon_solid:1800};
+      const expected2=SUMS2[currentShapeName];
+      const actualSum=syncedAngles.reduce((a,b)=>a+b,0);
+      if(expected2&&Math.abs(actualSum-expected2)<10){
+        syncedAngles.forEach((a,i)=>{ s2.angles[i]=a; });
+        if(!s2.topUnlocked) s2.topAngles=[...s2.angles];
+      }
+    }catch(e){}
+  }
   scene.add(shapeMesh);scene.add(wireframeMesh);
 }
 
 // ─── LOAD SHAPE ───────────────────────────────────────────────────────────────
-window.loadShape=function(name,btnEl){
+window._doLoadShape=function(name,btnEl){
   currentShapeName=name;
   const def=SHAPES[name];
   currentDims={};
@@ -1715,7 +1759,7 @@ window.applyQuadSolidPreset=function(preset){
 function pBtn(label,onclick){
   const b=document.createElement('button');
   b.textContent=label;b.onclick=onclick;
-  b.style.cssText='padding:3px 10px;border:1px solid var(--border);border-radius:14px;background:var(--white);font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text);';
+  b.style.cssText='padding:3px 10px;border:1px solid var(--border);border-radius:14px;background:var(--white);font-size:11px;cursor:pointer;font-family:DM Sans,sans-serif;color:var(--text);';
   return b;
 }
 function pCard(title,content){
@@ -2010,7 +2054,7 @@ function buildNGonPanel(cfg){
     topHeader.innerHTML=`<span>Top ${title}</span>`;
     const lockBtn=document.createElement('button');
     lockBtn.textContent=s.topUnlocked?'🔓 Independent':'🔒 Linked to base';
-    lockBtn.style.cssText='font-size:10px;padding:2px 8px;border:1px solid var(--border);border-radius:10px;cursor:pointer;background:var(--white);font-family:'DM Sans',sans-serif;';
+    lockBtn.style.cssText='font-size:10px;padding:2px 8px;border:1px solid var(--border);border-radius:10px;cursor:pointer;background:var(--white);font-family:DM Sans,sans-serif;';
     lockBtn.onclick=()=>{s.topUnlocked=!s.topUnlocked;if(!s.topUnlocked){s.topSides=[...s.sides];s.topAngles=[...s.angles];}buildFn();rebuildMesh();updatePanel();};
     topHeader.appendChild(lockBtn);
     const topCard=document.createElement('div');topCard.style.cssText='border:1px solid var(--border-light);border-radius:10px;overflow:hidden;';
@@ -2276,15 +2320,22 @@ function animate(){requestAnimationFrame(animate);updateCamera();renderer.render
 // ─── BOOT ─────────────────────────────────────────────────────────────────────
   resize();
   resetView();
-  loadShape('solid_of_revolution',document.querySelector('#toolbar .ctrl-btn'));
+  _doLoadShape('solid_of_revolution',document.querySelector('#toolbar .ctrl-btn'));
   window.addEventListener('resize',resize);
   animate();
+  // Signal app is ready and process any pending shape load from early clicks
+  window._appReady = true;
+  window.loadShape = function(name, btn) { window._doLoadShape(name, btn); };
+  if (window._pendingLoad) {
+    window._doLoadShape(window._pendingLoad.name, window._pendingLoad.btn);
+    window._pendingLoad = null;
+  }
 
 } // end initApp
 </script>
 <footer class="rf-footer">
   <span class="rf-footer-label">DISCLAIMER</span>
-  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. — Leon Dudhill
+  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta test. — Leon Dudhill
 </footer>
 </body>
 </html>

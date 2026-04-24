@@ -8,13 +8,13 @@
 <style>
 :root {
   --bg: #ffffff;
-  --surface: #f0f5ff;
+  --surface: #eff6ff;
   --surface2: #dbeafe;
-  --border: #bdd0f7;
+  --border: #93c5fd;
   --border-light: #dbeafe;
   --text: #0d1b3e;
   --text-muted: #4a6190;
-  --accent: #2563eb;
+  --accent: #0b5fcb;
   --accent-light: #eff6ff;
   --correct: #2a9d5c;
   --wrong: #e84c1e;
@@ -58,7 +58,7 @@ header {
 .logo .forge { color: var(--accent); }
 .logo .dim   { color: #111111; letter-spacing: 2px; }
 .header-byline { font-size: 11px; color: #111111; font-weight: 400; letter-spacing: 0.3px; text-align: right; }
-.header-byline strong { font-weight: 700; color: #111111; }
+.header-byline strong { font-weight: 700; color: var(--accent); }
 
 /* ── APP LAYOUT ── */
 #app {
@@ -66,7 +66,7 @@ header {
   grid-template-columns: 1fr 300px;
   flex: 1;
   min-height: 0;
-  height: calc(100vh - 82px - 44px);
+  height: calc(100vh - 82px - 46px);
 }
 
 /* ── CANVAS AREA ── */
@@ -247,8 +247,9 @@ header {
 footer {
   border-top: 1.5px solid var(--border);
   padding: 11px 24px;
-  font-size: 11.5px; color: var(--text-muted);
+  font-size: 11.5px; color: #111111;
   background: var(--surface); line-height: 1.5; flex-shrink: 0;
+  position: sticky; bottom: 0; z-index: 150;
 }
 .footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; font-family: "DM Sans", sans-serif; }
 
@@ -365,7 +366,7 @@ footer {
 
 <footer>
   <span class="footer-label">DISCLAIMER</span>
-  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. - Leon Dudhill
+  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta test. — Leon Dudhill
 </footer>
 
 <script>

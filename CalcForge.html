@@ -7,9 +7,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
+  --accent: #2196f3;
   --bg: #f8f9fa;
-  --surface: #fff;
-  --border: #dadce0;
+  --surface: #e3f2fd;
+  --border: #90caf9;
   --border2: #e8eaed;
   --blue: #1a73e8;
   --blue2: #1557b0;
@@ -22,7 +23,7 @@
   --yellow-light: #fef7e0;
   --purple: #7c4dff;
   --purple-light: #ede7f6;
-  --text: #202124;
+  --text: #0d1b3e;
   --muted: #5f6368;
   --dim: #9aa0a6;
   --screen-bg: #e8f0fe;
@@ -353,7 +354,7 @@ textarea.pi { width: 100%; resize: none; height: 50px; }
   /* ── REVISEFORGE HEADER ── */
   header {
     padding: 14px 24px;
-    border-bottom: 1.5px solid #bdd0f7;
+    border-bottom: 1.5px solid var(--border);
     display: flex; align-items: center; justify-content: space-between;
     flex-shrink: 0; background: #ffffff;
     position: sticky; top: 0; z-index: 200;
@@ -363,9 +364,9 @@ textarea.pi { width: 100%; resize: none; height: 50px; }
     font-size: 52px; letter-spacing: 2px;
     color: #0d1b3e; line-height: 1; text-decoration: none;
   }
-  .rf-forge { color: #2563eb; }
+  .rf-forge { color: var(--accent); }
   .rf-byline { font-size: 11px; color: #111111; font-weight: 400; letter-spacing: 0.3px; text-align: right; }
-  .rf-byline strong { font-weight: 700; color: #111111; }
+  .rf-byline strong { font-weight: 700; color: var(--accent); }
 
   /* ── REVISEFORGE FOOTER ── */
   .rf-footer {
@@ -375,7 +376,7 @@ textarea.pi { width: 100%; resize: none; height: 50px; }
     background: #f0f5ff; line-height: 1.5;
     font-family: 'DM Sans', sans-serif;
   }
-  .rf-footer-label { font-weight: 700; letter-spacing: 1px; color: #2563eb; margin-right: 6px; }
+  .rf-footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; }
 
   body { padding-top: 0 !important; }
 </style>
@@ -385,7 +386,7 @@ textarea.pi { width: 100%; resize: none; height: 50px; }
 
 <header>
   <a href="../index.html" class="rf-logo"><span class="rf-study">Calc</span><span class="rf-forge">Forge</span></a>
-  <div class="rf-byline">A website by <strong style="color:var(--accent)">Leon Dudhill</strong></div>
+  <div class="rf-byline">A website by <strong>Leon Dudhill</strong></div>
 </header>
 
 
@@ -409,8 +410,8 @@ textarea.pi { width: 100%; resize: none; height: 50px; }
   <!-- TOP MODE SWITCHER -->
   <div class="top-mode-bar">
     <button class="top-mode-btn tm-std active"  onclick="switchTopMode('std')">Standard</button>
-    <button class="top-mode-btn tm-gcse"         onclick="switchTopMode('gcse')">GCSE</button>
-    <button class="top-mode-btn tm-alv"          onclick="switchTopMode('alv')">A-Level</button>
+    <button class="top-mode-btn tm-gcse"         onclick="switchTopMode('gcse')">Scientific</button>
+    <button class="top-mode-btn tm-alv"          onclick="switchTopMode('alv')">Graphic</button>
   </div>
 
   <!-- DISPLAY BEZEL -->
@@ -609,7 +610,7 @@ textarea.pi { width: 100%; resize: none; height: 50px; }
       </div>
     </div>
 
-  </div>                                                    -->
+  </div>
   <!-- =============================================================== -->
   <div id="mode-alv" class="mode-section" style="display:none;">
     <div class="alv-tabs">
@@ -1401,7 +1402,7 @@ function drawGraph(){
   ctx.strokeStyle='#e8eaed';ctx.lineWidth=1;
   for(let gx=Math.ceil(xmn/gsx)*gsx;gx<=xmx;gx+=gsx){ctx.beginPath();ctx.moveTo(xToP(gx,xmn,xmx),0);ctx.lineTo(xToP(gx,xmn,xmx),CH);ctx.stroke();}
   for(let gy=Math.ceil(ymn/gsy)*gsy;gy<=ymx;gy+=gsy){ctx.beginPath();ctx.moveTo(0,yToP(gy,ymn,ymx));ctx.lineTo(CW,yToP(gy,ymn,ymx));ctx.stroke();}
-  ctx.strokeStyle='#dadce0';ctx.lineWidth=1.5;
+  ctx.strokeStyle='var(--border)';ctx.lineWidth=1.5;
   const ax=xToP(0,xmn,xmx),ay=yToP(0,ymn,ymx);
   ctx.beginPath();ctx.moveTo(ax,0);ctx.lineTo(ax,CH);ctx.stroke();
   ctx.beginPath();ctx.moveTo(0,ay);ctx.lineTo(CW,ay);ctx.stroke();
@@ -1700,7 +1701,7 @@ document.addEventListener('keydown', e => {
 </div>
 <footer class="rf-footer">
   <span class="rf-footer-label">DISCLAIMER</span>
-  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. — Leon Dudhill
+  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta test. — Leon Dudhill
 </footer>
 </body>
 </html>

@@ -40,9 +40,15 @@
   .level-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
   .lv-toggle { position: relative; cursor: pointer; }
   .lv-toggle input { display: none; }
-  .lv-toggle .pill { display: flex; align-items: center; justify-content: space-between; height: 44px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--surface); font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; color: var(--text-muted); transition: all 0.15s ease; user-select: none; padding: 0 14px; }
-  .lv-toggle .pill .lv-range { display: none; }
+    .lv-toggle .pill {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 44px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: var(--surface); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    transition: all 0.15s ease; user-select: none; padding: 0 14px;
+  }
   .lv-toggle input:checked + .pill { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .lv-toggle .pill .lv-range { display: none; }
   .lv-toggle input:checked + .pill .lv-range { color: rgba(255,255,255,0.75); opacity: 1; }
   .lv-toggle .mastered-badge { position: absolute; top: -4px; right: -4px; width: 10px; height: 10px; background: var(--accent2); border-radius: 50%; border: 1.5px solid #fff; display: none; }
   .lv-toggle.has-mastered .mastered-badge { display: block; }
@@ -105,7 +111,7 @@
 <body>
 <header>
   <div class="logo">Round<span>Forge</span></div>
-  <div class="byline">A tool by <strong style="color:var(--accent)">Leon Dudhill</strong></div>
+  <div class="byline">A tool by <strong>Leon Dudhill</strong></div>
 </header>
 <div class="score-bar" id="scoreBar">
   <div class="score-bar-item"><span class="score-bar-label">Correct</span><span class="score-bar-value" id="sbCorrect">0</span></div>
@@ -163,7 +169,10 @@
     <button class="reset-btn" id="resetBtnMobile">Reset Progress</button>
   </div>
 </div>
-<footer><span class="footer-label">DISCLAIMER</span> This tool was built for my own personal GCSE revision. You\'re welcome to use it, but it may contain errors and shouldn\'t be solely relied upon. Consider this a beta. — Leon Dudhill</footer>
+<footer>
+  <span class="footer-label">DISCLAIMER</span>
+  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta test. — Leon Dudhill
+</footer>
 <div class="toast" id="toast"></div>
 <script>
 const LEVELS = [
@@ -269,21 +278,11 @@ const mobileDrawer  = document.getElementById('mobileDrawer');
 
 function renderLevelGrid(gridEl) {
   gridEl.innerHTML = '';
-  const sections = [
-    { label: '', ids: [1, 2, 3] },
-    { label: '', ids: [4, 5, 6] },
-  ];
-  sections.forEach(sec => {
-    if(sec.label){
-      const heading = document.createElement('div');
-      heading.className = 'level-section-label';
-      heading.textContent = sec.label;
-      gridEl.appendChild(heading);
-    }
-    const grid = document.createElement('div');
-    grid.className = 'level-grid';
-    gridEl.appendChild(grid);
-    sec.ids.forEach(id => {
+  const grid = document.createElement('div');
+  grid.className = 'level-grid';
+  gridEl.appendChild(grid);
+  const allIds = [1, 2, 3, 4, 5, 6];
+  allIds.forEach(id => {
       const l = LEVELS.find(x => x.id === id);
       const hasMastered = [...mastered].some(k => k.startsWith(l.id + ':'));
       const wrapper = document.createElement('label');
@@ -303,7 +302,6 @@ function renderLevelGrid(gridEl) {
       badge.className = 'mastered-badge';
       wrapper.appendChild(input); wrapper.appendChild(pill); wrapper.appendChild(badge);
       grid.appendChild(wrapper);
-    });
   });
 }
 
@@ -423,7 +421,7 @@ function updateStats() {
   const barColor = pct === null ? 'var(--correct)' : pct <= 25 ? '#e84c1e' : pct <= 50 ? '#f07d20' : pct <= 70 ? '#f5c518' : 'var(--correct)';
   pctBar.style.background = barColor; sbPctBar.style.background = barColor;
   const ss = stats.sessionStreak || 0;
-  statStreak.textContent = ss >= 3 ? '\uD83D\uDD25 ' + ss + ' in a row' : '';
+  statStreak.textContent = ss >= 5 ? '🔥'.repeat(Math.floor(ss / 5)) + ' ' + ss + ' in a row' : '';
 }
 
 function renderMastered() {

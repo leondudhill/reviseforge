@@ -33,9 +33,15 @@
   .level-grid{display:grid;grid-template-columns:1fr;gap:8px;}
   .lv-toggle{position:relative;cursor:pointer;}
   .lv-toggle input{display:none;}
-  .lv-toggle .pill{display:flex;align-items:center;justify-content:space-between;height:44px;border-radius:8px;border:1.5px solid var(--border);background:var(--surface);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--text-muted);transition:all 0.15s ease;user-select:none;padding:0 14px;}
-  .lv-toggle .pill .lv-range{font-family:'DM Mono',monospace;font-size:11px;font-weight:400;color:var(--text-muted);opacity:0.7;}
-  .lv-toggle input:checked+.pill{background:var(--accent);border-color:var(--accent);color:#fff;}
+    .lv-toggle .pill {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 44px; border-radius: 8px; border: 1.5px solid var(--border);
+    background: var(--surface); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; color: var(--text-muted);
+    transition: all 0.15s ease; user-select: none; padding: 0 14px;
+  }
+  .lv-toggle input:checked + .pill { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .lv-toggle .pill .lv-range{display:none;}
   .lv-toggle input:checked+.pill .lv-range{color:rgba(255,255,255,0.75);opacity:1;}
   .lv-toggle .mastered-badge{position:absolute;top:-4px;right:-4px;width:10px;height:10px;background:var(--accent2);border-radius:50%;border:1.5px solid #fff;display:none;}
   .lv-toggle.has-mastered .mastered-badge{display:block;}
@@ -91,7 +97,7 @@
   .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--text);color:#fff;font-family:'DM Sans',sans-serif;font-weight:600;font-size:14px;padding:12px 24px;border-radius:30px;pointer-events:none;transition:transform 0.3s cubic-bezier(0.34,1.56,0.64,1),opacity 0.3s;opacity:0;z-index:999;white-space:nowrap;}
   .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
   .toast.mastered-toast{background:var(--accent2);color:var(--text);}
-  footer{border-top:1.5px solid var(--border);padding:11px 24px;font-size:11.5px;color:var(--text-muted);background:var(--surface);line-height:1.5;flex-shrink:0;}
+  footer{border-top:1.5px solid var(--border);padding:11px 24px;font-size:11.5px;color: #111111;background:var(--surface);line-height:1.5;flex-shrink:0;}
   .footer-label{font-weight:700;letter-spacing:1px;color:var(--accent);margin-right:6px;}
   @media(max-width:860px){.layout{grid-template-columns:200px 1fr;}.sidebar-right{display:none;}.score-bar{display:flex;}}
   @media(max-width:580px){.layout{grid-template-columns:1fr;}.sidebar{display:none;}.sidebar-right{display:none;}.score-bar{display:flex;}.mobile-drawer-toggle{display:flex;}.main{padding:28px 16px;gap:22px;}header{padding:12px 16px;}.byline{display:none;}footer{padding:10px 16px;font-size:10.5px;}}
@@ -162,15 +168,18 @@
     <button class="reset-btn" id="resetBtnMobile">Reset Progress</button>
   </div>
 </div>
-<footer><span class="footer-label">DISCLAIMER</span> This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. &#8212; Leon Dudhill</footer>
+<footer>
+  <span class="footer-label">DISCLAIMER</span>
+  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta test. — Leon Dudhill
+</footer>
 <div class="toast" id="toast"></div>
 <script>
 // LEVELS: direction of conversion + magnitude range
 const LEVELS = [
-  { id:1, name:'To Std Form',  desc:'positive n', type:'toSF',   minPow:1,  maxPow:6  },
-  { id:2, name:'From Std Form',desc:'positive n', type:'fromSF', minPow:1,  maxPow:6  },
-  { id:3, name:'Neg Powers',   desc:'negative n', type:'toSF',   minPow:-6, maxPow:-1 },
-  { id:4, name:'From Neg Pow', desc:'negative n', type:'fromSF', minPow:-6, maxPow:-1 },
+  { id:1, name:'To Std Form',  desc:'', type:'toSF',   minPow:1,  maxPow:6  },
+  { id:2, name:'From Std Form',desc:'', type:'fromSF', minPow:1,  maxPow:6  },
+  { id:3, name:'Neg Powers',   desc:'', type:'toSF',   minPow:-6, maxPow:-1 },
+  { id:4, name:'From Neg Pow', desc:'', type:'fromSF', minPow:-6, maxPow:-1 },
 ];
 
 function randInt(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
@@ -425,7 +434,7 @@ function updateStats(){
   sbMastered.textContent=mastered.size;
   const barColor=pct===null?'var(--correct)':pct<=25?'#e84c1e':pct<=50?'#f07d20':pct<=70?'#f5c518':'var(--correct)';
   pctBar.style.background=barColor;sbPctBar.style.background=barColor;
-  const ss=stats.sessionStreak||0;statStreak.textContent=ss>=3?'\uD83D\uDD25 '+ss+' in a row':'';
+  const ss=stats.sessionStreak||0;statStreak.textContent=ss>=5?'🔥'.repeat(Math.floor(ss/5))+' '+ss+' in a row':'';
 }
 function renderMastered(){
   masteredCount.textContent=mastered.size;sbMastered.textContent=mastered.size;

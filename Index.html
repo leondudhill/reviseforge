@@ -10,10 +10,10 @@
     --bg: #ffffff;
     --surface: #fdf4f8;
     --surface2: #f5e0ec;
-    --border: #e0b8d0;
+    --border: #d0d0d0;
     --text: #1e0e18;
     --text-muted: #7a4f68;
-    --accent: #d63384;
+    --accent: #888888;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -74,7 +74,7 @@
   .logo .logo-study { font-weight: 700; color: #111111; }
   .logo .logo-forge { font-weight: 700; color: #888888; }
   .header-byline { font-size: 11px; color: #111111; font-weight: 400; letter-spacing: 0.3px; text-align: right; }
-  .header-byline strong { font-weight: 700; color: #111111; }
+  .header-byline strong { font-weight: 700; color: var(--accent); }
 
 
   /* ===================== MAIN ===================== */
@@ -227,7 +227,7 @@
 
 <header>
   <div class="logo"><span class="logo-study">Revise</span><span class="logo-forge">Forge</span></div>
-  <div class="header-byline">A website by <strong style="color:var(--accent)">Leon Dudhill</strong></div>
+  <div class="header-byline">A website by <strong>Leon Dudhill</strong></div>
 </header>
 
 <main class="main">
@@ -271,7 +271,7 @@
 
 <footer>
   <span class="footer-label">DISCLAIMER</span>
-  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. — Leon Dudhill
+  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta test. — Leon Dudhill
 </footer>
 
 <script>

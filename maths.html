@@ -38,7 +38,7 @@
   .logo .logo-study { font-weight: 400; color: var(--text); }
   .logo .logo-forge { font-weight: 700; color: var(--accent); }
   .header-byline { font-size: 11px; color: #111111; font-weight: 400; letter-spacing: 0.3px; text-align: right; }
-  .header-byline strong { font-weight: 700; color: #111111; }
+  .header-byline strong { font-weight: 700; color: var(--accent); }
 
   /* ===================== MAIN ===================== */
   .main {
@@ -200,7 +200,7 @@
   /* ===================== FOOTER ===================== */
   footer {
     border-top: 1.5px solid var(--border); padding: 11px 24px;
-    font-size: 11.5px; color: var(--text-muted);
+    font-size: 11.5px; color: #111111;
     background: var(--surface); line-height: 1.5; flex-shrink: 0;
   }
   .footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; }
@@ -217,12 +217,14 @@
     footer { padding: 10px 16px; font-size: 10.5px; }
   }
 </style>
+
+<script>sessionStorage.setItem('visited','1');</script>
 </head>
 <body>
 
 <header>
   <a href="../index.html" class="logo"><span class="logo-study">Maths</span><span class="logo-forge">Forge</span></a>
-  <div class="header-byline">A website by <strong style="color:var(--accent)">Leon Dudhill</strong></div>
+  <div class="header-byline">A website by <strong>Leon Dudhill</strong></div>
 </header>
 
 <main class="main">
@@ -373,7 +375,7 @@
 
 <footer>
   <span class="footer-label">DISCLAIMER</span>
-  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta. — Leon Dudhill
+  This tool was built for my own personal GCSE revision. You're welcome to use it, but it may contain errors and shouldn't be solely relied upon. Consider this a beta test. — Leon Dudhill
 </footer>
 
 </body>

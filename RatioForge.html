@@ -3,22 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SubtractionForge — Leon Dudhill</title>
+<title>RatioForge — ReviseForge</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #ffffff;
-    --surface: #eef2ff;
+    --surface: #eff6ff;
     --surface2: #dbeafe;
-    --border: #b3c6f5;
-    --text: #0d1835;
-    --text-muted: #3d5585;
-    --accent: #1d4ed8;
+    --border: #93c5fd;
+    --text: #0b1d40;
+    --text-muted: #2e5fa0;
+    --accent: #1d6fea;
     --accent2: #f5a623;
     --correct: #2a9d5c;
-    --wrong: #c0392b;
-    --acc-yellow: #f5c518;
-    --acc-orange: #f5821e;
+    --wrong: #e84c1e;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -50,9 +48,9 @@
   }
   .logo span { color: var(--accent); }
   .byline { font-size: 11px; color: var(--text-muted); letter-spacing: 0.5px; font-weight: 500; }
-  .byline strong { color: var(--accent); font-weight: 700; }
+  .byline strong { font-weight: 700; color: var(--accent); }
 
-  /* ===================== SCORE BAR (tablet + mobile) ===================== */
+  /* ===================== SCORE BAR ===================== */
   .score-bar {
     display: none;
     background: var(--surface);
@@ -81,7 +79,6 @@
   /* ===================== SIDEBARS ===================== */
   .sidebar { border-right: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; }
   .sidebar-right { border-right: none; border-left: 1.5px solid var(--border); }
-  .sidebar-title { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 14px; }
 
   /* ===================== LEVEL TOGGLES ===================== */
   .level-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
@@ -96,9 +93,9 @@
     transition: all 0.15s ease; user-select: none; padding: 0 14px;
   }
   .lv-toggle input:checked + .pill { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .lv-toggle .pill .lv-name { }
   .lv-toggle .pill .lv-range { display: none; }
   .lv-toggle input:checked + .pill .lv-range { color: rgba(255,255,255,0.75); opacity: 1; }
+
   .lv-toggle .mastered-badge {
     position: absolute; top: -4px; right: -4px;
     width: 10px; height: 10px; background: var(--accent2);
@@ -112,7 +109,7 @@
     font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
     color: var(--text-muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px;
   }
-  .toggle-all-btn:hover { border-color: var(--text); color: var(--text); }
+  .toggle-all-btn:hover { border-color: var(--accent); color: var(--accent); }
   .reset-btn {
     margin-top: 8px; width: 100%; padding: 8px; background: none;
     border: 1.5px solid #f2c4bb; border-radius: 6px;
@@ -121,60 +118,77 @@
   }
   .reset-btn:hover { background: #fff0ed; }
 
-  /* ===================== LEVEL BADGE in sidebar ===================== */
-  .level-info {
-    margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border);
-  }
-  .level-info-title { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
-  .level-desc { font-size: 11px; color: var(--text-muted); line-height: 1.6; }
-
   /* ===================== MAIN ===================== */
   .main {
     display: flex; flex-direction: column; align-items: center;
     justify-content: center; padding: 40px 20px; gap: 28px;
   }
-  .question-card { text-align: center; }
-  .level-chip {
-    display: inline-block; font-family: 'DM Mono', monospace; font-size: 10px;
-    font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase;
-    background: var(--surface); border: 1.5px solid var(--border);
-    border-radius: 20px; padding: 3px 10px; color: var(--text-muted);
-    margin-bottom: 10px; transition: all 0.3s;
+
+  /* Ratio display: A : B */
+  .ratio-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    line-height: 1;
   }
-  .level-chip.l1 { border-color: #f9a8a8; color: #c0392b; background: #fff5f5; }
-  .level-chip.l2 { border-color: #f5c518; color: #8a6d00; background: #fffbea; }
-  .level-chip.l3 { border-color: #6bc5a0; color: #1a6e4a; background: #f0faf5; }
-  .level-chip.l4 { border-color: #9b8de8; color: #4a3a8a; background: #f5f3ff; }
-  .question-text {
+  .ratio-num {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(52px, 9vw, 88px);
-    letter-spacing: 3px; line-height: 1; color: var(--text);
+    font-size: clamp(52px, 8vw, 88px);
+    letter-spacing: 3px;
+    color: var(--text);
   }
-  .question-sub { font-size: 13px; color: var(--text-muted); margin-top: 6px; font-weight: 500; letter-spacing: 0.5px; min-height: 20px; }
+  .ratio-colon {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 6vw, 70px);
+    color: var(--accent);
+    letter-spacing: 0;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .question-sub { font-size: 13px; color: var(--text-muted); margin-top: 10px; font-weight: 500; letter-spacing: 0.5px; min-height: 20px; text-align: center; }
 
   .timer-wrap { width: min(280px, 80vw); height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
   .timer-bar { height: 100%; width: 100%; background: var(--correct); border-radius: 2px; transition: width 0.1s linear, background 0.3s; }
-  .timer-bar.warning { background: var(--acc-yellow); }
-  .timer-bar.urgent  { background: var(--wrong); }
+  .timer-bar.warning        { background: #f5c518; }
+  .timer-bar.warning-orange { background: #f07d20; }
+  .timer-bar.urgent         { background: var(--wrong); }
 
   .streak-dots { display: flex; gap: 6px; justify-content: center; }
   .streak-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); transition: all 0.2s ease; }
   .streak-dot.filled { background: var(--correct); border-color: var(--correct); transform: scale(1.2); }
 
-  .input-row { display: flex; gap: 10px; align-items: center; }
-  .answer-input {
+  /* ===================== RATIO INPUT ===================== */
+  .ratio-input-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ratio-input {
     font-family: 'DM Mono', monospace;
-    font-size: clamp(16px, 5vw, 28px);
-    font-weight: 500; width: 140px; text-align: center;
-    border: 2px solid var(--border); border-radius: 10px;
-    padding: 10px 12px; outline: none;
-    background: var(--surface); color: var(--text);
+    font-size: clamp(18px, 4vw, 26px);
+    font-weight: 500;
+    width: 90px;
+    text-align: center;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    outline: none;
+    background: var(--surface);
+    color: var(--text);
     transition: border-color 0.15s, background 0.15s;
   }
-  .answer-input:focus        { border-color: var(--text); background: #fff; }
-  .answer-input.correct-flash { border-color: var(--correct); background: #edfaf3; }
-  .answer-input.wrong-flash   { border-color: var(--wrong);   background: #fff0ed; }
-  .answer-input:disabled { opacity: 0.5; }
+  .ratio-input:focus { border-color: var(--accent); background: #fff; }
+  .ratio-input.correct-flash { border-color: var(--correct); background: #edfaf3; }
+  .ratio-input.wrong-flash   { border-color: var(--wrong);   background: #fff0ed; }
+  .ratio-input:disabled { opacity: 0.5; }
+
+  .input-colon {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--accent);
+    line-height: 1;
+  }
 
   .submit-btn {
     font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600;
@@ -183,7 +197,7 @@
     transition: all 0.15s; letter-spacing: 0.3px;
     min-height: 48px; min-width: 64px;
   }
-  .submit-btn:hover  { background: var(--accent); }
+  .submit-btn:hover  { filter: brightness(1.1); }
   .submit-btn:active { transform: scale(0.97); }
 
   .feedback-msg { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; min-height: 26px; }
@@ -196,10 +210,11 @@
   .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
   .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 1px; line-height: 1; color: var(--text); }
   .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .sidebar-title { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 14px; }
   .pct-bar-wrap { height: 5px; background: var(--surface2); border-radius: 3px; margin-top: 8px; overflow: hidden; }
   .pct-bar { height: 100%; background: var(--correct); border-radius: 3px; transition: width 0.5s ease; }
   .divider { border: none; border-top: 1.5px solid var(--border); margin: 18px 0; }
-  .mastered-list { display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto; }
+  .mastered-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
   .mastered-item { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); padding: 3px 6px; background: var(--surface); border-radius: 4px; }
 
   /* ===================== MOBILE DRAWER ===================== */
@@ -214,10 +229,8 @@
   }
   .mobile-drawer-toggle .arrow { font-size: 10px; transition: transform 0.25s; color: var(--text-muted); }
   .mobile-drawer-toggle.open .arrow { transform: rotate(180deg); }
-
   .mobile-drawer { display: none; background: var(--surface); border-top: 1px solid var(--border); padding: 16px 20px 20px; flex-shrink: 0; }
   .mobile-drawer.open { display: block; }
-  .mobile-drawer .level-grid { grid-template-columns: repeat(2, 1fr); }
   .mobile-drawer-actions { display: flex; gap: 8px; margin-top: 10px; }
   .mobile-drawer-actions .toggle-all-btn,
   .mobile-drawer-actions .reset-btn { margin: 0; flex: 1; }
@@ -228,8 +241,7 @@
     transform: translateX(-50%) translateY(80px);
     background: var(--text); color: #fff;
     font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px;
-    padding: 12px 24px; border-radius: 30px;
-    pointer-events: none;
+    padding: 12px 24px; border-radius: 30px; pointer-events: none;
     transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s;
     opacity: 0; z-index: 999; white-space: nowrap;
   }
@@ -266,11 +278,11 @@
 <body>
 
 <header>
-  <div class="logo">Subtraction<span>Forge</span></div>
+  <div class="logo">Ratio<span>Forge</span></div>
   <div class="byline">A tool by <strong>Leon Dudhill</strong></div>
 </header>
 
-<!-- Score bar visible on tablet + mobile -->
+<!-- Score bar: tablet + mobile -->
 <div class="score-bar" id="scoreBar">
   <div class="score-bar-item">
     <span class="score-bar-label">Correct</span>
@@ -297,24 +309,32 @@
 
   <!-- LEFT SIDEBAR -->
   <div class="sidebar">
-    <div class="level-grid" id="levelListDesktop" style="margin-top:4px;"></div>
+    <div class="level-grid" id="levelGridDesktop"></div>
     <button class="toggle-all-btn" id="toggleAllBtnDesktop">Toggle All</button>
     <button class="reset-btn" id="resetBtnDesktop">Reset Progress</button>
   </div>
 
   <!-- MAIN -->
   <div class="main">
-    <div class="question-card">
-      <div class="question-text" id="questionText">—</div>
+    <div class="question-card" style="text-align:center">
+      <div class="ratio-display">
+        <div class="ratio-num" id="ratioA">—</div>
+        <div class="ratio-colon">:</div>
+        <div class="ratio-num" id="ratioB">—</div>
+      </div>
       <div class="question-sub" id="questionSub"></div>
     </div>
+
     <div class="timer-wrap"><div class="timer-bar" id="timerBar"></div></div>
     <div class="streak-dots" id="streakDots"></div>
-    <div class="input-row">
-      <input type="number" class="answer-input" id="answerInput"
-             placeholder="?" autocomplete="off" inputmode="numeric">
+
+    <div class="ratio-input-wrap">
+      <input type="number" class="ratio-input" id="inputA" placeholder="?" autocomplete="off" inputmode="numeric" min="1">
+      <div class="input-colon">:</div>
+      <input type="number" class="ratio-input" id="inputB" placeholder="?" autocomplete="off" inputmode="numeric" min="1">
       <button class="submit-btn" id="submitBtn">Go</button>
     </div>
+
     <div class="feedback-msg" id="feedbackMsg"></div>
   </div>
 
@@ -346,13 +366,13 @@
 
 </div>
 
-<!-- MOBILE DRAWER TOGGLE -->
+<!-- MOBILE DRAWER -->
 <button class="mobile-drawer-toggle" id="drawerToggle">
-  <span>⚙ Difficulty Levels &amp; Options</span>
+  <span>⚙ Options</span>
   <span class="arrow">▼</span>
 </button>
 <div class="mobile-drawer" id="mobileDrawer">
-  <div class="level-grid" id="levelListMobile" style="grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;"></div>
+  <div class="level-grid" id="levelGridMobile" style="grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;"></div>
   <div class="mobile-drawer-actions">
     <button class="toggle-all-btn" id="toggleAllBtnMobile">Toggle All</button>
     <button class="reset-btn" id="resetBtnMobile">Reset Progress</button>
@@ -368,24 +388,37 @@
 
 <script>
 // ============================================================
-// LEVEL DEFINITIONS
-// Each level: id, label, tag, min/max for both operands
-// Questions are always: larger − smaller (result always ≥ 0)
+// LEVELS
 // ============================================================
 const LEVELS = [
-  { id: 'l1', label: '1 Digits',  tag: '1–9',       min: 1,    max: 9    },
-  { id: 'l2', label: '2 Digits',  tag: '10–99',      min: 10,   max: 99   },
-  { id: 'l3', label: '3 Digits',  tag: '100–999',    min: 100,  max: 999  },
-  { id: 'l4', label: '4 Digits',  tag: '1000–9999',  min: 1000, max: 9999 },
+  { id: 1, name: 'Easy',   desc: 'max 20',  max: 20  },
+  { id: 2, name: 'Medium', desc: 'max 50',  max: 50  },
+  { id: 3, name: 'Hard',   desc: 'max 200', max: 200 },
+  { id: 4, name: 'Tricky', desc: 'max 999', max: 999 },
 ];
 
-// Time limits scale with level difficulty (ms)
-const TIME_LIMITS = { l1: 5000, l2: 8000, l3: 12000, l4: 16000 };
+// ============================================================
+// HELPERS
+// ============================================================
+function gcd(a, b) {
+  a = Math.abs(a); b = Math.abs(b);
+  while (b) { [a, b] = [b, a % b]; }
+  return a;
+}
+
+function simplifyRatio(a, b) {
+  const g = gcd(a, b);
+  return { a: a / g, b: b / g };
+}
+
+function randInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 // ============================================================
 // STATE & STORAGE
 // ============================================================
-const STORAGE_KEY = 'subtractionforge_v1';
+const STORAGE_KEY = 'ratioforge_v1';
 
 function loadState() {
   try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch(e) {}
@@ -398,57 +431,81 @@ function saveState() {
 }
 
 const saved = loadState();
-let enabledLevels = saved?.enabledLevels || { l1: true, l2: true, l3: false, l4: false };
+let enabledLevels = saved?.enabledLevels || { 1: true, 2: false, 3: false, 4: false };
 let mastered  = new Set(Array.isArray(saved?.mastered) ? saved.mastered : []);
 let stats     = (saved?.stats && typeof saved.stats === 'object') ? saved.stats : { correct: 0, total: 0, sessionStreak: 0 };
 let streaks   = (saved?.streaks && typeof saved.streaks === 'object' && !Array.isArray(saved.streaks)) ? saved.streaks : {};
 
-// Ensure all level keys exist
 LEVELS.forEach(l => { if (enabledLevels[l.id] === undefined) enabledLevels[l.id] = false; });
 
 // ============================================================
-// RANDOM HELPERS
+// QUESTION GENERATION
+// Build an unsimplified ratio that genuinely needs simplifying
 // ============================================================
-function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-
-// ============================================================
-// POOL — pick a random enabled level, generate a question
-// ============================================================
-function pickLevel() {
-  const active = LEVELS.filter(l => enabledLevels[l.id] && !mastered.has(l.id));
-  if (active.length === 0) {
-    // If all enabled levels are mastered, allow repeats
-    const any = LEVELS.filter(l => enabledLevels[l.id]);
-    return any.length ? any[Math.floor(Math.random() * any.length)] : null;
-  }
-  return active[Math.floor(Math.random() * active.length)];
+function getEnabledLevels() {
+  return LEVELS.filter(l => enabledLevels[l.id]);
 }
 
-function generateQuestion(level) {
-  let a = randInt(level.min, level.max);
-  let b = randInt(level.min, level.max);
-  // Ensure a >= b so answer is always non-negative
-  if (b > a) [a, b] = [b, a];
-  // Avoid trivial a - a = 0 questions
-  while (a === b) {
-    a = randInt(level.min, level.max);
-    b = randInt(level.min, level.max);
-    if (b > a) [a, b] = [b, a];
+function generateQuestion() {
+  const lvls = getEnabledLevels();
+  if (!lvls.length) return null;
+
+  const lv = lvls[Math.floor(Math.random() * lvls.length)];
+
+  for (let attempt = 0; attempt < 60; attempt++) {
+    // Pick two coprime values for the simplified ratio
+    const simpleA = randInt(1, Math.floor(lv.max / 2));
+    const simpleB = randInt(1, Math.floor(lv.max / 2));
+    if (simpleA === simpleB) continue; // avoid trivial 1:1 simplifications
+    if (gcd(simpleA, simpleB) !== 1) continue; // must already be coprime
+
+    // Pick a common factor to multiply by
+    const maxFactor = Math.floor(lv.max / Math.max(simpleA, simpleB));
+    if (maxFactor < 2) continue;
+    const factor = randInt(2, Math.min(maxFactor, 15));
+
+    const displayA = simpleA * factor;
+    const displayB = simpleB * factor;
+
+    // Canonical key: smaller first
+    const keyA = Math.min(displayA, displayB);
+    const keyB = Math.max(displayA, displayB);
+    const key = `${keyA}:${keyB}`;
+
+    // Answer preserves order matching display
+    return {
+      displayA, displayB,
+      answerA: simpleA, answerB: simpleB,
+      key, levelId: lv.id,
+    };
   }
-  return { a, b, answer: a - b, levelId: level.id };
+  return null;
+}
+
+function buildQuestion(previous) {
+  for (let attempt = 0; attempt < 30; attempt++) {
+    const q = generateQuestion();
+    if (!q) return null;
+    if (mastered.has(q.key)) continue;
+    if (previous && q.key === previous.key && attempt < 15) continue;
+    return q;
+  }
+  return null;
 }
 
 // ============================================================
 // DOM
 // ============================================================
-const questionText  = document.getElementById('questionText');
-const questionSub   = document.getElementById('questionSub');
-const levelChip     = document.getElementById('levelChip');
-const answerInput   = document.getElementById('answerInput');
-const submitBtn     = document.getElementById('submitBtn');
-const feedbackMsg   = document.getElementById('feedbackMsg');
-const timerBar      = document.getElementById('timerBar');
-const streakDotsEl  = document.getElementById('streakDots');
+const ratioA       = document.getElementById('ratioA');
+const ratioB       = document.getElementById('ratioB');
+const questionSub  = document.getElementById('questionSub');
+const inputA       = document.getElementById('inputA');
+const inputB       = document.getElementById('inputB');
+const submitBtn    = document.getElementById('submitBtn');
+const feedbackMsg  = document.getElementById('feedbackMsg');
+const timerBar     = document.getElementById('timerBar');
+const streakDotsEl = document.getElementById('streakDots');
+
 const statCorrect   = document.getElementById('statCorrect');
 const statTotal     = document.getElementById('statTotal');
 const statPct       = document.getElementById('statPct');
@@ -461,35 +518,37 @@ const sbTotal       = document.getElementById('sbTotal');
 const sbPct         = document.getElementById('sbPct');
 const sbPctBar      = document.getElementById('sbPctBar');
 const sbMastered    = document.getElementById('sbMastered');
-const levelListDesktop = document.getElementById('levelListDesktop');
-const levelListMobile  = document.getElementById('levelListMobile');
+const levelGridDesktop = document.getElementById('levelGridDesktop');
+const levelGridMobile  = document.getElementById('levelGridMobile');
 const toast         = document.getElementById('toast');
 const drawerToggle  = document.getElementById('drawerToggle');
 const mobileDrawer  = document.getElementById('mobileDrawer');
 
 // ============================================================
-// RENDER TOGGLES
+// RENDER LEVEL TOGGLES
 // ============================================================
-function renderLevelList(container) {
-  container.innerHTML = '';
-  LEVELS.forEach(level => {
-    const isMastered = mastered.has(level.id);
+function renderLevelGrid(gridEl) {
+  gridEl.innerHTML = '';
+  LEVELS.forEach(l => {
+    const hasMastered = [...mastered].some(k => {
+      const [a] = k.split(':').map(Number);
+      return a <= l.max;
+    });
     const wrapper = document.createElement('label');
-    wrapper.className = 'lv-toggle' + (isMastered ? ' has-mastered' : '');
+    wrapper.className = 'lv-toggle' + (hasMastered ? ' has-mastered' : '');
 
     const input = document.createElement('input');
     input.type = 'checkbox';
-    input.checked = enabledLevels[level.id];
+    input.checked = enabledLevels[l.id];
     input.addEventListener('change', () => {
-      enabledLevels[level.id] = input.checked;
-      syncToggle(level.id, input.checked);
-      saveState();
-      nextQuestion();
+      enabledLevels[l.id] = input.checked;
+      syncLevelToggles(l.id, input.checked);
+      saveState(); nextQuestion();
     });
 
     const pill = document.createElement('div');
     pill.className = 'pill';
-    pill.innerHTML = `<span class="lv-name">${level.label}</span><span class="lv-range">${level.tag}</span>`;
+    pill.innerHTML = `<span class="lv-name">${l.name}</span><span class="lv-range">${l.desc}</span>`;
 
     const badge = document.createElement('div');
     badge.className = 'mastered-badge';
@@ -497,18 +556,18 @@ function renderLevelList(container) {
     wrapper.appendChild(input);
     wrapper.appendChild(pill);
     wrapper.appendChild(badge);
-    container.appendChild(wrapper);
+    gridEl.appendChild(wrapper);
   });
 }
 
 function renderToggles() {
-  renderLevelList(levelListDesktop);
-  renderLevelList(levelListMobile);
+  renderLevelGrid(levelGridDesktop);
+  renderLevelGrid(levelGridMobile);
 }
 
-function syncToggle(levelId, checked) {
-  [levelListDesktop, levelListMobile].forEach(container => {
-    const inputs = container.querySelectorAll('input[type=checkbox]');
+function syncLevelToggles(levelId, checked) {
+  [levelGridDesktop, levelGridMobile].forEach(grid => {
+    const inputs = grid.querySelectorAll('input[type=checkbox]');
     const idx = LEVELS.findIndex(l => l.id === levelId);
     if (inputs[idx]) inputs[idx].checked = checked;
   });
@@ -527,24 +586,25 @@ function renderStreakDots(count) {
 }
 
 // ============================================================
-// TIMER — time limit varies by level
+// TIMER
 // ============================================================
-let currentQ = null, timerInterval = null, timerStart = null, currentTimeLimit = 8000;
+let currentQ = null, timerInterval = null, timerStart = null;
+const TIME_LIMIT = 8000;
 
-function startTimer(timeLimit) {
-  currentTimeLimit = timeLimit;
+function startTimer() {
   clearInterval(timerInterval);
   timerStart = Date.now();
   timerBar.style.transition = 'none';
   timerBar.style.width = '100%';
   timerBar.className = 'timer-bar';
   timerInterval = setInterval(() => {
-    const pct = Math.max(0, 100 - ((Date.now() - timerStart) / currentTimeLimit) * 100);
+    const pct = Math.max(0, 100 - ((Date.now() - timerStart) / TIME_LIMIT) * 100);
     timerBar.style.transition = 'width 0.1s linear';
     timerBar.style.width = pct + '%';
-    if (pct < 33)      timerBar.className = 'timer-bar urgent';
-    else if (pct < 66) timerBar.className = 'timer-bar warning';
-    else               timerBar.className = 'timer-bar';
+    if (pct <= 16)       timerBar.className = 'timer-bar urgent';
+    else if (pct <= 33)  timerBar.className = 'timer-bar warning-orange';
+    else if (pct <= 55)  timerBar.className = 'timer-bar warning';
+    else                 timerBar.className = 'timer-bar';
   }, 100);
 }
 function stopTimer() { clearInterval(timerInterval); }
@@ -557,74 +617,73 @@ function nextQuestion() {
   stopTimer();
   feedbackMsg.textContent = '';
   feedbackMsg.className = 'feedback-msg';
-  answerInput.value = '';
-  answerInput.className = 'answer-input';
-  answerInput.disabled = false;
+  inputA.value = ''; inputB.value = '';
+  inputA.className = 'ratio-input'; inputB.className = 'ratio-input';
+  inputA.disabled = false; inputB.disabled = false;
 
-  const anyEnabled = LEVELS.some(l => enabledLevels[l.id]);
-  if (!anyEnabled) {
-    questionText.textContent = '—';
-    questionSub.textContent = 'Enable a difficulty level.';
-    answerInput.disabled = true;
-    currentQ = null;
-    timerBar.style.width = '0%';
-    renderStreakDots(0);
-    return;
+  if (!getEnabledLevels().length) {
+    ratioA.textContent = '—'; ratioB.textContent = '—';
+    questionSub.textContent = 'Enable a level to begin.';
+    inputA.disabled = true; inputB.disabled = true;
+    currentQ = null; timerBar.style.width = '0%';
+    renderStreakDots(0); return;
   }
 
-  const level = pickLevel();
-  if (!level) {
-    questionText.textContent = '🎉';
-    questionSub.textContent = 'All enabled levels mastered!';
-    answerInput.disabled = true;
-    currentQ = null;
-    timerBar.style.width = '0%';
-    renderStreakDots(0);
-    return;
+  const q = buildQuestion(currentQ);
+  if (!q) {
+    ratioA.textContent = '🎉'; ratioB.textContent = '';
+    questionSub.textContent = 'All mastered! Enable more levels.';
+    inputA.disabled = true; inputB.disabled = true;
+    currentQ = null; timerBar.style.width = '0%';
+    renderStreakDots(0); return;
   }
 
-  const q = generateQuestion(level);
   currentQ = q;
-
-  questionText.innerHTML = `${q.a} <span style="color:var(--accent)">−</span> ${q.b}`;
-  const streak = streaks[level.id] || 0;
+  ratioA.textContent = q.displayA;
+  ratioB.textContent = q.displayB;
+  const streak = streaks[q.key] || 0;
   renderStreakDots(streak);
-  questionSub.textContent = streak > 0 ? `${streak}/6 mastery streak` : '';
-  startTimer(TIME_LIMITS[level.id]);
-  if (!('ontouchstart' in window)) answerInput.focus();
+  questionSub.textContent = streak > 0 ? `${streak}/6 mastery streak` : 'Simplify to lowest terms';
+  startTimer();
+  if (!('ontouchstart' in window)) inputA.focus();
 }
 
 // ============================================================
 // SUBMIT
 // ============================================================
 function submitAnswer() {
-  if (!currentQ || answerInput.disabled) return;
-  const val = parseInt(answerInput.value, 10);
-  if (isNaN(val)) { answerInput.focus(); return; }
+  if (!currentQ || inputA.disabled) return;
+  const userA = parseInt(inputA.value, 10);
+  const userB = parseInt(inputB.value, 10);
+  if (isNaN(userA)) { inputA.focus(); return; }
+  if (isNaN(userB)) { inputB.focus(); return; }
 
-  const correct = currentQ.answer;
+  // Normalise what the user entered — must be fully simplified
+  const userGcd = gcd(userA, userB);
+  const normA = userA / userGcd;
+  const normB = userB / userGcd;
+
+  const correct = normA === currentQ.answerA && normB === currentQ.answerB;
   const elapsed = getElapsed();
   stopTimer();
   stats.total++;
 
-  if (val === correct) {
+  if (correct) {
     stats.correct++;
     stats.sessionStreak = (stats.sessionStreak || 0) + 1;
-    answerInput.className = 'answer-input correct-flash';
-    const withinTime = elapsed <= currentTimeLimit;
-    streaks[currentQ.levelId] = withinTime ? (streaks[currentQ.levelId] || 0) + 1 : 0;
-    const streak = streaks[currentQ.levelId];
+    inputA.className = 'ratio-input correct-flash';
+    inputB.className = 'ratio-input correct-flash';
+    streaks[currentQ.key] = elapsed <= TIME_LIMIT ? (streaks[currentQ.key] || 0) + 1 : 0;
+    const streak = streaks[currentQ.key];
     renderStreakDots(streak);
 
     if (streak >= 6) {
-      mastered.add(currentQ.levelId);
-      streaks[currentQ.levelId] = 0;
+      mastered.add(currentQ.key);
+      streaks[currentQ.key] = 0;
       feedbackMsg.textContent = '★ MASTERED!';
       feedbackMsg.className = 'feedback-msg mastered';
-      const lvl = LEVELS.find(l => l.id === currentQ.levelId);
-      showToast(`${lvl ? lvl.label : 'Level'} mastered! 🔥`, true);
-      renderToggles();
-      renderMastered();
+      showToast(`${currentQ.displayA}:${currentQ.displayB} mastered! 🔥`, true);
+      renderToggles(); renderMastered();
     } else {
       const msgs = ['Correct!', 'Nice!', 'Spot on!', 'Yes!', '✓ Right!'];
       feedbackMsg.textContent = msgs[Math.floor(Math.random() * msgs.length)];
@@ -632,17 +691,17 @@ function submitAnswer() {
     }
   } else {
     stats.sessionStreak = 0;
-    streaks[currentQ.levelId] = 0;
+    streaks[currentQ.key] = 0;
     renderStreakDots(0);
-    answerInput.className = 'answer-input wrong-flash';
-    feedbackMsg.textContent = `✗  Answer was ${correct}`;
+    inputA.className = 'ratio-input wrong-flash';
+    inputB.className = 'ratio-input wrong-flash';
+    feedbackMsg.textContent = `✗  Answer was ${currentQ.answerA} : ${currentQ.answerB}`;
     feedbackMsg.className = 'feedback-msg wrong';
   }
 
-  updateStats();
-  saveState();
-  answerInput.disabled = true;
-  setTimeout(() => nextQuestion(), 900);
+  updateStats(); saveState();
+  inputA.disabled = true; inputB.disabled = true;
+  setTimeout(() => nextQuestion(), 1000);
 }
 
 // ============================================================
@@ -653,34 +712,39 @@ function updateStats() {
   const pct = t > 0 ? Math.round((c / t) * 100) : null;
   const pctStr = pct !== null ? pct + '%' : '—';
   const pctW   = pct !== null ? pct + '%' : '0%';
+
   statCorrect.textContent = c; statTotal.textContent = t;
   statPct.textContent = pctStr; pctBar.style.width = pctW;
   sbCorrect.textContent = c; sbTotal.textContent = t;
   sbPct.textContent = pctStr; sbPctBar.style.width = pctW;
   sbMastered.textContent = mastered.size;
+
+  const barColor = pct === null ? 'var(--correct)'
+    : pct <= 25 ? '#e84c1e' : pct <= 50 ? '#f07d20'
+    : pct <= 70 ? '#f5c518' : 'var(--correct)';
+  pctBar.style.background = barColor;
+  sbPctBar.style.background = barColor;
+
   const ss = stats.sessionStreak || 0;
   statStreak.textContent = ss >= 5 ? '🔥'.repeat(Math.floor(ss / 5)) + ' ' + ss + ' in a row' : '';
-  // Accuracy bar colour
-  let accColor;
-  if (pct === null)   accColor = 'var(--correct)';
-  else if (pct <= 25) accColor = 'var(--wrong)';
-  else if (pct <= 50) accColor = 'var(--acc-orange)';
-  else if (pct <= 70) accColor = 'var(--acc-yellow)';
-  else                accColor = 'var(--correct)';
-  pctBar.style.background = accColor;
-  sbPctBar.style.background = accColor;
 }
 
 function renderMastered() {
   masteredCount.textContent = mastered.size;
   sbMastered.textContent = mastered.size;
-  if (mastered.size === 0) {
+  if (!mastered.size) {
     masteredList.innerHTML = '<div style="font-size:12px;color:var(--text-muted)">None yet</div>';
     return;
   }
-  masteredList.innerHTML = [...mastered].map(id => {
-    const lvl = LEVELS.find(l => l.id === id);
-    return lvl ? `<div class="mastered-item">★ ${lvl.label}</div>` : '';
+  const sorted = [...mastered].sort((a, b) => {
+    const [aa] = a.split(':').map(Number);
+    const [ba] = b.split(':').map(Number);
+    return aa - ba;
+  });
+  masteredList.innerHTML = sorted.map(k => {
+    const [a, b] = k.split(':').map(Number);
+    const s = simplifyRatio(a, b);
+    return `<div class="mastered-item">★ ${k} = ${s.a}:${s.b}</div>`;
   }).join('');
 }
 
@@ -698,7 +762,7 @@ function showToast(msg, isMastered = false) {
 // ============================================================
 // TOGGLE ALL / RESET
 // ============================================================
-let allOn = true;
+let allOn = false;
 function toggleAll() {
   allOn = !allOn;
   LEVELS.forEach(l => enabledLevels[l.id] = allOn);
@@ -708,8 +772,8 @@ function doReset() {
   if (!confirm('Reset all mastery progress and stats? This cannot be undone.')) return;
   mastered = new Set(); streaks = {};
   stats = { correct: 0, total: 0, sessionStreak: 0 };
-  allOn = true;
-  LEVELS.forEach(l => enabledLevels[l.id] = l.id === 'l1' || l.id === 'l2');
+  allOn = false;
+  LEVELS.forEach(l => enabledLevels[l.id] = l.id === 1);
   saveState(); renderToggles(); renderMastered(); updateStats(); nextQuestion();
   showToast('Progress reset.');
 }
@@ -728,10 +792,13 @@ drawerToggle.addEventListener('click', () => {
 });
 
 // ============================================================
-// INPUT
+// INPUT — Tab A→B, Enter to submit
 // ============================================================
 submitBtn.addEventListener('click', submitAnswer);
-answerInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitAnswer(); });
+inputA.addEventListener('keydown', e => { if (e.key === 'Enter') inputB.focus(); });
+inputB.addEventListener('keydown', e => { if (e.key === 'Enter') submitAnswer(); });
+inputA.addEventListener('input', () => { if (inputA.value < 1) inputA.value = ''; });
+inputB.addEventListener('input', () => { if (inputB.value < 1) inputB.value = ''; });
 
 // ============================================================
 // INIT
