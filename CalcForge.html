@@ -62,7 +62,8 @@ body {
 
 /* ===== WRAPPER ===== */
 .app-wrapper {
-  width: 480px;
+  width: 100%;
+  max-width: 480px;
   opacity: 0;
   transform: translateY(20px);
   transition: opacity 0.5s ease, transform 0.5s ease;
@@ -379,6 +380,23 @@ textarea.pi { width: 100%; resize: none; height: 50px; }
   .rf-footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; }
 
   body { padding-top: 0 !important; }
+
+@media (max-width: 520px) {
+  .app-wrapper { padding: 0 8px; }
+  .shell { padding: 16px 12px 20px; border-radius: 8px; }
+  .top-mode-btn { font-size: 11px; padding: 8px 2px; }
+  .std-grid { gap: 6px; }
+  .sci-grid { gap: 4px; }
+  .alv-grid { gap: 4px; }
+  .h56 { height: 48px !important; font-size: 18px !important; }
+  .h44 { height: 38px !important; font-size: 14px !important; }
+  .h38 { height: 34px !important; font-size: 13px !important; }
+  .h30 { height: 28px !important; font-size: 11px !important; }
+  .d-main { font-size: 36px !important; }
+  header { padding: 10px 16px; }
+  .rf-logo { font-size: 38px; }
+  footer.rf-footer { padding: 8px 16px; font-size: 10.5px; }
+}
 </style>
 </head>
 <body>

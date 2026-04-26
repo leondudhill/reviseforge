@@ -77,15 +77,16 @@
   }
 
   /* ===================== SIDEBARS ===================== */
-  .sidebar { border-right: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; }
-  .sidebar-right { border-right: none; border-left: 1.5px solid var(--border); }
+  .sidebar { border-right: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; display:flex;flex-direction:column;}
+  .sidebar-right { border-right: none; border-left: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; display: flex; flex-direction: column; }
   .sidebar-title { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 14px; }
 
-  /* ===================== TABLE TOGGLES ===================== */
-  .table-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .tt-toggle { position: relative; cursor: pointer; }
-  .tt-toggle input { display: none; }
-  .tt-toggle   .lv-toggle .pill {
+  /* ===================== LEVEL TOGGLES ===================== */
+  .level-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+
+  .lv-toggle { position: relative; cursor: pointer; }
+  .lv-toggle input { display: none; }
+    .lv-toggle .pill {
     display: flex; align-items: center; justify-content: space-between;
     height: 44px; border-radius: 8px; border: 1.5px solid var(--border);
     background: var(--surface); font-family: 'DM Sans', sans-serif;
@@ -93,12 +94,27 @@
     transition: all 0.15s ease; user-select: none; padding: 0 14px;
   }
   .lv-toggle input:checked + .pill { background: var(--accent); border-color: var(--accent); color: #fff; }
-  .tt-toggle .mastered-badge {
+  .lv-toggle .pill .lv-name { }
+  .lv-toggle .pill .lv-range { display: none; }
+  .lv-toggle input:checked + .pill .lv-range { color: rgba(255,255,255,0.75); opacity: 1; }
+
+  .lv-toggle .mastered-badge {
     position: absolute; top: -4px; right: -4px;
     width: 10px; height: 10px; background: var(--accent2);
     border-radius: 50%; border: 1.5px solid #fff; display: none;
   }
-  .tt-toggle.has-mastered .mastered-badge { display: block; }
+  .lv-toggle.has-mastered .mastered-badge { display: block; }
+
+  /* Info blurb under toggles */
+  .level-info {
+    margin-top: 16px;
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .level-info strong { color: var(--accent); font-weight: 700; }
 
   .toggle-all-btn {
     margin-top: 12px; width: 100%; padding: 8px; background: none;
@@ -106,7 +122,7 @@
     font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
     color: var(--text-muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.5px;
   }
-  .toggle-all-btn:hover { border-color: var(--text); color: var(--text); }
+  .toggle-all-btn:hover { border-color: var(--accent); color: var(--accent); }
   .reset-btn {
     margin-top: 8px; width: 100%; padding: 8px; background: none;
     border: 1.5px solid #f2c4bb; border-radius: 6px;
@@ -123,17 +139,38 @@
   .question-card { text-align: center; }
   .question-text {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(60px, 10vw, 96px);
-    letter-spacing: 4px; line-height: 1; color: var(--text);
+    font-size: clamp(52px, 8vw, 88px);
+    letter-spacing: 3px; line-height: 1.1; color: var(--text);
   }
-  .question-text .operator { color: var(--accent); }
+  .question-text .operator {
+    color: var(--accent);
+    font-size: 0.8em;
+    vertical-align: middle;
+    margin: 0 4px;
+  }
   .question-sub { font-size: 13px; color: var(--text-muted); margin-top: 6px; font-weight: 500; letter-spacing: 0.5px; min-height: 20px; }
+
+  /* Level badge */
+  .level-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
 
   .timer-wrap { width: min(280px, 80vw); height: 4px; background: var(--surface2); border-radius: 2px; overflow: hidden; }
   .timer-bar { height: 100%; width: 100%; background: var(--correct); border-radius: 2px; transition: width 0.1s linear, background 0.3s; }
-  .timer-bar.warning { background: #f5c518; }
+  .timer-bar.warning        { background: #f5c518; }
   .timer-bar.warning-orange { background: #f07d20; }
-  .timer-bar.urgent  { background: var(--accent); }
+  .timer-bar.urgent         { background: var(--wrong); }
 
   .streak-dots { display: flex; gap: 6px; justify-content: center; }
   .streak-dot { width: 10px; height: 10px; border-radius: 50%; border: 1.5px solid var(--border); background: var(--surface); transition: all 0.2s ease; }
@@ -143,13 +180,13 @@
   .answer-input {
     font-family: 'DM Mono', monospace;
     font-size: clamp(16px, 5vw, 28px);
-    font-weight: 500; width: 120px; text-align: center;
+    font-weight: 500; width: 140px; text-align: center;
     border: 2px solid var(--border); border-radius: 10px;
     padding: 10px 12px; outline: none;
     background: var(--surface); color: var(--text);
     transition: border-color 0.15s, background 0.15s;
   }
-  .answer-input:focus        { border-color: var(--text); background: #fff; }
+  .answer-input:focus         { border-color: var(--accent); background: #fff; }
   .answer-input.correct-flash { border-color: var(--correct); background: #edfaf3; }
   .answer-input.wrong-flash   { border-color: var(--wrong);   background: #fff0ed; }
   .answer-input:disabled { opacity: 0.5; }
@@ -161,7 +198,7 @@
     transition: all 0.15s; letter-spacing: 0.3px;
     min-height: 48px; min-width: 64px;
   }
-  .submit-btn:hover  { background: var(--accent); }
+  .submit-btn:hover  { filter: brightness(1.1); }
   .submit-btn:active { transform: scale(0.97); }
 
   .feedback-msg { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; min-height: 26px; }
@@ -170,14 +207,14 @@
   .feedback-msg.mastered { color: var(--accent2); }
 
   /* ===================== RIGHT SIDEBAR STATS ===================== */
-  .stat-block { margin-bottom: 22px; }
+  .stat-block { margin-bottom: 18px; flex-shrink: 0; }
   .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
   .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 1px; line-height: 1; color: var(--text); }
   .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
   .pct-bar-wrap { height: 5px; background: var(--surface2); border-radius: 3px; margin-top: 8px; overflow: hidden; }
   .pct-bar { height: 100%; background: var(--correct); border-radius: 3px; transition: width 0.5s ease; }
   .divider { border: none; border-top: 1.5px solid var(--border); margin: 18px 0; }
-  .mastered-list { display: flex; flex-direction: column; gap: 4px; max-height: 180px; overflow-y: auto; }
+  .mastered-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
   .mastered-item { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-muted); padding: 3px 6px; background: var(--surface); border-radius: 4px; }
 
   /* ===================== MOBILE DRAWER ===================== */
@@ -195,6 +232,7 @@
 
   .mobile-drawer { display: none; background: var(--surface); border-top: 1px solid var(--border); padding: 16px 20px 20px; flex-shrink: 0; }
   .mobile-drawer.open { display: block; }
+  .mobile-drawer .level-grid { grid-template-columns: repeat(2, 1fr); }
   .mobile-drawer-actions { display: flex; gap: 8px; margin-top: 10px; }
   .mobile-drawer-actions .toggle-all-btn,
   .mobile-drawer-actions .reset-btn { margin: 0; flex: 1; }
@@ -222,19 +260,15 @@
   .footer-label { font-weight: 700; letter-spacing: 1px; color: var(--accent); margin-right: 6px; }
 
   /* ===================== BREAKPOINTS ===================== */
-
-  /* Tablet: hide right sidebar, show score bar */
   @media (max-width: 860px) {
     .layout { grid-template-columns: 200px 1fr; }
-    .sidebar-right { display: none; }
+    .sidebar-right { border-right: none; border-left: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; display: flex; flex-direction: column; }
     .score-bar { display: flex; }
   }
-
-  /* Mobile: single column, hide both sidebars, show drawer */
   @media (max-width: 580px) {
     .layout { grid-template-columns: 1fr; }
-    .sidebar { display: none; }
-    .sidebar-right { display: none; }
+    .sidebar { display: none; display:flex;flex-direction:column;}
+    .sidebar-right { border-right: none; border-left: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; display: flex; flex-direction: column; }
     .score-bar { display: flex; }
     .mobile-drawer-toggle { display: flex; }
     .main { padding: 28px 16px; gap: 22px; }
@@ -278,7 +312,7 @@
 
   <!-- LEFT SIDEBAR -->
   <div class="sidebar">
-    <div class="table-grid" id="tableGridDesktop"></div>
+    <div class="level-grid" id="levelGridDesktop"></div>
     <button class="toggle-all-btn" id="toggleAllBtnDesktop">Toggle All</button>
     <button class="reset-btn" id="resetBtnDesktop">Reset Progress</button>
   </div>
@@ -304,11 +338,7 @@
     <div class="sidebar-title">Score</div>
     <div class="stat-block">
       <div class="stat-label">Correct / Total</div>
-      <div class="stat-value">
-        <span id="statCorrect">0</span>
-        <span style="font-size:20px;color:var(--border)">/</span>
-        <span id="statTotal">0</span>
-      </div>
+      <div class="stat-value"><span id="statCorrect">0</span><span style="font-size:20px;color:var(--border)">/</span><span id="statTotal">0</span></div>
     </div>
     <div class="stat-block">
       <div class="stat-label">Accuracy</div>
@@ -333,7 +363,7 @@
   <span class="arrow">▼</span>
 </button>
 <div class="mobile-drawer" id="mobileDrawer">
-  <div class="table-grid" id="tableGridMobile" style="grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:10px;"></div>
+  <div class="level-grid" id="levelGridMobile" style="grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px;"></div>
   <div class="mobile-drawer-actions">
     <button class="toggle-all-btn" id="toggleAllBtnMobile">Toggle All</button>
     <button class="reset-btn" id="resetBtnMobile">Reset Progress</button>
@@ -413,8 +443,8 @@ const sbTotal       = document.getElementById('sbTotal');
 const sbPct         = document.getElementById('sbPct');
 const sbPctBar      = document.getElementById('sbPctBar');
 const sbMastered    = document.getElementById('sbMastered');
-const tableGridDesktop = document.getElementById('tableGridDesktop');
-const tableGridMobile  = document.getElementById('tableGridMobile');
+const levelGridDesktop = document.getElementById('levelGridDesktop');
+const levelGridMobile  = document.getElementById('levelGridMobile');
 const toast         = document.getElementById('toast');
 const drawerToggle  = document.getElementById('drawerToggle');
 const mobileDrawer  = document.getElementById('mobileDrawer');
@@ -422,12 +452,12 @@ const mobileDrawer  = document.getElementById('mobileDrawer');
 // ============================================================
 // RENDER TOGGLES
 // ============================================================
-function renderToggleGrid(gridEl) {
+function renderLevelGrid(gridEl) {
   gridEl.innerHTML = '';
   for (let i = 1; i <= 12; i++) {
     const hasMastered = [...mastered].some(k => k.split('×').map(Number).includes(i));
     const wrapper = document.createElement('label');
-    wrapper.className = 'tt-toggle' + (hasMastered ? ' has-mastered' : '');
+    wrapper.className = 'lv-toggle' + (hasMastered ? ' has-mastered' : '');
     const input = document.createElement('input');
     input.type = 'checkbox';
     input.checked = enabledTables[i];
@@ -449,11 +479,11 @@ function renderToggleGrid(gridEl) {
   }
 }
 function renderToggles() {
-  renderToggleGrid(tableGridDesktop);
-  renderToggleGrid(tableGridMobile);
+  renderLevelGrid(levelGridDesktop);
+  renderLevelGrid(levelGridMobile);
 }
 function syncToggles(tableNum, checked) {
-  [tableGridDesktop, tableGridMobile].forEach(grid => {
+  [levelGridDesktop, levelGridMobile].forEach(grid => {
     const inputs = grid.querySelectorAll('input[type=checkbox]');
     if (inputs[tableNum - 1]) inputs[tableNum - 1].checked = checked;
   });

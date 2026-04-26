@@ -77,8 +77,8 @@
   }
 
   /* ===================== SIDEBARS ===================== */
-  .sidebar { border-right: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; }
-  .sidebar-right { border-right: none; border-left: 1.5px solid var(--border); }
+  .sidebar { border-right: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; display:flex;flex-direction:column;}
+  .sidebar-right { border-right: none; border-left: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; display: flex; flex-direction: column; }
   .sidebar-title { font-family: 'Bebas Neue', sans-serif; font-size: 14px; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 14px; }
 
   /* ===================== LEVEL TOGGLES ===================== */
@@ -207,7 +207,7 @@
   .feedback-msg.mastered { color: var(--accent2); }
 
   /* ===================== RIGHT SIDEBAR STATS ===================== */
-  .stat-block { margin-bottom: 22px; }
+  .stat-block { margin-bottom: 18px; flex-shrink: 0; }
   .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 3px; }
   .stat-value { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 1px; line-height: 1; color: var(--text); }
   .stat-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
@@ -262,13 +262,13 @@
   /* ===================== BREAKPOINTS ===================== */
   @media (max-width: 860px) {
     .layout { grid-template-columns: 200px 1fr; }
-    .sidebar-right { display: none; }
+    .sidebar-right { border-right: none; border-left: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; display: flex; flex-direction: column; }
     .score-bar { display: flex; }
   }
   @media (max-width: 580px) {
     .layout { grid-template-columns: 1fr; }
-    .sidebar { display: none; }
-    .sidebar-right { display: none; }
+    .sidebar { display: none; display:flex;flex-direction:column;}
+    .sidebar-right { border-right: none; border-left: 1.5px solid var(--border); padding: 22px 18px; overflow-y: auto; display: flex; flex-direction: column; }
     .score-bar { display: flex; }
     .mobile-drawer-toggle { display: flex; }
     .main { padding: 28px 16px; gap: 22px; }
@@ -337,11 +337,7 @@
     <div class="sidebar-title">Score</div>
     <div class="stat-block">
       <div class="stat-label">Correct / Total</div>
-      <div class="stat-value">
-        <span id="statCorrect">0</span>
-        <span style="font-size:20px;color:var(--border)">/</span>
-        <span id="statTotal">0</span>
-      </div>
+      <div class="stat-value"><span id="statCorrect">0</span><span style="font-size:20px;color:var(--border)">/</span><span id="statTotal">0</span></div>
     </div>
     <div class="stat-block">
       <div class="stat-label">Accuracy</div>
